@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Civic Issue Reporting System Flowchart</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+</head>
+<body>
+    <h1>Civic Issue Reporting System Architecture and Flow</h1>
+    <div class="mermaid">
+        flowchart TD
+            A[Admin Logs into Web Portal] --> B[Dashboard Loads: Interactive Map with Issue Pins]
+            B --> C[Filter Reports: By Category, Location, Priority, Status]
+            C --> D[View Report Details: Photo, Description, Location]
+            D --> E{Action Required?}
+            E -->|Yes| F[Assign to Department/Auto-Route]
+            E -->|No| G[Update Status: Acknowledged/In Progress/Resolved]
+            F --> H[Send Notification to Citizen]
+            G --> H
+            H --> I[Generate Analytics Report]
+            I --> J[Export Data/Insights]
+            J --> K[Logout or Continue Monitoring]
+
+            subgraph "User Flow (Mobile App)"
+                L[Citizen Submits Report via Mobile] --> M[Report Sent to Backend]
+                M --> N[Confirmation Notification Received]
+                N --> O[Track Status via App]
+            end
+
+            subgraph "Admin Portal Features"
+                B
+                C
+                D
+                F
+                G
+                I
+            end
+    </div>
+</body>
+</html>
