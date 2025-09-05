@@ -211,6 +211,35 @@ function ViewStatus() {
                   </div>
                 </div>
 
+                {/* New Civic Category Information */}
+                <div style={{ padding: '15px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>ISSUE CATEGORY</div>
+                  <div style={{ fontSize: '14px', lineHeight: '1.4' }}>
+                    {status.category || `${status.mainCategory || 'N/A'} > ${status.subCategory1 || 'N/A'} > ${status.specificIssue || 'N/A'}`}
+                  </div>
+                </div>
+
+                {/* Location Information */}
+                {status.location && (
+                  <div style={{ padding: '15px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
+                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>LOCATION</div>
+                    <div style={{ fontSize: '14px' }}>{status.location}</div>
+                    {status.latitude && status.longitude && (
+                      <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '5px' }}>
+                        Coordinates: {status.latitude.toFixed(6)}, {status.longitude.toFixed(6)}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Attachments Information */}
+                {status.attachments && status.attachments > 0 && (
+                  <div style={{ padding: '15px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
+                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>ATTACHMENTS</div>
+                    <div style={{ fontSize: '14px' }}>{status.attachments} file(s) attached</div>
+                  </div>
+                )}
+
                 <div style={{ padding: '15px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
                   <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>COMPLAINT DESCRIPTION</div>
                   <div style={{ fontSize: '16px', lineHeight: '1.5' }}>{status.description || status.title}</div>

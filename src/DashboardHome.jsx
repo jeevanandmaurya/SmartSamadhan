@@ -151,7 +151,12 @@ function DashboardHome() {
       report.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       report.regNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       report.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      report.id.toLowerCase().includes(searchTerm.toLowerCase())
+      report.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      report.mainCategory?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      report.subCategory1?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      report.specificIssue?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      report.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      report.location?.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [sortedReports, searchTerm]);
 
@@ -326,6 +331,15 @@ function DashboardHome() {
                     title={report.description || report.title}>
                       {report.title || report.description}
                     </div>
+                    {report.mainCategory && (
+                      <div style={{
+                        fontSize: '11px',
+                        color: 'var(--muted)',
+                        marginTop: '2px'
+                      }}>
+                        {report.mainCategory} • {report.department}
+                      </div>
+                    )}
                   </td>
                   <td style={{ padding: '12px' }}>
                     <span

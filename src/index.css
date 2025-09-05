@@ -24,17 +24,15 @@
   --border: #374151; /* gray-700 */
   --card: #111827; /* gray-900 */
   --icon: #9ca3af; /* gray-400 for icons */
-}
 
-[data-theme="dark"] {
-  --bg: #1f2937; /* gray-800 */
-  --fg: #f9fafb; /* gray-50 */
-  --muted: #9ca3af; /* gray-400 */
-  --primary: #3b82f6; /* blue-500 */
-  --primary-hover: #2563eb; /* blue-600 */
-  --border: #374151; /* gray-700 */
-  --card: #111827; /* gray-900 */
-  --icon: #9ca3af; /* gray-400 for icons */
+  /* Warning box colors for dark mode */
+  --warning-bg: #2d1b1b; /* dark red background */
+  --warning-border: #7f1d1d; /* dark red border */
+  --warning-text: #fca5a5; /* light red text */
+
+  /* Table header colors for dark mode */
+  --table-header-bg: #374151; /* gray-700 */
+  --table-header-text: #f9fafb; /* white text */
 }
 
 /* Use border-box to avoid 100% width + padding overflow */
@@ -138,3 +136,13 @@ button:focus { outline: 3px solid rgba(37,99,235,0.35); outline-offset: 2px; }
 .leaflet-left { left: 0; }
 .leaflet-right { right: 0; }
 .leaflet-control-zoom a { background: #fff; color: #000; }
+
+/* Floating animation for decorative objects */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}

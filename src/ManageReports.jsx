@@ -22,7 +22,12 @@ function ManageReports() {
         complaint.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         complaint.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         complaint.regNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        complaint.userName?.toLowerCase().includes(searchTerm.toLowerCase());
+        complaint.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        complaint.mainCategory?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        complaint.subCategory1?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        complaint.specificIssue?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        complaint.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        complaint.location?.toLowerCase().includes(searchTerm.toLowerCase());
 
       return matchesStatus && matchesDepartment && matchesPriority && matchesSearch;
     });
@@ -209,16 +214,28 @@ function ManageReports() {
               >
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '15px', alignItems: 'start' }}>
                   <div>
-                    <h4 style={{ margin: '0 0 8px 0' }}>{report.title || report.issue}</h4>
+                    <h4 style={{ margin: '0 0 8px 0' }}>{report.title || report.description}</h4>
                     <p style={{ margin: '0 0 8px 0', color: 'var(--muted)', fontSize: '14px' }}>
-                      {report.description || report.issue}
+                      {report.description || report.title}
                     </p>
-                    <div style={{ display: 'flex', gap: '15px', fontSize: '12px', color: 'var(--muted)' }}>
+                    {report.mainCategory && (
+                      <div style={{ margin: '0 0 8px 0', fontSize: '13px', color: 'var(--primary)' }}>
+                        📂 {report.mainCategory} → {report.subCategory1} → {report.specificIssue}
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', gap: '15px', fontSize: '12px', color: 'var(--muted)', flexWrap: 'wrap' }}>
                       <span>📋 {report.regNumber}</span>
                       <span>🏢 {report.department}</span>
                       <span>👤 {report.userName}</span>
                       <span>📅 {new Date(report.dateSubmitted).toLocaleDateString()}</span>
+                      {report.city && <span>📍 {report.city}</span>}
+                      {report.attachments > 0 && <span>📎 {report.attachments} files</span>}
                     </div>
+                    {report.location && (
+                      <div style={{ marginTop: '5px', fontSize: '12px', color: 'var(--muted)' }}>
+                        📍 {report.location}
+                      </div>
+                    )}
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'flex-end' }}>

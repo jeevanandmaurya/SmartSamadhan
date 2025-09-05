@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 
@@ -10,7 +10,14 @@ function Login() {
   const [remember, setRemember] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate(user.role === 'admin' ? '/admin-dashboard' : '/user-dashboard');
+    }
+  }, [user, navigate]);
 
   const handleLogin = (e) => {
     e.preventDefault();

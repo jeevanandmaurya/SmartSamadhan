@@ -70,7 +70,10 @@ function Navbar() {
             </>
           ) : (
             // Not logged in options
-            <Link to="/login" style={{ color: 'var(--fg)' }}>Sign In</Link>
+            <>
+              <Link to="/login" style={{ color: 'var(--fg)' }}>Sign In</Link>
+              <Link to="/admin-login" style={{ color: 'var(--fg)' }}>Admin</Link>
+            </>
           )}
 
           <button onClick={toggleTheme} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', color: 'var(--fg)' }}>

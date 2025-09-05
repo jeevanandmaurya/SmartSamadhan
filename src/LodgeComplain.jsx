@@ -24,16 +24,14 @@ function LodgeComplain() {
     // Agreement
     agreementAccepted: false,
 
-    // Government Selection
-    governmentLevel: '',
-    ministry: '',
+    // Location/Department Selection
+    city: '',
     department: '',
-    state: '',
 
     // Category Selection
     mainCategory: '',
     subCategory1: '',
-    subCategory2: '',
+    specificIssue: '',
 
     // Complaint Details
     title: '',
@@ -47,91 +45,109 @@ function LodgeComplain() {
     attachments: []
   });
 
-  // Categories data structure
-  const categories = {
-    'Ministry of Home Affairs': {
-      'Police & Law Enforcement': {
-        'Crime & Criminal Activities': ['Theft', 'Assault', 'Fraud', 'Cyber Crime', 'Domestic Violence'],
-        'Traffic Violations': ['Signal Jumping', 'Wrong Parking', 'Overspeeding', 'Drunk Driving'],
-        'Public Safety': ['Fire Safety', 'Building Safety', 'Public Nuisance']
-      },
-      'Internal Security': {
-        'Terrorism': ['Terrorist Activities', 'Extremism', 'Radicalization'],
-        'Border Security': ['Border Disputes', 'Immigration Issues', 'Smuggling']
-      }
+  // Civic Issues Categories - Focused on everyday municipal problems
+  const civicCategories = {
+    'Roads & Infrastructure': {
+      'Potholes & Road Damage': [
+        'Large Potholes',
+        'Multiple Potholes',
+        'Road Cracks',
+        'Road Subsidence',
+        'Road Erosion',
+        'Missing Road Signs'
+      ],
+      'Street Lights': [
+        'Malfunctioning Street Light',
+        'Completely Dark Street Light',
+        'Flickering Street Light',
+        'Damaged Street Light Pole',
+        'Missing Street Light'
+      ],
+      'Traffic Signals': [
+        'Malfunctioning Traffic Signal',
+        'Missing Traffic Signal',
+        'Wrong Signal Timing',
+        'Damaged Signal Pole'
+      ]
     },
-    'Ministry of Road Transport & Highways': {
-      'Road Infrastructure': {
-        'Potholes & Road Damage': ['Potholes', 'Cracks', 'Road Subsidence'],
-        'Road Maintenance': ['Repairs Needed', 'Cleaning Required', 'Signage Missing'],
-        'Bridge & Flyover': ['Bridge Damage', 'Flyover Issues', 'Construction Quality']
-      },
-      'Traffic Management': {
-        'Traffic Signals': ['Malfunctioning Signals', 'Missing Signals', 'Wrong Timing'],
-        'Road Signs': ['Missing Signs', 'Damaged Signs', 'Incorrect Information']
-      }
+    'Sanitation & Waste': {
+      'Garbage Collection': [
+        'Overflowing Garbage Bin',
+        'Irregular Garbage Collection',
+        'Garbage Not Collected',
+        'Illegal Dumping',
+        'Garbage on Streets'
+      ],
+      'Public Toilets': [
+        'Dirty Public Toilet',
+        'No Water in Toilet',
+        'Broken Toilet Fixtures',
+        'No Electricity in Toilet',
+        'Toilet Door Broken'
+      ],
+      'Sewage & Drainage': [
+        'Blocked Drain',
+        'Overflowing Sewage',
+        'Bad Odor from Drains',
+        'Water Logging',
+        'Broken Manhole Cover'
+      ]
     },
-    'Ministry of Power': {
-      'Electricity Supply': {
-        'Power Outages': ['Frequent Outages', 'Long Duration Outages', 'Scheduled Outages'],
-        'Voltage Issues': ['Low Voltage', 'High Voltage', 'Voltage Fluctuations'],
-        'Billing Problems': ['Incorrect Billing', 'Meter Issues', 'Connection Problems']
-      }
+    'Water Supply': {
+      'Water Shortage': [
+        'No Water Supply',
+        'Low Water Pressure',
+        'Water Supply Interruption',
+        'Contaminated Water'
+      ],
+      'Pipeline Issues': [
+        'Leaking Water Pipe',
+        'Broken Water Pipe',
+        'Water Pipe Damage',
+        'Unauthorized Connection'
+      ]
     },
-    'Ministry of Housing & Urban Affairs': {
-      'Urban Development': {
-        'Sanitation': ['Garbage Collection', 'Sewage Issues', 'Public Toilets'],
-        'Water Supply': ['Water Shortage', 'Water Quality', 'Pipeline Leaks'],
-        'Housing': ['Slum Development', 'Housing Schemes', 'Property Disputes']
-      }
-    }
-  };
-
-  // State government categories
-  const stateCategories = {
-    'Police Department': {
-      'Law & Order': {
-        'Crime Reporting': ['Theft', 'Assault', 'Burglary', 'Fraud'],
-        'Traffic Violations': ['Signal Jumping', 'Wrong Parking', 'Overspeeding'],
-        'Public Safety': ['Fire Safety', 'Building Safety', 'Public Nuisance']
-      },
-      'Women & Child Safety': {
-        'Domestic Violence': ['Domestic Abuse', 'Harassment', 'Child Protection'],
-        'Women Safety': ['Eve Teasing', 'Sexual Harassment', 'Women Helpline']
-      }
+    'Electricity & Power': {
+      'Power Outages': [
+        'Frequent Power Cuts',
+        'Long Duration Outage',
+        'Power Fluctuations',
+        'Low Voltage'
+      ],
+      'Street Lighting': [
+        'Dark Street Lights',
+        'Flickering Street Lights',
+        'Damaged Light Poles',
+        'Wrong Light Timing'
+      ]
     },
-    'Public Works Department': {
-      'Roads & Infrastructure': {
-        'Potholes': ['Road Repairs', 'Pothole Filling', 'Road Maintenance'],
-        'Street Lights': ['Faulty Lights', 'Missing Lights', 'Light Timings'],
-        'Drainage': ['Blocked Drains', 'Water Logging', 'Sewage Issues']
-      },
-      'Buildings & Construction': {
-        'Government Buildings': ['Maintenance', 'Repairs', 'Safety Issues'],
-        'Public Infrastructure': ['Bridges', 'Flyovers', 'Public Parks']
-      }
+    'Public Safety': {
+      'Road Safety': [
+        'Missing Speed Breakers',
+        'Broken Guard Rails',
+        'Dangerous Road Conditions',
+        'Poor Visibility'
+      ],
+      'Public Nuisance': [
+        'Illegal Parking',
+        'Encroachment',
+        'Obstructed Pathways',
+        'Dangerous Structures'
+      ]
     },
-    'Municipal Corporation': {
-      'Sanitation': {
-        'Garbage Collection': ['Irregular Collection', 'Overflowing Bins', 'Dump Issues'],
-        'Public Toilets': ['Maintenance', 'Cleanliness', 'Availability'],
-        'Sewage': ['Blockage', 'Leaks', 'Bad Odor']
-      },
-      'Water Supply': {
-        'Water Shortage': ['No Water Supply', 'Low Pressure', 'Contaminated Water'],
-        'Billing Issues': ['Incorrect Bills', 'Meter Problems', 'Connection Issues']
-      }
-    },
-    'Electricity Department': {
-      'Power Supply': {
-        'Power Outages': ['Frequent Outages', 'Long Duration', 'Scheduled Outages'],
-        'Voltage Problems': ['Low Voltage', 'High Voltage', 'Fluctuations'],
-        'Connection Issues': ['New Connection', 'Disconnection', 'Faulty Wiring']
-      },
-      'Billing & Payment': {
-        'Incorrect Billing': ['Wrong Units', 'Calculation Errors', 'Extra Charges'],
-        'Payment Issues': ['Payment Problems', 'Receipt Issues', 'Refund Requests']
-      }
+    'Other Issues': {
+      'General Maintenance': [
+        'Broken Benches',
+        'Damaged Fencing',
+        'Park Maintenance',
+        'Playground Equipment'
+      ],
+      'Environmental': [
+        'Illegal Construction',
+        'Tree Cutting',
+        'Pollution Issues',
+        'Noise Pollution'
+      ]
     }
   };
 
@@ -259,6 +275,80 @@ function LodgeComplain() {
     }
   }, [formData.latitude, formData.longitude]);
 
+  // Initialize expanded map when overlay is shown
+  useEffect(() => {
+    const overlay = document.getElementById('map-overlay');
+    if (!overlay) return;
+
+    const observer = new MutationObserver(() => {
+      if (overlay.style.display === 'flex') {
+        const expandedContainer = document.getElementById('complaint-map-expanded');
+        if (expandedContainer && !expandedContainer.hasChildNodes()) {
+          const expandedMap = L.map(expandedContainer, {
+            center: [center.lat, center.lng],
+            zoom: formData.latitude ? 15 : 5,
+            zoomControl: true
+          });
+
+          // Ensure default marker icon visible (use CDN assets)
+          const DefaultIcon = L.icon({
+            iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+            shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+          });
+
+          // Try Bhuvan (ISRO) WMTS first; fallback to OSM if unreachable
+          const bhuvan = L.tileLayer(
+            'https://bhuvan-vec1.nrsc.gov.in/bhuvan/gwc/service/wmts?layer=bhuvan_imagery&style=default&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix={z}&TileCol={x}&TileRow={y}',
+            {
+              attribution: '© NRSC/ISRO - Bhuvan Imagery',
+              maxZoom: 18,
+              tileSize: 256,
+              crossOrigin: true
+            }
+          );
+          const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors',
+            maxZoom: 19
+          });
+
+          let activeLayer = bhuvan;
+          bhuvan.once('tileerror', () => {
+            expandedMap.removeLayer(bhuvan);
+            osm.addTo(expandedMap);
+            activeLayer = osm;
+          });
+          activeLayer.addTo(expandedMap);
+
+          // Add marker if coordinates exist
+          if (formData.latitude && formData.longitude) {
+            L.marker([Number(formData.latitude), Number(formData.longitude)], { draggable: true }).addTo(expandedMap);
+            expandedMap.setView([Number(formData.latitude), Number(formData.longitude)], 15);
+          }
+
+          // Handle map clicks for expanded map
+          expandedMap.on('click', (e) => {
+            const { lat, lng } = e.latlng;
+            setFormData(prev => ({
+              ...prev,
+              latitude: lat,
+              longitude: lng,
+              location: `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`
+            }));
+            overlay.style.display = 'none';
+          });
+        }
+      }
+    });
+
+    observer.observe(overlay, { attributes: true, attributeFilter: ['style'] });
+
+    return () => observer.disconnect();
+  }, [center.lat, center.lng, formData.latitude, formData.longitude]);
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -358,10 +448,9 @@ function LodgeComplain() {
       const complaintData = {
         title: formData.title,
         description: formData.description,
-        category: `${formData.mainCategory} > ${formData.subCategory1}${formData.subCategory2 ? ` > ${formData.subCategory2}` : ''}`,
-        ministry: formData.ministry,
+        category: `${formData.mainCategory} > ${formData.subCategory1} > ${formData.specificIssue}`,
+        city: formData.city,
         department: formData.department,
-        state: formData.state,
         location: formData.location,
         latitude: formData.latitude,
         longitude: formData.longitude,
@@ -373,7 +462,9 @@ function LodgeComplain() {
           phone: formData.phone,
           address: formData.address
         },
-        assignedTo: 'Unassigned'
+        assignedTo: 'Unassigned',
+        status: 'Pending',
+        submittedAt: new Date().toISOString()
       };
 
       const newComplaint = addComplaint(user.id, complaintData);
@@ -390,14 +481,14 @@ function LodgeComplain() {
   if (isSubmitted) {
     return (
       <div>
-        <div className="card" style={{ padding: '40px', textAlign: 'center' }}>
-          <div style={{ fontSize: '64px', marginBottom: '20px' }}>✅</div>
-          <h2 style={{ color: 'var(--primary)', marginBottom: '10px' }}>Complaint Submitted Successfully!</h2>
-          <p style={{ color: 'var(--muted)', marginBottom: '20px', fontSize: '16px' }}>
-            Your complaint has been registered with reference number: <strong>{Math.random().toString(36).substr(2, 9).toUpperCase()}</strong>
+        <div className="card" style={{ padding: '25px', textAlign: 'center' }}>
+          <div style={{ fontSize: '48px', marginBottom: '15px' }}>✅</div>
+          <h2 style={{ color: 'var(--primary)', marginBottom: '8px', fontSize: '20px' }}>Issue Reported Successfully!</h2>
+          <p style={{ color: 'var(--muted)', marginBottom: '15px', fontSize: '14px' }}>
+            Reference: <strong>{Math.random().toString(36).substr(2, 9).toUpperCase()}</strong>
           </p>
-          <p style={{ color: 'var(--muted)', marginBottom: '30px' }}>
-            You will receive updates on your registered email and mobile number.
+          <p style={{ color: 'var(--muted)', marginBottom: '20px', fontSize: '14px' }}>
+            Your report will be reviewed by the concerned department.
           </p>
           <button
             onClick={() => window.location.reload()}
@@ -435,29 +526,29 @@ function LodgeComplain() {
 
   return (
     <div>
-      <div className="card" style={{ padding: '30px', maxWidth: '900px', margin: '0 auto' }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '10px' }}>Lodge a Complaint</h2>
-        <p style={{ textAlign: 'center', color: 'var(--muted)', marginBottom: '30px' }}>
-          Report issues and help improve governance
+      <div className="card" style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+        <h2 style={{ textAlign: 'center', marginBottom: '8px', fontSize: '24px' }}>Report Civic Issues</h2>
+        <p style={{ textAlign: 'center', color: 'var(--muted)', marginBottom: '15px', fontSize: '14px' }}>
+          Report everyday problems like potholes, streetlights, and overflowing trash bins to help improve your community
         </p>
 
-        <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '25px' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '15px' }}>
           {/* Agreement Section */}
           <div className="card" style={{
             padding: '20px',
-            backgroundColor: '#fff3cd',
-            border: '1px solid #ffeaa7'
+            backgroundColor: 'var(--warning-bg, #fff3cd)',
+            border: '1px solid var(--warning-border, #ffeaa7)'
           }}>
-            <h4 style={{ color: '#856404', marginBottom: '15px' }}>⚠️ Important Notice</h4>
-            <p style={{ color: '#856404', marginBottom: '15px', fontWeight: 'bold' }}>
+            <h4 style={{ color: 'var(--warning-text, #856404)', marginBottom: '15px' }}>⚠️ Important Notice</h4>
+            <p style={{ color: 'var(--warning-text, #856404)', marginBottom: '15px', fontWeight: 'bold' }}>
               The following types of grievances/matters are NOT to be raised through this portal:
             </p>
-            <ul style={{ color: '#856404', margin: '0', paddingLeft: '20px' }}>
+            <ul style={{ color: 'var(--warning-text, #856404)', margin: '0', paddingLeft: '20px' }}>
               <li><strong>RTI Matters</strong> - Use RTI portal for information requests</li>
               <li><strong>Court related / Subjudice matters</strong> - Matters under court consideration</li>
               <li><strong>Religious matters</strong> - Religious disputes and matters</li>
               <li><strong>Government employee grievances</strong> concerning service matters including disciplinary proceedings (unless prescribed channels exhausted as per DoPT OM No. 11013/08/2013-Estt.(A-III) dated 31.08.2015)</li>
-              <li><strong>Pension issues</strong> - Use Lodge Pension Grievance option or click <a href="#" style={{ color: '#856404', textDecoration: 'underline' }}>here</a></li>
+              <li><strong>Pension issues</strong> - Use Lodge Pension Grievance option or click <a href="#" style={{ color: 'var(--warning-text, #856404)', textDecoration: 'underline' }}>here</a></li>
             </ul>
 
             <div style={{ marginTop: '20px' }}>
@@ -479,8 +570,8 @@ function LodgeComplain() {
 
           {/* User Details Section */}
           <div>
-            <h3 style={{ color: 'var(--primary)', marginBottom: '20px' }}>👤 Your Details</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '15px' }}>
+            <h3 style={{ color: 'var(--primary)', marginBottom: '12px', fontSize: '18px' }}>👤 Your Details</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '12px' }}>
               <div>
                 <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
                   Full Name *
@@ -574,101 +665,20 @@ function LodgeComplain() {
             </div>
           </div>
 
-          {/* Government Selection */}
+          {/* Location & Department Selection */}
           <div>
-            <h3 style={{ color: 'var(--primary)', marginBottom: '20px' }}>🏛️ Government Level</h3>
-            <div style={{ display: 'grid', gap: '15px' }}>
+            <h3 style={{ color: 'var(--primary)', marginBottom: '12px', fontSize: '18px' }}>📍 Location & Department</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
               <div>
                 <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
-                  Select Government Level *
-                </label>
-                <select
-                  name="governmentLevel"
-                  value={formData.governmentLevel}
-                  onChange={handleInputChange}
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    border: '1px solid var(--border)',
-                    borderRadius: '4px',
-                    backgroundColor: 'var(--bg)',
-                    color: 'var(--fg)',
-                    fontSize: '16px'
-                  }}
-                >
-                  <option value="">Select Government Level</option>
-                  <option value="Central">Central Government</option>
-                  <option value="State">State Government</option>
-                </select>
-              </div>
-
-              {formData.governmentLevel === 'Central' && (
-                <div>
-                  <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
-                    Ministry *
-                  </label>
-                  <select
-                    name="ministry"
-                    value={formData.ministry}
-                    onChange={handleInputChange}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '1px solid var(--border)',
-                      borderRadius: '4px',
-                      backgroundColor: 'var(--bg)',
-                      color: 'var(--fg)',
-                      fontSize: '16px'
-                    }}
-                  >
-                    <option value="">Select Ministry</option>
-                    {Object.keys(categories).map(ministry => (
-                      <option key={ministry} value={ministry}>{ministry}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              {formData.governmentLevel === 'State' && (
-                <div>
-                  <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
-                    State *
-                  </label>
-                  <select
-                    name="state"
-                    value={formData.state}
-                    onChange={handleInputChange}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '1px solid var(--border)',
-                      borderRadius: '4px',
-                      backgroundColor: 'var(--bg)',
-                      color: 'var(--fg)',
-                      fontSize: '16px'
-                    }}
-                  >
-                    <option value="">Select State</option>
-                    {states.map(state => (
-                      <option key={state} value={state}>{state}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              <div>
-                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
-                  Department *
+                  City/Municipality *
                 </label>
                 <input
                   type="text"
-                  name="department"
-                  value={formData.department}
+                  name="city"
+                  value={formData.city}
                   onChange={handleInputChange}
-                  placeholder="Specific department within the ministry/state"
+                  placeholder="Enter your city or municipality"
                   required
                   style={{
                     width: '100%',
@@ -681,169 +691,156 @@ function LodgeComplain() {
                   }}
                 />
               </div>
+
+              <div>
+                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
+                  Concerned Department *
+                </label>
+                <select
+                  name="department"
+                  value={formData.department}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                    // Reset category selections when department changes
+                    setFormData(prev => ({
+                      ...prev,
+                      mainCategory: '',
+                      subCategory1: '',
+                      specificIssue: ''
+                    }));
+                  }}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid var(--border)',
+                    borderRadius: '4px',
+                    backgroundColor: 'var(--bg)',
+                    color: 'var(--fg)',
+                    fontSize: '16px'
+                  }}
+                >
+                  <option value="">Select Department</option>
+                  <option value="Public Works">Public Works Department</option>
+                  <option value="Municipal Corporation">Municipal Corporation</option>
+                  <option value="Electricity Board">Electricity Board</option>
+                  <option value="Water Supply">Water Supply Department</option>
+                  <option value="Sanitation">Sanitation Department</option>
+                  <option value="Traffic Police">Traffic Police</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
             </div>
           </div>
 
           {/* Category Selection */}
           <div>
-            <h3 style={{ color: 'var(--primary)', marginBottom: '20px' }}>📂 Category</h3>
-            <div style={{ display: 'grid', gap: '15px' }}>
-              {/* Department Selection for State Government */}
-              {formData.governmentLevel === 'State' && (
-                <div>
-                  <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
-                    Department Category *
-                  </label>
-                  <select
-                    name="department"
-                    value={formData.department}
-                    onChange={(e) => {
-                      handleInputChange(e);
-                      // Reset category selections when department changes
-                      setFormData(prev => ({
-                        ...prev,
-                        mainCategory: '',
-                        subCategory1: '',
-                        subCategory2: ''
-                      }));
-                    }}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '1px solid var(--border)',
-                      borderRadius: '4px',
-                      backgroundColor: 'var(--bg)',
-                      color: 'var(--fg)',
-                      fontSize: '16px'
-                    }}
-                  >
-                    <option value="">Select Department Category</option>
-                    {Object.keys(stateCategories).map(dept => (
-                      <option key={dept} value={dept}>{dept}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
+            <h3 style={{ color: 'var(--primary)', marginBottom: '12px', fontSize: '18px' }}>📂 Issue Category</h3>
+            <div style={{ display: 'grid', gap: '12px' }}>
               {/* Main Category Selection */}
-              {((formData.governmentLevel === 'Central' && formData.ministry) ||
-                (formData.governmentLevel === 'State' && formData.department)) && (
-                <div>
-                  <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
-                    Main Category *
-                  </label>
-                  <select
-                    name="mainCategory"
-                    value={formData.mainCategory}
-                    onChange={(e) => {
-                      handleInputChange(e);
-                      // Reset sub-categories when main category changes
-                      setFormData(prev => ({
-                        ...prev,
-                        subCategory1: '',
-                        subCategory2: ''
-                      }));
-                    }}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '1px solid var(--border)',
-                      borderRadius: '4px',
-                      backgroundColor: 'var(--bg)',
-                      color: 'var(--fg)',
-                      fontSize: '16px'
-                    }}
-                  >
-                    <option value="">Select Main Category</option>
-                    {formData.governmentLevel === 'Central' && formData.ministry ?
-                      Object.keys(categories[formData.ministry]).map(category => (
-                        <option key={category} value={category}>{category}</option>
-                      )) :
-                      formData.governmentLevel === 'State' && formData.department ?
-                      Object.keys(stateCategories[formData.department]).map(category => (
-                        <option key={category} value={category}>{category}</option>
-                      )) : null
-                    }
-                  </select>
-                </div>
-              )}
+              <div>
+                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
+                  Main Category *
+                </label>
+                <select
+                  name="mainCategory"
+                  value={formData.mainCategory}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                    // Reset sub-categories when main category changes
+                    setFormData(prev => ({
+                      ...prev,
+                      subCategory1: '',
+                      specificIssue: ''
+                    }));
+                  }}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid var(--border)',
+                    borderRadius: '4px',
+                    backgroundColor: 'var(--bg)',
+                    color: 'var(--fg)',
+                    fontSize: '16px'
+                  }}
+                >
+                  <option value="">Select Main Category</option>
+                  {Object.keys(civicCategories).map(category => (
+                    <option key={category} value={category}>{category}</option>
+                  ))}
+                </select>
+              </div>
 
-              {/* Sub Category Selection */}
+              {/* Sub Category and Specific Issue in one row when both are available */}
               {formData.mainCategory && (
-                <div>
-                  <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
-                    Sub Category *
-                  </label>
-                  <select
-                    name="subCategory1"
-                    value={formData.subCategory1}
-                    onChange={(e) => {
-                      handleInputChange(e);
-                      // Reset specific issue when sub category changes
-                      setFormData(prev => ({
-                        ...prev,
-                        subCategory2: ''
-                      }));
-                    }}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '1px solid var(--border)',
-                      borderRadius: '4px',
-                      backgroundColor: 'var(--bg)',
-                      color: 'var(--fg)',
-                      fontSize: '16px'
-                    }}
-                  >
-                    <option value="">Select Sub Category</option>
-                    {formData.governmentLevel === 'Central' && formData.ministry && categories[formData.ministry][formData.mainCategory] ?
-                      Object.keys(categories[formData.ministry][formData.mainCategory]).map(subCat => (
-                        <option key={subCat} value={subCat}>{subCat}</option>
-                      )) :
-                      formData.governmentLevel === 'State' && formData.department && stateCategories[formData.department][formData.mainCategory] ?
-                      Object.keys(stateCategories[formData.department][formData.mainCategory]).map(subCat => (
-                        <option key={subCat} value={subCat}>{subCat}</option>
-                      )) : null
-                    }
-                  </select>
-                </div>
-              )}
+                <div style={{ display: 'grid', gridTemplateColumns: formData.subCategory1 ? '1fr 1fr' : '1fr', gap: '15px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
+                      Sub Category *
+                    </label>
+                    <select
+                      name="subCategory1"
+                      value={formData.subCategory1}
+                      onChange={(e) => {
+                        handleInputChange(e);
+                        // Reset specific issue when sub category changes
+                        setFormData(prev => ({
+                          ...prev,
+                          specificIssue: ''
+                        }));
+                      }}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        border: '1px solid var(--border)',
+                        borderRadius: '4px',
+                        backgroundColor: 'var(--bg)',
+                        color: 'var(--fg)',
+                        fontSize: '16px'
+                      }}
+                    >
+                      <option value="">Select Sub Category</option>
+                      {civicCategories[formData.mainCategory] &&
+                        Object.keys(civicCategories[formData.mainCategory]).map(subCat => (
+                          <option key={subCat} value={subCat}>{subCat}</option>
+                        ))
+                      }
+                    </select>
+                  </div>
 
-              {/* Specific Issue Selection */}
-              {formData.subCategory1 && (
-                <div>
-                  <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
-                    Specific Issue *
-                  </label>
-                  <select
-                    name="subCategory2"
-                    value={formData.subCategory2}
-                    onChange={handleInputChange}
-                    required
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '1px solid var(--border)',
-                      borderRadius: '4px',
-                      backgroundColor: 'var(--bg)',
-                      color: 'var(--fg)',
-                      fontSize: '16px'
-                    }}
-                  >
-                    <option value="">Select Specific Issue</option>
-                    {formData.governmentLevel === 'Central' && formData.ministry && categories[formData.ministry][formData.mainCategory][formData.subCategory1] ?
-                      categories[formData.ministry][formData.mainCategory][formData.subCategory1].map(issue => (
-                        <option key={issue} value={issue}>{issue}</option>
-                      )) :
-                      formData.governmentLevel === 'State' && formData.department && stateCategories[formData.department][formData.mainCategory][formData.subCategory1] ?
-                      stateCategories[formData.department][formData.mainCategory][formData.subCategory1].map(issue => (
-                        <option key={issue} value={issue}>{issue}</option>
-                      )) : null
-                    }
-                  </select>
+                  {/* Specific Issue Selection */}
+                  {formData.subCategory1 && (
+                    <div>
+                      <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
+                        Specific Issue *
+                      </label>
+                      <select
+                        name="specificIssue"
+                        value={formData.specificIssue}
+                        onChange={handleInputChange}
+                        required
+                        style={{
+                          width: '100%',
+                          padding: '12px',
+                          border: '1px solid var(--border)',
+                          borderRadius: '4px',
+                          backgroundColor: 'var(--bg)',
+                          color: 'var(--fg)',
+                          fontSize: '16px'
+                        }}
+                      >
+                        <option value="">Select Specific Issue</option>
+                        {civicCategories[formData.mainCategory] &&
+                          civicCategories[formData.mainCategory][formData.subCategory1] &&
+                          civicCategories[formData.mainCategory][formData.subCategory1].map(issue => (
+                            <option key={issue} value={issue}>{issue}</option>
+                          ))
+                        }
+                      </select>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -851,8 +848,8 @@ function LodgeComplain() {
 
           {/* Complaint Details */}
           <div>
-            <h3 style={{ color: 'var(--primary)', marginBottom: '20px' }}>📝 Complaint Details</h3>
-            <div style={{ display: 'grid', gap: '15px' }}>
+            <h3 style={{ color: 'var(--primary)', marginBottom: '12px', fontSize: '18px' }}>📝 Complaint Details</h3>
+            <div style={{ display: 'grid', gap: '12px' }}>
               <div>
                 <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
                   Complaint Title *
@@ -886,7 +883,7 @@ function LodgeComplain() {
                   onChange={handleInputChange}
                   placeholder="Please provide detailed information about the issue..."
                   required
-                  rows={6}
+                  rows={4}
                   style={{
                     width: '100%',
                     padding: '12px',
@@ -903,34 +900,29 @@ function LodgeComplain() {
 
               <div>
                 <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
-                  Priority Level
+                  Priority Level, Location & Map
                 </label>
-                <select
-                  name="priority"
-                  value={formData.priority}
-                  onChange={handleInputChange}
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    border: '1px solid var(--border)',
-                    borderRadius: '4px',
-                    backgroundColor: 'var(--bg)',
-                    color: 'var(--fg)',
-                    fontSize: '16px'
-                  }}
-                >
-                  <option value="Low">Low</option>
-                  <option value="Medium">Medium</option>
-                  <option value="High">High</option>
-                  <option value="Urgent">Urgent</option>
-                </select>
-              </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto', gap: '10px', alignItems: 'end' }}>
+                  <select
+                    name="priority"
+                    value={formData.priority}
+                    onChange={handleInputChange}
+                    style={{
+                      width: '120px',
+                      padding: '12px',
+                      border: '1px solid var(--border)',
+                      borderRadius: '4px',
+                      backgroundColor: 'var(--bg)',
+                      color: 'var(--fg)',
+                      fontSize: '16px'
+                    }}
+                  >
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                    <option value="Urgent">Urgent</option>
+                  </select>
 
-              <div>
-                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
-                  Location *
-                </label>
-                <div style={{ display: 'flex', gap: '10px' }}>
                   <input
                     type="text"
                     name="location"
@@ -939,7 +931,6 @@ function LodgeComplain() {
                     placeholder="Enter location or use GPS"
                     required
                     style={{
-                      flex: 1,
                       padding: '12px',
                       border: '1px solid var(--border)',
                       borderRadius: '4px',
@@ -948,6 +939,7 @@ function LodgeComplain() {
                       fontSize: '16px'
                     }}
                   />
+
                   <button
                     type="button"
                     onClick={getCurrentLocation}
@@ -969,8 +961,85 @@ function LodgeComplain() {
 
                 {/* Map picker - Bhuvan/OSM via Leaflet */}
                 <div style={{ marginTop: '10px' }}>
-                  <div style={{ marginBottom: '6px', color: 'var(--muted)', fontSize: '12px' }}>Or pick a point on the map:</div>
-                  <div id="complaint-map" style={{ height: 320, width: '100%', border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                    <span style={{ color: 'var(--muted)', fontSize: '12px' }}>Pick location on map:</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const mapContainer = document.getElementById('complaint-map');
+                        const overlay = document.getElementById('map-overlay');
+                        if (overlay) {
+                          overlay.style.display = overlay.style.display === 'flex' ? 'none' : 'flex';
+                        }
+                      }}
+                      style={{
+                        padding: '4px 8px',
+                        backgroundColor: 'var(--primary)',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '12px'
+                      }}
+                    >
+                      🔍 Expand
+                    </button>
+                  </div>
+                  <div id="complaint-map" style={{ height: 200, width: '100%', border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden' }} />
+
+                  {/* Map Overlay */}
+                  <div id="map-overlay" style={{
+                    display: 'none',
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    zIndex: 1000,
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <div style={{
+                      backgroundColor: 'var(--bg)',
+                      borderRadius: '8px',
+                      padding: '20px',
+                      maxWidth: '90vw',
+                      maxHeight: '90vh',
+                      position: 'relative'
+                    }}>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '10px'
+                      }}>
+                        <h4 style={{ margin: 0, color: 'var(--primary)' }}>Select Location</h4>
+                        <button
+                          onClick={() => {
+                            const overlay = document.getElementById('map-overlay');
+                            if (overlay) overlay.style.display = 'none';
+                          }}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            fontSize: '20px',
+                            cursor: 'pointer',
+                            color: 'var(--muted)'
+                          }}
+                        >
+                          ×
+                        </button>
+                      </div>
+                      <div id="complaint-map-expanded" style={{
+                        height: '80vh',
+                        width: '80vh',
+                        border: '1px solid var(--border)',
+                        borderRadius: 8,
+                        overflow: 'hidden'
+                      }} />
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -1045,7 +1114,7 @@ function LodgeComplain() {
                 fontWeight: 'bold'
               }}
             >
-              {isLoading ? 'Submitting...' : 'Submit Complaint'}
+              {isLoading ? 'Submitting...' : 'Report Issue'}
             </button>
           </div>
         </form>

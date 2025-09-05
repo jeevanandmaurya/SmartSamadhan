@@ -21,7 +21,7 @@ const initialData = {
       password: 'pass',
       email: 'user@example.com',
       fullName: 'John Citizen',
-      phone: '+91-9876543210',
+      phone: '91xxxxxxxx',
       address: '123 Main Street, City, State',
       createdAt: '2025-01-01',
       complaints: [
@@ -71,7 +71,7 @@ const initialData = {
       password: 'pass123',
       email: 'citizen@example.com',
       fullName: 'Jane Doe',
-      phone: '+91-9876543211',
+      phone: '91xxxxxxxx',
       address: '456 Oak Avenue, City, State',
       createdAt: '2025-01-05',
       complaints: [
@@ -255,15 +255,43 @@ export const DatabaseProvider = ({ children }) => {
     const newComplaint = {
       id: `COMP${Date.now()}`,
       regNumber: `REG${Date.now().toString().slice(-3)}`,
-      ...complaintData,
+      // Basic complaint info
+      title: complaintData.title,
+      description: complaintData.description,
+      priority: complaintData.priority || 'Medium',
+
+      // Civic category structure
+      category: complaintData.category,
+      mainCategory: complaintData.mainCategory,
+      subCategory1: complaintData.subCategory1,
+      specificIssue: complaintData.specificIssue,
+
+      // Location & Department
+      city: complaintData.city,
+      department: complaintData.department,
+      location: complaintData.location,
+      latitude: complaintData.latitude,
+      longitude: complaintData.longitude,
+
+      // User details
+      userDetails: complaintData.userDetails,
+
+      // Attachments
+      attachments: complaintData.attachments || [],
+
+      // Status & timestamps
+      status: complaintData.status || 'Pending',
+      assignedTo: complaintData.assignedTo || 'Unassigned',
+      submittedAt: complaintData.submittedAt || new Date().toISOString(),
       dateSubmitted: new Date().toISOString().split('T')[0],
       lastUpdated: new Date().toISOString().split('T')[0],
-      status: 'Pending',
+
+      // Updates history
       updates: [
         {
           date: new Date().toISOString().split('T')[0],
           status: 'Submitted',
-          note: 'Complaint registered'
+          note: 'Issue reported and registered'
         }
       ]
     };
