@@ -1,8 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { useDatabase } from './DatabaseContext';
 
 function Homepage() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [showAdmins, setShowAdmins] = useState(false);
+  const { getAllAdmins, getAdminsByLevel } = useDatabase();
+
   const slides = [
     { color: 'red', text: 'Report Civic Issues Easily' },
     { color: 'green', text: 'Track Your Reports in Real-Time' },
@@ -16,6 +20,11 @@ function Homepage() {
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
+
+  const admins = getAllAdmins();
+  const stateAdmins = getAdminsByLevel('state');
+  const cityAdmins = getAdminsByLevel('city');
+  const sectorAdmins = getAdminsByLevel('sector');
 
   return (
     <div>
@@ -133,6 +142,86 @@ function Homepage() {
               transition: 'background-color 0.3s, color 0.3s'
             }}>Contact Us</button>
           </Link>
+        </div>
+
+        {/* Admin Information Section */}
+        <div className="card" style={{ marginTop: '30px', textAlign: 'left' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <h2 style={{ margin: '0', color: 'var(--primary)' }}>Administrative Structure</h2>
+            <button
+              onClick={() => setShowAdmins(!showAdmins)}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: 'var(--primary)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                fontSize: '14px'
+              }}
+            >
+              {showAdmins ? 'Hide Admins' : 'View Admins'}
+            </button>
+          </div>
+
+          <p style={{ marginBottom: '20px', color: 'var(--muted)' }}>
+            Our administrative structure is organized hierarchically to ensure efficient governance and quick resolution of civic issues.
+          </p>
+
+          {showAdmins && (
+            <div style={{ display: 'grid', gap: '20px' }}>
+              {/* State Level Admin */}
+              <div style={{ padding: '15px', backgroundColor: 'var(--bg)', borderRadius: '8px', border: '2px solid #ef4444' }}>
+                <h3 style={{ margin: '0 0 10px 0', color: '#ef4444' }}>🏛️ State Level Administration</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '15px' }}>
+                  {stateAdmins.map(admin => (
+                    <div key={admin.id} style={{ padding: '10px', backgroundColor: 'var(--card-bg)', borderRadius: '5px' }}>
+                      <div style={{ fontWeight: 'bold', fontSize: '16px' }}>{admin.fullName}</div>
+                      <div style={{ fontSize: '14px', color: 'var(--muted)', margin: '5px 0' }}>{admin.role}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--muted)' }}>{admin.location}</div>
+                      <div style={{ fontSize: '12px', color: '#ef4444', marginTop: '5px' }}>
+                        Access Level: {admin.accessLevel} | Permissions: {admin.permissions.length}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* City Level Admin */}
+              <div style={{ padding: '15px', backgroundColor: 'var(--bg)', borderRadius: '8px', border: '2px solid #f59e0b' }}>
+                <h3 style={{ margin: '0 0 10px 0', color: '#f59e0b' }}>🏙️ City Level Administration</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '15px' }}>
+                  {cityAdmins.map(admin => (
+                    <div key={admin.id} style={{ padding: '10px', backgroundColor: 'var(--card-bg)', borderRadius: '5px' }}>
+                      <div style={{ fontWeight: 'bold', fontSize: '16px' }}>{admin.fullName}</div>
+                      <div style={{ fontSize: '14px', color: 'var(--muted)', margin: '5px 0' }}>{admin.role}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--muted)' }}>{admin.location}</div>
+                      <div style={{ fontSize: '12px', color: '#f59e0b', marginTop: '5px' }}>
+                        Access Level: {admin.accessLevel} | Permissions: {admin.permissions.length}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Sector Level Admin */}
+              <div style={{ padding: '15px', backgroundColor: 'var(--bg)', borderRadius: '8px', border: '2px solid #10b981' }}>
+                <h3 style={{ margin: '0 0 10px 0', color: '#10b981' }}>🏘️ Sector/Block Level Administration</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '15px' }}>
+                  {sectorAdmins.map(admin => (
+                    <div key={admin.id} style={{ padding: '10px', backgroundColor: 'var(--card-bg)', borderRadius: '5px' }}>
+                      <div style={{ fontWeight: 'bold', fontSize: '16px' }}>{admin.fullName}</div>
+                      <div style={{ fontSize: '14px', color: 'var(--muted)', margin: '5px 0' }}>{admin.role}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--muted)' }}>{admin.location}</div>
+                      <div style={{ fontSize: '12px', color: '#10b981', marginTop: '5px' }}>
+                        Access Level: {admin.accessLevel} | Permissions: {admin.permissions.length}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

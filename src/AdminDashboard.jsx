@@ -1,160 +1,156 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
+import AdminDashboardHome from './AdminDashboardHome';
+import ManageReports from './ManageReports';
+import UserManagement from './UserManagement';
+import AdminSettings from './AdminSettings';
 
 function AdminDashboard() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
+  const [activeSection, setActiveSection] = useState('dashboard');
+  const [showSignoutConfirm, setShowSignoutConfirm] = useState(false);
 
-  const reports = [
-    { id: '12345', issue: 'Pothole on Main St', status: 'In Progress', department: 'Public Works', priority: 'High' },
-    { id: '67890', issue: 'Broken Streetlight', status: 'Resolved', department: 'Electricity', priority: 'Medium' },
-    { id: '11111', issue: 'Trash Bin Overflow', status: 'Pending', department: 'Sanitation', priority: 'Low' }
+  const menuItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: '📊' },
+    { id: 'manage-reports', label: 'Manage Reports', icon: '📋' },
+    { id: 'user-management', label: 'User Management', icon: '👥' },
+    { id: 'settings', label: 'Settings', icon: '⚙' },
+    { id: 'signout', label: 'Sign Out', icon: '↗' }
   ];
 
-  const analytics = {
-    total: 150,
-    resolved: 120,
-    pending: 30,
-    inProgress: 25
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Resolved': return '#10b981';
-      case 'In Progress': return '#f59e0b';
-      case 'Pending': return '#ef4444';
-      default: return '#6b7280';
+  const handleMenuClick = (sectionId) => {
+    if (sectionId === 'signout') {
+      setShowSignoutConfirm(true);
+    } else {
+      setActiveSection(sectionId);
     }
   };
 
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case 'High': return '#ef4444';
-      case 'Medium': return '#f59e0b';
-      case 'Low': return '#10b981';
-      default: return '#6b7280';
+  const handleSignoutConfirm = () => {
+    logout();
+    navigate('/');
+    setShowSignoutConfirm(false);
+  };
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'dashboard':
+        return <AdminDashboardHome />;
+      case 'manage-reports':
+        return <ManageReports />;
+      case 'user-management':
+        return <UserManagement />;
+      case 'settings':
+        return <AdminSettings />;
+      default:
+        return <AdminDashboardHome />;
     }
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h1>Admin Dashboard</h1>
-        <button
-          onClick={() => navigate('/')}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: 'var(--primary)',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer'
-          }}
-        >
-          Logout
-        </button>
-      </div>
-
-      {/* Analytics Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-        <div className="card" style={{ padding: '20px', textAlign: 'center' }}>
-          <h3 style={{ margin: '0 0 10px 0', color: 'var(--primary)' }}>Total Reports</h3>
-          <p style={{ fontSize: '2rem', fontWeight: 'bold', margin: '0' }}>{analytics.total}</p>
-        </div>
-        <div className="card" style={{ padding: '20px', textAlign: 'center' }}>
-          <h3 style={{ margin: '0 0 10px 0', color: '#10b981' }}>Resolved</h3>
-          <p style={{ fontSize: '2rem', fontWeight: 'bold', margin: '0' }}>{analytics.resolved}</p>
-        </div>
-        <div className="card" style={{ padding: '20px', textAlign: 'center' }}>
-          <h3 style={{ margin: '0 0 10px 0', color: '#f59e0b' }}>In Progress</h3>
-          <p style={{ fontSize: '2rem', fontWeight: 'bold', margin: '0' }}>{analytics.inProgress}</p>
-        </div>
-        <div className="card" style={{ padding: '20px', textAlign: 'center' }}>
-          <h3 style={{ margin: '0 0 10px 0', color: '#ef4444' }}>Pending</h3>
-          <p style={{ fontSize: '2rem', fontWeight: 'bold', margin: '0' }}>{analytics.pending}</p>
-        </div>
-      </div>
-
-      {/* Reports Management */}
-      <div className="card" style={{ padding: '20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h3>All Reports</h3>
-          <button
-            style={{
-              padding: '10px 20px',
-              backgroundColor: 'var(--primary)',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: 'pointer'
-            }}
-          >
-            Export Reports
-          </button>
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--bg)' }}>
+      {/* Sidebar */}
+      <div style={{
+        width: '250px',
+        backgroundColor: 'var(--card-bg)',
+        borderRight: '1px solid var(--border)',
+        padding: '20px 0'
+      }}>
+        <div style={{ padding: '0 20px', marginBottom: '30px' }}>
+          <h2 style={{ margin: '0', color: 'var(--primary)' }}>Admin Panel</h2>
         </div>
 
-        <div style={{ display: 'grid', gap: '15px' }}>
-          {reports.map((report) => (
-            <div
-              key={report.id}
-              className="card"
+        <nav>
+          {menuItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => handleMenuClick(item.id)}
               style={{
-                padding: '15px',
-                borderLeft: `5px solid ${getStatusColor(report.status)}`,
-                display: 'grid',
-                gridTemplateColumns: '1fr auto auto',
+                width: '100%',
+                padding: '12px 20px',
+                backgroundColor: activeSection === item.id ? 'var(--primary)' : 'transparent',
+                color: activeSection === item.id ? '#fff' : 'var(--fg)',
+                border: 'none',
+                textAlign: 'left',
+                cursor: 'pointer',
+                display: 'flex',
                 alignItems: 'center',
-                gap: '15px'
+                gap: '10px',
+                fontSize: '16px',
+                transition: 'all 0.2s'
               }}
             >
-              <div>
-                <h4 style={{ margin: '0 0 5px 0' }}>{report.issue}</h4>
-                <p style={{ margin: '0', color: 'var(--muted)' }}>
-                  ID: {report.id} | Department: {report.department}
-                </p>
-              </div>
-              <span
-                style={{
-                  padding: '5px 10px',
-                  borderRadius: '15px',
-                  backgroundColor: getPriorityColor(report.priority),
-                  color: '#fff',
-                  fontSize: '12px',
-                  fontWeight: 'bold'
-                }}
-              >
-                {report.priority}
-              </span>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <select
-                  defaultValue={report.status}
-                  style={{
-                    padding: '5px 10px',
-                    borderRadius: '5px',
-                    border: '1px solid var(--border)',
-                    backgroundColor: 'var(--bg)',
-                    color: 'var(--fg)'
-                  }}
-                >
-                  <option value="Pending">Pending</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Resolved">Resolved</option>
-                </select>
-                <button
-                  style={{
-                    padding: '5px 10px',
-                    backgroundColor: 'var(--primary)',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Update
-                </button>
-              </div>
-            </div>
+              <span>{item.icon}</span>
+              {item.label}
+            </button>
           ))}
+        </nav>
+      </div>
+
+      {/* Main Content */}
+      <div style={{ flex: 1, padding: '20px', overflowY: 'auto' }}>
+        <div style={{ maxWidth: '100%', padding: '0 10px' }}>
+          {renderContent()}
         </div>
       </div>
+
+      {/* Signout Confirmation Modal */}
+      {showSignoutConfirm && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div className="card" style={{
+            padding: '30px',
+            maxWidth: '400px',
+            width: '90%',
+            textAlign: 'center'
+          }}>
+            <h3 style={{ margin: '0 0 20px 0', color: 'var(--primary)' }}>Confirm Sign Out</h3>
+            <p style={{ margin: '0 0 30px 0', color: 'var(--muted)' }}>
+              Are you sure you want to sign out? You will need to log in again to access the admin panel.
+            </p>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <button
+                onClick={handleSignoutConfirm}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: '#ef4444',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer'
+                }}
+              >
+                Sign Out
+              </button>
+              <button
+                onClick={() => setShowSignoutConfirm(false)}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: 'var(--muted)',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

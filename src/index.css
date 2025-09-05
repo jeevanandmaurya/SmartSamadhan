@@ -26,6 +26,20 @@
   --icon: #9ca3af; /* gray-400 for icons */
 }
 
+[data-theme="dark"] {
+  --bg: #1f2937; /* gray-800 */
+  --fg: #f9fafb; /* gray-50 */
+  --muted: #9ca3af; /* gray-400 */
+  --primary: #3b82f6; /* blue-500 */
+  --primary-hover: #2563eb; /* blue-600 */
+  --border: #374151; /* gray-700 */
+  --card: #111827; /* gray-900 */
+  --icon: #9ca3af; /* gray-400 for icons */
+}
+
+/* Use border-box to avoid 100% width + padding overflow */
+*, *::before, *::after { box-sizing: border-box; }
+
 html, body, #root {
   height: 100%;
 }
@@ -36,6 +50,7 @@ body {
   min-height: 100vh;
   background: var(--bg);
   color: var(--fg);
+  overflow-x: hidden; /* guard against stray horizontal scroll */
 }
 
 a {
@@ -71,9 +86,17 @@ button:focus { outline: 3px solid rgba(37,99,235,0.35); outline-offset: 2px; }
 /* Layout helpers */
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 16px;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.container--wide { max-width: 1800px; }
+.container--fluid { max-width: none; }
+
+@media (max-width: 640px) {
+  .container { padding-left: 6px; padding-right: 6px; }
 }
 
 .card {
@@ -82,3 +105,36 @@ button:focus { outline: 3px solid rgba(37,99,235,0.35); outline-offset: 2px; }
   border-radius: 10px;
   padding: 16px;
 }
+
+/* Leaflet minimal styles (avoid @import ordering issues) */
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.leaflet-container {
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  outline: 0;
+}
+.leaflet-container .leaflet-marker-pane img,
+.leaflet-container .leaflet-tile,
+.leaflet-container img.leaflet-image-layer { user-select: none; }
+.leaflet-container .leaflet-overlay-pane svg { max-width: none !important; max-height: none !important; }
+.leaflet-container .leaflet-control-attribution { background: rgba(255,255,255,0.8); margin: 0; }
+.leaflet-control { position: relative; z-index: 800; pointer-events: auto; }
+.leaflet-bottom, .leaflet-top { position: absolute; z-index: 1000; pointer-events: none; }
+.leaflet-top { top: 0; }
+.leaflet-bottom { bottom: 0; }
+.leaflet-left { left: 0; }
+.leaflet-right { right: 0; }
+.leaflet-control-zoom a { background: #fff; color: #000; }
