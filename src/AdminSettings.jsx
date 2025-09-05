@@ -1,13 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { useDatabase } from './DatabaseContext';
 
 function AdminSettings() {
   const { user } = useAuth();
-  const { getAdmin, users, complaints } = useDatabase();
+  const { getAdmin, getAllUsers, getAllComplaints } = useDatabase();
   const [activeTab, setActiveTab] = useState('profile');
+  const [adminData, setAdminData] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [complaints, setComplaints] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const adminData = getAdmin(user.username);
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [admin, allUsers, allComplaints] = await Promise.all([
+          getAdmin(user.username),
+          getAllUsers(),
+          getAllComplaints()
+        ]);
+        setAdminData(admin);
+        setUsers(allUsers);
+        setComplaints(allComplaints);
+      } catch (error) {
+        console.error('Error loading admin settings data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [getAdmin, getAllUsers, getAllComplaints, user.username]);
 
   const systemStats = {
     totalUsers: users.length,

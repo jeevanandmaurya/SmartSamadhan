@@ -193,28 +193,13 @@ function LodgeComplain() {
     // @ts-ignore
     L.Marker.prototype.options.icon = DefaultIcon;
 
-    // Try Bhuvan (ISRO) WMTS first; fallback to OSM if unreachable
-    const bhuvan = L.tileLayer(
-      'https://bhuvan-vec1.nrsc.gov.in/bhuvan/gwc/service/wmts?layer=bhuvan_imagery&style=default&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix={z}&TileCol={x}&TileRow={y}',
-      {
-        attribution: '© NRSC/ISRO - Bhuvan Imagery',
-        maxZoom: 18,
-        tileSize: 256,
-        crossOrigin: true
-      }
-    );
+    // Use OpenStreetMap tiles
     const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors',
       maxZoom: 19
     });
 
-    let activeLayer = bhuvan;
-  bhuvan.once('tileerror', () => {
-      map.removeLayer(bhuvan);
-      osm.addTo(map);
-      activeLayer = osm;
-    });
-    activeLayer.addTo(map);
+    osm.addTo(map);
 
     // Click to set marker and update form
     const setLatLng = (lat, lng) => {
@@ -300,28 +285,13 @@ function LodgeComplain() {
             shadowSize: [41, 41]
           });
 
-          // Try Bhuvan (ISRO) WMTS first; fallback to OSM if unreachable
-          const bhuvan = L.tileLayer(
-            'https://bhuvan-vec1.nrsc.gov.in/bhuvan/gwc/service/wmts?layer=bhuvan_imagery&style=default&tilematrixset=EPSG:900913&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix={z}&TileCol={x}&TileRow={y}',
-            {
-              attribution: '© NRSC/ISRO - Bhuvan Imagery',
-              maxZoom: 18,
-              tileSize: 256,
-              crossOrigin: true
-            }
-          );
+          // Use OpenStreetMap tiles for expanded map
           const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors',
             maxZoom: 19
           });
 
-          let activeLayer = bhuvan;
-          bhuvan.once('tileerror', () => {
-            expandedMap.removeLayer(bhuvan);
-            osm.addTo(expandedMap);
-            activeLayer = osm;
-          });
-          activeLayer.addTo(expandedMap);
+          osm.addTo(expandedMap);
 
           // Add marker if coordinates exist
           if (formData.latitude && formData.longitude) {
@@ -467,7 +437,7 @@ function LodgeComplain() {
         submittedAt: new Date().toISOString()
       };
 
-      const newComplaint = addComplaint(user.id, complaintData);
+      const newComplaint = await addComplaint(user.id, complaintData);
       setIsSubmitted(true);
 
     } catch (error) {

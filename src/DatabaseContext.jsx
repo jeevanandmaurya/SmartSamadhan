@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { EnvironmentDatabaseFactory } from './database/DatabaseFactory.js';
 
-// Database Context for local data management
-// Easily replaceable with Supabase/Firebase later
+// Database Context using modular abstraction layer
 const DatabaseContext = createContext();
 
 export const useDatabase = () => {
@@ -12,389 +12,205 @@ export const useDatabase = () => {
   return context;
 };
 
-// Mock database structure - easily replaceable with real database
-const initialData = {
-  users: [
-    {
-      id: 'user001',
-      username: 'user',
-      password: 'pass',
-      email: 'user@example.com',
-      fullName: 'John Citizen',
-      phone: '91xxxxxxxx',
-      address: '123 Main Street, City, State',
-      createdAt: '2025-01-01',
-      complaints: [
-        {
-          id: 'COMP001',
-          regNumber: 'REG001',
-          title: 'Pothole on Main Street',
-          description: 'Pothole on Main Street causing traffic issues',
-          status: 'Pending',
-          priority: 'High',
-          category: 'Road Maintenance',
-          department: 'Public Works',
-          location: 'Main Street, Sector 5',
-          dateSubmitted: '2025-01-15',
-          lastUpdated: '2025-01-20',
-          assignedTo: 'John Smith',
-          images: [],
-          updates: [
-            { date: '2025-01-15', status: 'Submitted', note: 'Complaint registered' },
-            { date: '2025-01-16', status: 'Pending', note: 'Under review by department' }
-          ]
-        },
-        {
-          id: 'COMP002',
-          regNumber: 'REG002',
-          title: 'Broken Streetlight',
-          description: 'Broken Streetlight at Park Avenue',
-          status: 'In Progress',
-          priority: 'Medium',
-          category: 'Electricity',
-          department: 'Electricity Department',
-          location: 'Park Avenue, Sector 3',
-          dateSubmitted: '2025-01-10',
-          lastUpdated: '2025-01-18',
-          assignedTo: 'Sarah Johnson',
-          images: [],
-          updates: [
-            { date: '2025-01-10', status: 'Submitted', note: 'Complaint registered' },
-            { date: '2025-01-12', status: 'In Progress', note: 'Technician assigned' }
-          ]
-        }
-      ]
-    },
-    {
-      id: 'user002',
-      username: 'citizen',
-      password: 'pass123',
-      email: 'citizen@example.com',
-      fullName: 'Jane Doe',
-      phone: '91xxxxxxxx',
-      address: '456 Oak Avenue, City, State',
-      createdAt: '2025-01-05',
-      complaints: [
-        {
-          id: 'COMP003',
-          regNumber: 'REG003',
-          title: 'Trash Bin Overflow',
-          description: 'Trash Bin Overflow near Market Square',
-          status: 'Resolved',
-          priority: 'Low',
-          category: 'Sanitation',
-          department: 'Sanitation Department',
-          location: 'Market Square, Sector 2',
-          dateSubmitted: '2025-01-20',
-          lastUpdated: '2025-01-22',
-          assignedTo: 'Mike Davis',
-          images: [],
-          updates: [
-            { date: '2025-01-20', status: 'Submitted', note: 'Complaint registered' },
-            { date: '2025-01-21', status: 'In Progress', note: 'Worker assigned' },
-            { date: '2025-01-22', status: 'Resolved', note: 'Issue resolved' }
-          ]
-        }
-      ]
-    }
-  ],
 
-  admins: [
-    {
-      id: 'admin001',
-      username: 'admin',
-      password: 'pass',
-      email: 'admin@smartsamadhan.gov',
-      fullName: 'State Administrator',
-      role: 'State Admin',
-      level: 'state',
-      accessLevel: 3,
-      department: 'State Administration',
-      location: 'State Headquarters',
-      permissions: ['view_all', 'manage_users', 'manage_reports', 'system_settings'],
-      createdAt: '2024-01-01'
-    },
-    {
-      id: 'admin002',
-      username: 'cityadmin',
-      password: 'city123',
-      email: 'cityadmin@smartsamadhan.gov',
-      fullName: 'City Administrator',
-      role: 'City Admin',
-      level: 'city',
-      accessLevel: 2,
-      department: 'City Administration',
-      location: 'City Municipal Office',
-      permissions: ['view_city', 'manage_city_users', 'manage_city_reports'],
-      createdAt: '2024-06-01'
-    },
-    {
-      id: 'admin003',
-      username: 'sectoradmin',
-      password: 'sector123',
-      email: 'sectoradmin@smartsamadhan.gov',
-      fullName: 'Sector Administrator',
-      role: 'Sector Admin',
-      level: 'sector',
-      accessLevel: 1,
-      department: 'Sector Administration',
-      location: 'Sector 5 Office',
-      permissions: ['view_sector', 'manage_sector_reports'],
-      createdAt: '2024-08-01'
-    }
-  ],
-
-  complaints: [
-    // All complaints from users will be aggregated here
-  ]
-};
 
 export const DatabaseProvider = ({ children }) => {
-  const STORAGE_KEY = 'smartSamadhanDB';
+  const [database, setDatabase] = useState(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  const aggregateComplaints = (users) =>
-    users.flatMap(user =>
-      (user.complaints || []).map(complaint => ({
-        ...complaint,
-        userId: user.id,
-        userName: user.fullName,
-      }))
-    );
-
-  const loadData = () => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        return {
-          ...parsed,
-          complaints: aggregateComplaints(parsed.users || [])
-        };
-      }
-    } catch (e) {
-      console.warn('Failed to load DB from storage, using defaults.', e);
-    }
-    return { ...initialData, complaints: aggregateComplaints(initialData.users) };
-  };
-
-  const [data, setData] = useState(loadData);
-
-  // Persist to localStorage on data change
+  // Initialize database on mount
   useEffect(() => {
+    const initDatabase = async () => {
+      try {
+        const db = EnvironmentDatabaseFactory.getDatabase();
+        await db.initialize();
+        setDatabase(db);
+        setIsInitialized(true);
+      } catch (error) {
+        console.error('Failed to initialize database:', error);
+        // Fallback to localStorage
+        const { LocalStorageDatabase } = await import('./database/LocalStorageDatabase.js');
+        const fallbackDb = new LocalStorageDatabase();
+        await fallbackDb.initialize();
+        setDatabase(fallbackDb);
+        setIsInitialized(true);
+      }
+    };
+
+    initDatabase();
+  }, []);
+
+  // Loading state
+  if (!isInitialized || !database) {
+    return (
+      <DatabaseContext.Provider value={{ loading: true }}>
+        {children}
+      </DatabaseContext.Provider>
+    );
+  }
+
+  // Wrapper functions that use the database abstraction
+  const getUser = async (username) => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    } catch (e) {
-      console.warn('Failed to persist DB to storage.', e);
+      return await database.getUser(username);
+    } catch (error) {
+      console.error('Error getting user:', error);
+      return null;
     }
-  }, [data]);
-
-  // User-related functions
-  const getUser = (username) => {
-    return data.users.find(user => user.username === username);
   };
 
-  const getUserComplaints = (userId) => {
-    const user = data.users.find(u => u.id === userId);
-    return user ? user.complaints : [];
+  const getUserComplaints = async (userId) => {
+    try {
+      return await database.getUserComplaints(userId);
+    } catch (error) {
+      console.error('Error getting user complaints:', error);
+      return [];
+    }
   };
 
-  const addUser = (userData) => {
-    const newUser = {
-      id: `user${Date.now()}`,
-      username: userData.username,
-      password: userData.password,
-      email: userData.email,
-      fullName: userData.fullName,
-      phone: userData.phone,
-      address: userData.address || '',
-      createdAt: new Date().toISOString().split('T')[0],
-      complaints: []
-    };
-    setData(prev => {
-      const users = [...prev.users, newUser];
-      return {
-        ...prev,
-        users,
-        complaints: aggregateComplaints(users)
-      };
-    });
-    return newUser;
+  const addUser = async (userData) => {
+    try {
+      return await database.addUser(userData);
+    } catch (error) {
+      console.error('Error adding user:', error);
+      return null;
+    }
   };
 
-  const updateUser = (userId, changes) => {
-    let updatedUserRef = null;
-    setData(prev => {
-      const users = prev.users.map(u => {
-        if (u.id === userId) {
-          updatedUserRef = { ...u, ...changes };
-          return updatedUserRef;
-        }
-        return u;
-      });
-      return {
-        ...prev,
-        users,
-        complaints: aggregateComplaints(users)
-      };
-    });
-    return updatedUserRef;
+  const updateUser = async (userId, changes) => {
+    try {
+      return await database.updateUser(userId, changes);
+    } catch (error) {
+      console.error('Error updating user:', error);
+      return null;
+    }
   };
 
-  const deleteUser = (userId) => {
-    setData(prev => {
-      const users = prev.users.filter(u => u.id !== userId);
-      return {
-        ...prev,
-        users,
-        complaints: aggregateComplaints(users)
-      };
-    });
+  const deleteUser = async (userId) => {
+    try {
+      await database.deleteUser(userId);
+      return true;
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      return false;
+    }
   };
 
-  const addComplaint = (userId, complaintData) => {
-    const newComplaint = {
-      id: `COMP${Date.now()}`,
-      regNumber: `REG${Date.now().toString().slice(-3)}`,
-      // Basic complaint info
-      title: complaintData.title,
-      description: complaintData.description,
-      priority: complaintData.priority || 'Medium',
-
-      // Civic category structure
-      category: complaintData.category,
-      mainCategory: complaintData.mainCategory,
-      subCategory1: complaintData.subCategory1,
-      specificIssue: complaintData.specificIssue,
-
-      // Location & Department
-      city: complaintData.city,
-      department: complaintData.department,
-      location: complaintData.location,
-      latitude: complaintData.latitude,
-      longitude: complaintData.longitude,
-
-      // User details
-      userDetails: complaintData.userDetails,
-
-      // Attachments
-      attachments: complaintData.attachments || [],
-
-      // Status & timestamps
-      status: complaintData.status || 'Pending',
-      assignedTo: complaintData.assignedTo || 'Unassigned',
-      submittedAt: complaintData.submittedAt || new Date().toISOString(),
-      dateSubmitted: new Date().toISOString().split('T')[0],
-      lastUpdated: new Date().toISOString().split('T')[0],
-
-      // Updates history
-      updates: [
-        {
-          date: new Date().toISOString().split('T')[0],
-          status: 'Submitted',
-          note: 'Issue reported and registered'
-        }
-      ]
-    };
-
-    setData(prev => {
-      const users = prev.users.map(user =>
-        user.id === userId
-          ? { ...user, complaints: [...(user.complaints || []), newComplaint] }
-          : user
-      );
-      const userRef = users.find(u => u.id === userId);
-      return {
-        ...prev,
-        users,
-        complaints: [...prev.complaints, { ...newComplaint, userId, userName: userRef?.fullName }]
-      };
-    });
-
-    return newComplaint;
+  const addComplaint = async (userId, complaintData) => {
+    try {
+      return await database.addComplaint(userId, complaintData);
+    } catch (error) {
+      console.error('Error adding complaint:', error);
+      return null;
+    }
   };
 
-  // Admin-related functions
-  const getAdmin = (username) => {
-    return data.admins.find(admin => admin.username === username);
+  const getAdmin = async (username) => {
+    try {
+      return await database.getAdmin(username);
+    } catch (error) {
+      console.error('Error getting admin:', error);
+      return null;
+    }
   };
 
-  const getAllAdmins = () => {
-    return data.admins;
+  const getAllAdmins = async () => {
+    try {
+      return await database.getAllAdmins();
+    } catch (error) {
+      console.error('Error getting all admins:', error);
+      return [];
+    }
   };
 
-  const getAdminsByLevel = (level) => {
-    return data.admins.filter(admin => admin.level === level);
+  const getAdminsByLevel = async (level) => {
+    try {
+      return await database.getAdminsByLevel(level);
+    } catch (error) {
+      console.error('Error getting admins by level:', error);
+      return [];
+    }
   };
 
-  // Complaint-related functions
-  const getAllComplaints = () => {
-    return data.complaints;
+  const getAllComplaints = async () => {
+    try {
+      return await database.getAllComplaints();
+    } catch (error) {
+      console.error('Error getting all complaints:', error);
+      return [];
+    }
   };
 
-  const updateComplaintStatus = (complaintId, newStatus, note = '') => {
-    setData(prev => ({
-      ...prev,
-      users: prev.users.map(user => ({
-        ...user,
-        complaints: user.complaints.map(complaint =>
-          complaint.id === complaintId
-            ? {
-                ...complaint,
-                status: newStatus,
-                lastUpdated: new Date().toISOString().split('T')[0],
-                updates: [
-                  ...complaint.updates,
-                  {
-                    date: new Date().toISOString().split('T')[0],
-                    status: newStatus,
-                    note: note || `Status updated to ${newStatus}`
-                  }
-                ]
-              }
-            : complaint
-        )
-      })),
-      complaints: prev.complaints.map(complaint =>
-        complaint.id === complaintId
-          ? {
-              ...complaint,
-              status: newStatus,
-              lastUpdated: new Date().toISOString().split('T')[0],
-              updates: [
-                ...complaint.updates,
-                {
-                  date: new Date().toISOString().split('T')[0],
-                  status: newStatus,
-                  note: note || `Status updated to ${newStatus}`
-                }
-              ]
-            }
-          : complaint
-      )
-    }));
+  const updateComplaintStatus = async (complaintId, newStatus, note = '') => {
+    try {
+      return await database.updateComplaintStatus(complaintId, newStatus, note);
+    } catch (error) {
+      console.error('Error updating complaint status:', error);
+      return null;
+    }
   };
 
-  // Helper functions
-  const getUserById = (userId) => {
-    return data.users.find(user => user.id === userId);
+  const getComplaintByRegNumber = async (regNumber) => {
+    try {
+      return await database.getComplaintByRegNumber(regNumber);
+    } catch (error) {
+      console.error('Error getting complaint by reg number:', error);
+      return null;
+    }
   };
 
-  const getComplaintByRegNumber = (regNumber) => {
-    return data.complaints.find(complaint => complaint.regNumber === regNumber);
+  const getUserById = async (userId) => {
+    try {
+      return await database.getUserById(userId);
+    } catch (error) {
+      console.error('Error getting user by ID:', error);
+      return null;
+    }
+  };
+
+  // Analytics functions
+  const getComplaintStats = async (filters = {}) => {
+    try {
+      return await database.getComplaintStats(filters);
+    } catch (error) {
+      console.error('Error getting complaint stats:', error);
+      return { total: 0, byStatus: {}, byPriority: {}, byDepartment: {} };
+    }
+  };
+
+  const getDepartmentStats = async () => {
+    try {
+      return await database.getDepartmentStats();
+    } catch (error) {
+      console.error('Error getting department stats:', error);
+      return {};
+    }
+  };
+
+  const getPriorityStats = async () => {
+    try {
+      return await database.getPriorityStats();
+    } catch (error) {
+      console.error('Error getting priority stats:', error);
+      return {};
+    }
   };
 
   const value = {
-    // Data
-    users: data.users,
-    admins: data.admins,
-    complaints: data.complaints,
+    // Loading state
+    loading: false,
+
+    // Data access (for backward compatibility)
+    users: [],
+    admins: [],
+    complaints: [],
 
     // User functions
     getUser,
     getUserComplaints,
-  addUser,
-  updateUser,
-  deleteUser,
+    addUser,
+    updateUser,
+    deleteUser,
     addComplaint,
 
     // Admin functions
@@ -407,8 +223,17 @@ export const DatabaseProvider = ({ children }) => {
     updateComplaintStatus,
     getComplaintByRegNumber,
 
-    // Helpers
-    getUserById
+    // Helper functions
+    getUserById,
+
+    // Analytics functions
+    getComplaintStats,
+    getDepartmentStats,
+    getPriorityStats,
+
+    // Database info
+    databaseType: EnvironmentDatabaseFactory.getDatabaseType(),
+    database: database
   };
 
   return (

@@ -1,11 +1,16 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDatabase } from './DatabaseContext';
 
 function Homepage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showAdmins, setShowAdmins] = useState(false);
-  const { getAllAdmins, getAdminsByLevel } = useDatabase();
+  const [admins, setAdmins] = useState([]);
+  const [stateAdmins, setStateAdmins] = useState([]);
+  const [cityAdmins, setCityAdmins] = useState([]);
+  const [sectorAdmins, setSectorAdmins] = useState([]);
+  const [loadingAdmins, setLoadingAdmins] = useState(true);
+  const { getAllAdmins, getAdminsByLevel, loading } = useDatabase();
 
   const slides = [
     { color: 'red', text: 'Report Civic Issues Easily' },
@@ -21,10 +26,32 @@ function Homepage() {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
-  const admins = getAllAdmins();
-  const stateAdmins = getAdminsByLevel('state');
-  const cityAdmins = getAdminsByLevel('city');
-  const sectorAdmins = getAdminsByLevel('sector');
+  useEffect(() => {
+    const loadAdmins = async () => {
+      if (loading) return; // Don't load if database is still initializing
+
+      try {
+        const [allAdmins, state, city, sector] = await Promise.all([
+          getAllAdmins(),
+          getAdminsByLevel('state'),
+          getAdminsByLevel('city'),
+          getAdminsByLevel('sector')
+        ]);
+        setAdmins(allAdmins);
+        setStateAdmins(state);
+        setCityAdmins(city);
+        setSectorAdmins(sector);
+      } catch (error) {
+        console.error('Error loading admins:', error);
+      } finally {
+        setLoadingAdmins(false);
+      }
+    };
+
+    if (!loading) {
+      loadAdmins();
+    }
+  }, [getAllAdmins, getAdminsByLevel, loading]);
 
   return (
     <div>

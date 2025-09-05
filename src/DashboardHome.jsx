@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { useDatabase } from './DatabaseContext';
 
@@ -9,11 +9,29 @@ function DashboardHome() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedSortOption, setSelectedSortOption] = useState('date-newest');
   const [selectedComplaint, setSelectedComplaint] = useState(null);
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const { user } = useAuth();
   const { getUserComplaints } = useDatabase();
 
-  const reports = getUserComplaints(user?.id) || [];
+  useEffect(() => {
+    const loadUserComplaints = async () => {
+      if (user?.id) {
+        try {
+          const userComplaints = await getUserComplaints(user.id);
+          setReports(userComplaints);
+        } catch (error) {
+          console.error('Error loading user complaints:', error);
+          setReports([]);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadUserComplaints();
+  }, [getUserComplaints, user?.id]);
 
   // Calculate statistics
   const stats = useMemo(() => {

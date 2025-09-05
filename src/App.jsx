@@ -12,6 +12,7 @@ import AdminDashboard from './AdminDashboard';
 import ViewStatus from './ViewStatus';
 import ContactUs from './ContactUs';
 import Sitemap from './Sitemap';
+import MapTest from './MapTest';
 import Navbar from './Navbar';
 import './App.css';
 
@@ -33,6 +34,7 @@ function App() {
                   <Route path="/view-status" element={<ViewStatus />} />
                   <Route path="/contact-us" element={<ContactUs />} />
                   <Route path="/sitemap" element={<Sitemap />} />
+                  <Route path="/map-test" element={<MapTest />} />
                   <Route path="/user-dashboard" element={<ProtectedRoute requiredRole="user"><UserDashboard /></ProtectedRoute>} />
                   <Route path="/admin-dashboard" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
                 </Routes>

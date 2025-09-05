@@ -7,6 +7,7 @@ function EditProfile() {
   const { getUser, updateUser } = useDatabase();
   const [isLoading, setIsLoading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -16,15 +17,25 @@ function EditProfile() {
 
   // Load user data on component mount
   useEffect(() => {
-    if (user) {
-      setFormData({
-        fullName: user.fullName || '',
-        email: user.email || '',
-        phone: user.phone || '',
-        address: user.address || ''
-      });
-    }
-  }, [user]);
+    const loadUserData = async () => {
+      if (user) {
+        try {
+          const userDetails = await getUser(user.username);
+          setUserData(userDetails);
+          setFormData({
+            fullName: userDetails?.fullName || '',
+            email: userDetails?.email || '',
+            phone: userDetails?.phone || '',
+            address: userDetails?.address || ''
+          });
+        } catch (error) {
+          console.error('Error loading user data:', error);
+        }
+      }
+    };
+
+    loadUserData();
+  }, [user, getUser]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -43,7 +54,7 @@ function EditProfile() {
       await new Promise(resolve => setTimeout(resolve, 500));
 
       // Persist to database and session
-      const updated = updateUser(user.id, {
+      const updated = await updateUser(user.id, {
         fullName: formData.fullName,
         email: formData.email,
         phone: formData.phone,
@@ -322,28 +333,28 @@ function EditProfile() {
             <div style={{ fontSize: '24px', marginBottom: '5px' }}>📋</div>
             <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>TOTAL COMPLAINTS</div>
             <div style={{ fontSize: '20px', fontWeight: 'bold' }}>
-              {getUser(user.username)?.complaints?.length || 0}
+              {userData?.complaints?.length || 0}
             </div>
           </div>
           <div style={{ textAlign: 'center', padding: '15px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
             <div style={{ fontSize: '24px', marginBottom: '5px', color: '#10b981' }}>✅</div>
             <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>RESOLVED</div>
             <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981' }}>
-              {getUser(user.username)?.complaints?.filter(c => c.status === 'Resolved').length || 0}
+              {userData?.complaints?.filter(c => c.status === 'Resolved').length || 0}
             </div>
           </div>
           <div style={{ textAlign: 'center', padding: '15px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
             <div style={{ fontSize: '24px', marginBottom: '5px', color: '#f59e0b' }}>⏳</div>
             <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>IN PROGRESS</div>
             <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#f59e0b' }}>
-              {getUser(user.username)?.complaints?.filter(c => c.status === 'In Progress').length || 0}
+              {userData?.complaints?.filter(c => c.status === 'In Progress').length || 0}
             </div>
           </div>
           <div style={{ textAlign: 'center', padding: '15px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
             <div style={{ fontSize: '24px', marginBottom: '5px', color: '#ef4444' }}>⏸️</div>
             <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>PENDING</div>
             <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#ef4444' }}>
-              {getUser(user.username)?.complaints?.filter(c => c.status === 'Pending').length || 0}
+              {userData?.complaints?.filter(c => c.status === 'Pending').length || 0}
             </div>
           </div>
         </div>

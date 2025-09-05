@@ -6,6 +6,7 @@
   --primary-hover: #1d4ed8; /* blue-700 */
   --border: #e5e7eb; /* gray-200 */
   --card: #f9fafb; /* gray-50 */
+  --card-bg: #f9fafb; /* gray-50 - same as --card for consistency */
   --icon: #6b7280; /* gray-500 for icons */
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
   line-height: 1.5;
@@ -23,6 +24,7 @@
   --primary-hover: #2563eb; /* blue-600 */
   --border: #374151; /* gray-700 */
   --card: #111827; /* gray-900 */
+  --card-bg: #111827; /* gray-900 - same as --card for consistency */
   --icon: #9ca3af; /* gray-400 for icons */
 
   /* Warning box colors for dark mode */
@@ -144,5 +146,304 @@ button:focus { outline: 3px solid rgba(37,99,235,0.35); outline-offset: 2px; }
   }
   50% {
     transform: translateY(-10px);
+  }
+}
+
+/* Manage Reports Table Styles */
+.manage-reports {
+  padding: 20px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.reports-header {
+  margin-bottom: 20px;
+}
+
+.reports-header h2 {
+  color: var(--fg);
+  margin-bottom: 15px;
+}
+
+.filters-section {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--fg);
+  min-width: 200px;
+}
+
+.filters select {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--fg);
+  min-width: 120px;
+}
+
+.table-container {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.entries-control, .sort-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.entries-control select, .sort-control select {
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.reports-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+}
+
+.reports-table th {
+  background: var(--table-header-bg);
+  color: var(--table-header-text);
+  padding: 12px 8px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+}
+
+.reports-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s;
+}
+
+.reports-table th.sortable:hover {
+  background: var(--table-header-bg-hover, #4b5563);
+}
+
+.reports-table td {
+  padding: 12px 8px;
+  border-bottom: 1px solid var(--border);
+  color: var(--fg);
+  vertical-align: top;
+}
+
+.reports-table tbody tr:hover {
+  background: var(--bg-hover, rgba(255,255,255,0.05));
+}
+
+.issue-cell {
+  max-width: 300px;
+}
+
+.issue-content strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--fg);
+}
+
+.issue-content p {
+  margin: 4px 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.issue-content small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.priority-badge, .status-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.action-buttons button {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.resolve-btn {
+  background: #10b981;
+  color: white;
+}
+
+.resolve-btn:hover {
+  background: #059669;
+}
+
+.progress-btn {
+  background: #f59e0b;
+  color: white;
+}
+
+.progress-btn:hover {
+  background: #d97706;
+}
+
+.pending-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.pending-btn:hover {
+  background: #dc2626;
+}
+
+.no-results {
+  text-align: center;
+  padding: 40px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pagination-info {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.pagination-controls {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.pagination-controls button {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--fg);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+  background: var(--primary);
+  color: white;
+}
+
+.pagination-controls button.active {
+  background: var(--primary);
+  color: white;
+}
+
+.pagination-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .manage-reports {
+    padding: 10px;
+  }
+
+  .filters-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-bar input {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .filters select {
+    min-width: auto;
+    flex: 1;
+  }
+
+  .table-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .reports-table {
+    font-size: 14px;
+  }
+
+  .reports-table th,
+  .reports-table td {
+    padding: 8px 4px;
+  }
+
+  .issue-cell {
+    max-width: 200px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .action-buttons button {
+    width: 100%;
+  }
+
+  .pagination {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
 }

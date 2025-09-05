@@ -19,7 +19,7 @@ function Login() {
     }
   }, [user, navigate]);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
     if (!username || !password) {
@@ -27,7 +27,8 @@ function Login() {
       return;
     }
     // Use auth context for authentication
-    if (login(username, password, role)) {
+    const success = await login(username, password, role);
+    if (success) {
       navigate('/user-dashboard');
     } else {
       setError('Invalid credentials');

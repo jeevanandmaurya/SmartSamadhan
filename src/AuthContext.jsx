@@ -24,33 +24,38 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = (username, password, role) => {
-    let authenticatedUser = null;
+  const login = async (username, password, role) => {
+    try {
+      let authenticatedUser = null;
 
-    if (role === 'user') {
-      authenticatedUser = getUser(username);
-    } else if (role === 'admin') {
-      authenticatedUser = getAdmin(username);
-    }
+      if (role === 'user') {
+        authenticatedUser = await getUser(username);
+      } else if (role === 'admin') {
+        authenticatedUser = await getAdmin(username);
+      }
 
-    if (authenticatedUser && authenticatedUser.password === password) {
-      const userData = {
-        id: authenticatedUser.id,
-        username: authenticatedUser.username,
-        role,
-        fullName: authenticatedUser.fullName,
-        email: authenticatedUser.email,
-        phone: authenticatedUser.phone,
-        address: authenticatedUser.address,
-        createdAt: authenticatedUser.createdAt,
-        level: authenticatedUser.level || null,
-        accessLevel: authenticatedUser.accessLevel || null
-      };
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
-      return true;
+      if (authenticatedUser && authenticatedUser.password === password) {
+        const userData = {
+          id: authenticatedUser.id,
+          username: authenticatedUser.username,
+          role,
+          fullName: authenticatedUser.fullName,
+          email: authenticatedUser.email,
+          phone: authenticatedUser.phone,
+          address: authenticatedUser.address,
+          createdAt: authenticatedUser.createdAt,
+          level: authenticatedUser.level || null,
+          accessLevel: authenticatedUser.accessLevel || null
+        };
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
     }
-    return false;
   };
 
   const logout = () => {

@@ -1,10 +1,27 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useDatabase } from './DatabaseContext';
 
 function UserManagement() {
-  const { users } = useDatabase();
+  const { getAllUsers } = useDatabase();
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
+
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        const allUsers = await getAllUsers();
+        setUsers(allUsers);
+      } catch (error) {
+        console.error('Error loading users:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUsers();
+  }, [getAllUsers]);
 
   const filteredUsers = useMemo(() => {
     if (!searchTerm) return users;

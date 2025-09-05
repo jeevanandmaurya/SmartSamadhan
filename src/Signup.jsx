@@ -18,7 +18,7 @@ function Signup() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const navigate = useNavigate();
-  const { users, getUser, addUser } = useDatabase();
+  const { getUser, addUser } = useDatabase();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -28,7 +28,7 @@ function Signup() {
     }));
   };
 
-  const validateForm = () => {
+  const validateForm = async () => {
     if (!formData.username || !formData.email || !formData.fullName || !formData.password || !formData.confirmPassword) {
       setError('All fields are required');
       return false;
@@ -44,7 +44,8 @@ function Signup() {
       return false;
     }
 
-    if (getUser(formData.username)) {
+    const existingUser = await getUser(formData.username);
+    if (existingUser) {
       setError('Username already exists');
       return false;
     }
@@ -68,7 +69,7 @@ function Signup() {
     e.preventDefault();
     setError('');
 
-    if (!validateForm()) {
+    if (!(await validateForm())) {
       return;
     }
 
@@ -79,7 +80,7 @@ function Signup() {
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       // Persist user in local database (localStorage-backed)
-      addUser({
+      await addUser({
         username: formData.username,
         password: formData.password,
         email: formData.email,

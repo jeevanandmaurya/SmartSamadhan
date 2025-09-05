@@ -1,12 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDatabase } from './DatabaseContext';
 
 function ViewStatus() {
   const [registrationId, setRegistrationId] = useState('');
   const [status, setStatus] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [complaints, setComplaints] = useState([]);
 
-  const { getComplaintByRegNumber, complaints } = useDatabase();
+  const { getComplaintByRegNumber, getAllComplaints } = useDatabase();
+
+  useEffect(() => {
+    const loadComplaints = async () => {
+      try {
+        const allComplaints = await getAllComplaints();
+        setComplaints(allComplaints);
+      } catch (error) {
+        console.error('Error loading complaints:', error);
+      }
+    };
+
+    loadComplaints();
+  }, [getAllComplaints]);
 
   const getStatusColor = (status) => {
     switch (status) {
