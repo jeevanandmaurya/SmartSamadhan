@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import AdminDashboardHome from './AdminDashboardHome';
@@ -11,6 +11,29 @@ function AdminDashboard() {
   const { logout } = useAuth();
   const [activeSection, setActiveSection] = useState('dashboard');
   const [showSignoutConfirm, setShowSignoutConfirm] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+      if (window.innerWidth >= 768) {
+        setSidebarOpen(false); // Close sidebar on desktop
+      }
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+  };
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
@@ -25,6 +48,9 @@ function AdminDashboard() {
       setShowSignoutConfirm(true);
     } else {
       setActiveSection(sectionId);
+    }
+    if (isMobile) {
+      setSidebarOpen(false);
     }
   };
 
@@ -51,12 +77,44 @@ function AdminDashboard() {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--bg)' }}>
+      {/* Hamburger Button for Mobile */}
+  {isMobile && !sidebarOpen && (
+        <button
+          onClick={toggleSidebar}
+          style={{
+            position: 'fixed',
+            top: '20px',
+            left: '20px',
+            zIndex: 1001,
+            backgroundColor: 'var(--primary)',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '5px',
+            padding: '10px',
+            cursor: 'pointer',
+            fontSize: '18px'
+          }}
+        >
+          ☰
+        </button>
+      )}
+
       {/* Sidebar */}
       <div style={{
-        width: '250px',
-        backgroundColor: 'var(--card-bg)',
-        borderRight: '1px solid var(--border)',
-        padding: '20px 0'
+        width: isMobile ? '80%' : '250px',
+        backgroundColor: 'var(--card)',
+        borderRight: isMobile ? 'none' : '1px solid var(--border)',
+        borderRadius: isMobile ? '0 8px 8px 0' : '0',
+        padding: '20px 0',
+        position: isMobile ? 'fixed' : 'relative',
+        left: isMobile ? (sidebarOpen ? '0' : '-100%') : 'auto',
+        top: '0',
+        height: '100vh',
+        zIndex: 1000,
+        transition: 'left 0.3s ease',
+        display: isMobile && !sidebarOpen ? 'none' : 'block',
+        boxShadow: isMobile ? '2px 0 8px rgba(0, 0, 0, 0.15)' : 'none',
+        opacity: 1
       }}>
         <div style={{ padding: '0 20px', marginBottom: '30px' }}>
           <h2 style={{ margin: '0', color: 'var(--primary)' }}>Admin Panel</h2>
@@ -89,8 +147,29 @@ function AdminDashboard() {
         </nav>
       </div>
 
+      {/* Overlay for Mobile */}
+  {isMobile && sidebarOpen && (
+        <div
+          onClick={closeSidebar}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 999
+          }}
+        />
+      )}
+
       {/* Main Content */}
-      <div style={{ flex: 1, padding: '20px', overflowY: 'auto' }}>
+      <div style={{
+        flex: 1,
+        padding: '20px',
+        overflowY: 'auto',
+        marginLeft: isMobile ? '0' : '0'
+      }}>
         <div style={{ maxWidth: '100%', padding: '0 10px' }}>
           {renderContent()}
         </div>
