@@ -117,23 +117,35 @@ create policy "Admins: read all" on public.admins
 -- Inserts a row into public.users or public.admins when a new auth user registers
 create or replace function public.handle_new_user()
 returns trigger as $$
+declare
+    meta jsonb;
+    is_admin boolean;
 begin
-  -- Check for a custom claim or metadata to determine if the user is an admin
-  if new.user_metadata->>'is_admin' = 'true' then
-    insert into public.admins (id, email, username, full_name, role)
-    values (new.id, new.email, new.user_metadata->>'username', new.user_metadata->>'full_name', 'admin');
-  else
-    insert into public.users (id, email, username, full_name, phone, address)
-    values (
-      new.id,
-      new.email,
-      new.user_metadata->>'username',
-      new.user_metadata->>'full_name',
-      new.user_metadata->>'phone',
-      new.user_metadata->>'address'
-    );
-  end if;
-  return new;
+    -- In newer Supabase versions the column is raw_user_meta_data (NOT user_metadata)
+    meta := coalesce(new.raw_user_meta_data, '{}'::jsonb);
+    is_admin := (meta->>'is_admin')::boolean;
+
+    if is_admin then
+        insert into public.admins (id, email, username, full_name, role)
+        values (
+            new.id,
+            new.email,
+            meta->>'username',
+            meta->>'full_name',
+            'admin'
+        );
+    else
+        insert into public.users (id, email, username, full_name, phone, address)
+        values (
+            new.id,
+            new.email,
+            meta->>'username',
+            meta->>'full_name',
+            meta->>'phone',
+            meta->>'address'
+        );
+    end if;
+    return new;
 end;
 $$ language plpgsql security definer;
 
