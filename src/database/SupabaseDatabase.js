@@ -9,17 +9,15 @@ export class SupabaseDatabase extends BaseDatabase {
     super(config);
     this.supabaseUrl = config.supabaseUrl;
     this.supabaseKey = config.supabaseKey;
-    this.supabase = null;
+    this.supabase = config.client || null; // allow injected client
     this.initialized = false;
   }
 
   async initialize() {
     if (this.initialized) return;
-
+    if (this.supabase) { this.initialized = true; return; }
     try {
-      // Dynamic import to avoid bundling Supabase if not used
       const { createClient } = await import('@supabase/supabase-js');
-
       this.supabase = createClient(this.supabaseUrl, this.supabaseKey);
       this.initialized = true;
     } catch (e) {

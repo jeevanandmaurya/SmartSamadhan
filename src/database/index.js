@@ -1,4 +1,4 @@
-// Database abstraction layer exports (localStorage only)
+// Database abstraction layer exports (Supabase only now)
 export { BaseDatabase } from './BaseDatabase.js';
-export { LocalStorageDatabase } from './LocalStorageDatabase.js';
+export { SupabaseDatabase } from './SupabaseDatabase.js';
 export { DatabaseFactory, EnvironmentDatabaseFactory } from './DatabaseFactory.js';

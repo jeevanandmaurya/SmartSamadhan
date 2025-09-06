@@ -1,4 +1,5 @@
-import { LocalStorageDatabase } from './LocalStorageDatabase.js';
+import { SupabaseDatabase } from './SupabaseDatabase.js'
+import { supabase as existingSupabase } from '../supabaseClient.js';
 
 /**
  * Database Factory
@@ -6,7 +7,7 @@ import { LocalStorageDatabase } from './LocalStorageDatabase.js';
  */
 export class DatabaseFactory {
   static DATABASE_TYPES = {
-    LOCAL_STORAGE: 'localStorage'
+  SUPABASE: 'supabase'
   };
 
   static instances = new Map();
@@ -27,12 +28,19 @@ export class DatabaseFactory {
     let database;
 
     switch (type) {
-      case this.DATABASE_TYPES.LOCAL_STORAGE:
-        database = new LocalStorageDatabase(config);
+      case this.DATABASE_TYPES.SUPABASE: {
+        if (!config.supabaseUrl || !config.supabaseKey) {
+          throw new Error('Supabase configuration requires supabaseUrl and supabaseKey');
+        }
+        database = new SupabaseDatabase({
+          supabaseUrl: config.supabaseUrl,
+          supabaseKey: config.supabaseKey
+        });
         break;
-
-      default:
-        throw new Error(`Unsupported database type: ${type}. Only localStorage is supported.`);
+      }
+      default: {
+        throw new Error(`Unsupported database type: ${type}. Supported types: SUPABASE`);
+      }
     }
 
     this.instances.set(key, database);
@@ -44,8 +52,13 @@ export class DatabaseFactory {
    * @param {object} config - Configuration options
    * @returns {LocalStorageDatabase}
    */
-  static createLocalStorage(config = {}) {
-    return this.getDatabase(this.DATABASE_TYPES.LOCAL_STORAGE, config);
+  /**
+   * Create a Supabase database instance
+   * @param {object} config - { supabaseUrl, supabaseKey }
+   * @returns {SupabaseDatabase}
+   */
+  static createSupabase(config = {}) {
+    return this.getDatabase(this.DATABASE_TYPES.SUPABASE, config);
   }
 
   /**
@@ -60,7 +73,7 @@ export class DatabaseFactory {
    * @returns {string[]}
    */
   static getAvailableTypes() {
-    return Object.values(this.DATABASE_TYPES);
+    return [this.DATABASE_TYPES.SUPABASE];
   }
 }
 
@@ -70,10 +83,19 @@ export class DatabaseFactory {
  */
 export class EnvironmentDatabaseFactory {
   static getDatabase() {
-    return DatabaseFactory.createLocalStorage();
+    const supabaseUrl = import.meta?.env?.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta?.env?.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
+    if (!supabaseUrl || !supabaseKey) {
+      if (existingSupabase) {
+        // Reuse already-created client (supabaseClient.js succeeded)
+        return new SupabaseDatabase({ supabaseUrl: 'injected', supabaseKey: 'injected', client: existingSupabase });
+      }
+      return null; // signal missing config and no injected client
+    }
+    return DatabaseFactory.createSupabase({ supabaseUrl, supabaseKey });
   }
 
   static getDatabaseType() {
-    return DatabaseFactory.DATABASE_TYPES.LOCAL_STORAGE;
+  return DatabaseFactory.DATABASE_TYPES.SUPABASE;
   }
 }

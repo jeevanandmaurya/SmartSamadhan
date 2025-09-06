@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useAuth, useDatabase } from './contexts';
-import InteractiveMap from './InteractiveMap';
+import { useAuth, useDatabase } from '../../contexts';
+import { InteractiveMap } from '../../components/common';
 
 function AdminDashboardHome() {
   const { user } = useAuth();

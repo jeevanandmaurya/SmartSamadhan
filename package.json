@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.0.1",
+    "@supabase/supabase-js": "^2.57.2",
     "leaflet": "^1.9.4",
     "leaflet.heat": "^0.2.0",
     "leaflet.markercluster": "^1.5.3",

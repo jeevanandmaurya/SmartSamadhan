@@ -1,20 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { DatabaseProvider } from './DatabaseContext';
-import { AuthProvider } from './AuthContext';
-import ProtectedRoute from './ProtectedRoute';
-import Homepage from './Homepage';
-import About from './About';
-import Login from './Login';
-import Signup from './Signup';
-import AdminLogin from './AdminLogin';
-import UserDashboard from './UserDashboard';
-import AdminDashboard from './AdminDashboard';
-import ViewStatus from './ViewStatus';
-import ContactUs from './ContactUs';
-import Sitemap from './Sitemap';
-import MapTest from './MapTest';
-import Navbar from './Navbar';
-import './App.css';
+import { DatabaseProvider, AuthProvider } from './contexts';
+import { ProtectedRoute, MapTest } from './components/common';
+import { Navbar } from './components/layout';
+import { Login, Signup, AdminLogin } from './pages/auth';
+import { UserDashboard, AdminDashboard } from './pages/dashboard';
+import { Homepage, About, ContactUs, Sitemap } from './pages/public';
+import { ViewStatus } from './features/complaints/components';
+import './styles/App.css';
 
 function App() {
   return (
