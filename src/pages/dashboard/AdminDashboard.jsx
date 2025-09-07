@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts';
-// Updated paths after project re-organization
 import AdminDashboardHome from './AdminDashboardHome';
 import ManageReports from '../../features/complaints/components/ManageReports';
-import UserManagement from '../admin/UserManagement';
-import AdminSettings from '../admin/AdminSettings';
+import UserManagement from '../../pages/admin/UserManagement';
+import AdminSettings from '../../pages/admin/AdminSettings';
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -56,9 +55,18 @@ function AdminDashboard() {
   };
 
   const handleSignoutConfirm = async () => {
-    await logout();
-    navigate('/');
-    setShowSignoutConfirm(false);
+    try {
+      console.log('🔍 AdminDashboard: Starting logout process');
+      await logout();
+      console.log('🔍 AdminDashboard: Logout completed, navigating to home');
+      navigate('/', { replace: true });
+      setShowSignoutConfirm(false);
+    } catch (error) {
+      console.error('🔍 AdminDashboard: Logout error:', error);
+      // Fallback: even if logout fails, navigate away
+      navigate('/', { replace: true });
+      setShowSignoutConfirm(false);
+    }
   };
 
   const renderContent = () => {
@@ -77,156 +85,100 @@ function AdminDashboard() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--bg)' }}>
-      {/* Hamburger Button for Mobile */}
-  {isMobile && !sidebarOpen && (
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
+      {/* Mobile hamburger */}
+      {isMobile && !sidebarOpen && (
         <button
           onClick={toggleSidebar}
+          aria-label="Open navigation"
           style={{
-            position: 'fixed',
-            top: '20px',
-            left: '20px',
-            zIndex: 1001,
-            backgroundColor: 'var(--primary)',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '5px',
-            padding: '10px',
-            cursor: 'pointer',
-            fontSize: '18px'
-          }}
-        >
-          ☰
-        </button>
+            position: 'fixed', top: 16, left: 16, zIndex: 1100,
+            background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 6,
+            padding: '10px 12px', cursor: 'pointer', fontSize: 18
+          }}>☰</button>
       )}
 
       {/* Sidebar */}
-      <div style={{
-        width: isMobile ? '80%' : '250px',
-        backgroundColor: 'var(--card)',
-        borderRight: isMobile ? 'none' : '1px solid var(--border)',
-        borderRadius: isMobile ? '0 8px 8px 0' : '0',
-        padding: '20px 0',
-        position: isMobile ? 'fixed' : 'relative',
-        left: isMobile ? (sidebarOpen ? '0' : '-100%') : 'auto',
-        top: '0',
-        height: '100vh',
-        zIndex: 1000,
-        transition: 'left 0.3s ease',
-        display: isMobile && !sidebarOpen ? 'none' : 'block',
-        boxShadow: isMobile ? '2px 0 8px rgba(0, 0, 0, 0.15)' : 'none',
-        opacity: 1
-      }}>
-        <div style={{ padding: '0 20px', marginBottom: '30px' }}>
-          <h2 style={{ margin: '0', color: 'var(--primary)' }}>Admin Panel</h2>
+      <aside
+        style={{
+          width: 250,
+          background: 'var(--card)',
+          borderRight: '1px solid var(--border)',
+          padding: '20px 0',
+          position: 'fixed',
+          top: isMobile ? 0 : '60px',
+          left: isMobile ? (sidebarOpen ? 0 : '-100%') : 0,
+          height: isMobile ? '100vh' : 'calc(100vh - 60px)',
+          overflowY: 'auto',
+          zIndex: 1050,
+          transition: 'left .3s ease',
+          boxShadow: isMobile ? '2px 0 8px rgba(0,0,0,.15)' : 'none'
+        }}
+      >
+        <div style={{ padding: '0 20px 24px', borderBottom: '1px solid var(--border)' }}>
+          <h2 style={{ margin: 0, fontSize: 20, color: 'var(--primary)' }}>Admin Panel</h2>
         </div>
-
-        <nav>
-          {menuItems.map((item) => (
+        <nav style={{ marginTop: 8 }}>
+          {menuItems.map(item => (
             <button
               key={item.id}
               onClick={() => handleMenuClick(item.id)}
               style={{
                 width: '100%',
                 padding: '12px 20px',
-                backgroundColor: activeSection === item.id ? 'var(--primary)' : 'transparent',
+                background: activeSection === item.id ? 'var(--primary)' : 'transparent',
                 color: activeSection === item.id ? '#fff' : 'var(--fg)',
                 border: 'none',
-                textAlign: 'left',
-                cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '10px',
-                fontSize: '16px',
-                transition: 'all 0.2s'
+                gap: 10,
+                cursor: 'pointer',
+                fontSize: 15,
+                textAlign: 'left',
+                transition: 'background .2s'
               }}
             >
-              <i className={item.icon}></i>
-              {item.label}
+              <i className={item.icon} style={{ width: 18 }}></i>
+              <span>{item.label}</span>
             </button>
           ))}
         </nav>
-      </div>
+      </aside>
 
-      {/* Overlay for Mobile */}
-  {isMobile && sidebarOpen && (
+      {/* Mobile overlay */}
+      {isMobile && sidebarOpen && (
         <div
           onClick={closeSidebar}
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 999
-          }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.45)', zIndex: 1000 }}
         />
       )}
 
-      {/* Main Content */}
-      <div style={{
-        flex: 1,
-        padding: '20px',
-        overflowY: 'auto',
-        marginLeft: isMobile ? '0' : '0'
-      }}>
-        <div style={{ maxWidth: '100%', padding: '0 10px' }}>
+      {/* Main content */}
+      <main
+        style={{
+          flex: 1,
+            marginLeft: isMobile ? 0 : 250,
+          padding: '24px 24px 40px',
+          width: '100%',
+          maxWidth: '100%',
+          minHeight: '100vh',
+          boxSizing: 'border-box'
+        }}
+      >
+        <div style={{ maxWidth: 1600, margin: '0 auto' }}>
           {renderContent()}
         </div>
-      </div>
+      </main>
 
-      {/* Signout Confirmation Modal */}
+      {/* Signout modal */}
       {showSignoutConfirm && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }}>
-          <div className="card" style={{
-            padding: '30px',
-            maxWidth: '400px',
-            width: '90%',
-            textAlign: 'center'
-          }}>
-            <h3 style={{ margin: '0 0 20px 0', color: 'var(--primary)' }}>Confirm Sign Out</h3>
-            <p style={{ margin: '0 0 30px 0', color: 'var(--muted)' }}>
-              Are you sure you want to sign out? You will need to log in again to access the admin panel.
-            </p>
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-              <button
-                onClick={handleSignoutConfirm}
-                style={{
-                  padding: '10px 20px',
-                  backgroundColor: '#ef4444',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '5px',
-                  cursor: 'pointer'
-                }}
-              >
-                Sign Out
-              </button>
-              <button
-                onClick={() => setShowSignoutConfirm(false)}
-                style={{
-                  padding: '10px 20px',
-                  backgroundColor: 'var(--muted)',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '5px',
-                  cursor: 'pointer'
-                }}
-              >
-                Cancel
-              </button>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1200 }}>
+          <div className="card" style={{ padding: 32, maxWidth: 420, width: '92%' }}>
+            <h3 style={{ margin: '0 0 12px', color: 'var(--primary)' }}>Confirm Sign Out</h3>
+            <p style={{ margin: '0 0 24px', color: 'var(--muted)', fontSize: 14 }}>Are you sure you want to sign out? You'll need to sign in again to access admin tools.</p>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+              <button onClick={handleSignoutConfirm} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Sign Out</button>
+              <button onClick={() => setShowSignoutConfirm(false)} style={{ background: 'var(--muted)', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
             </div>
           </div>
         </div>

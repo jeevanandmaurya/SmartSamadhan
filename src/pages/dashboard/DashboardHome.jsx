@@ -12,25 +12,52 @@ function DashboardHome() {
   const [loading, setLoading] = useState(true);
 
   const { user } = useAuth();
-  const { getUserComplaints } = useDatabase();
+  const { getUserComplaints, database } = useDatabase();
 
   useEffect(() => {
-    const loadUserComplaints = async () => {
-      if (user?.id) {
-        try {
-          const userComplaints = await getUserComplaints(user.id);
-          setReports(userComplaints);
-        } catch (error) {
-          console.error('Error loading user complaints:', error);
-          setReports([]);
-        } finally {
-          setLoading(false);
-        }
+    let active = true;
+    const loadUserComplaints = async (reason='initial') => {
+      if (!user?.id) return;
+      try {
+        if (reason === 'initial') setLoading(true);
+        const userComplaints = await getUserComplaints(user.id);
+        if (!active) return;
+        console.log(`[DashboardHome] Loaded ${userComplaints.length} complaints (reason=${reason}) for user`, user.id);
+        setReports(userComplaints);
+      } catch (error) {
+        if (!active) return;
+        console.error('Error loading user complaints:', error);
+        setReports([]);
+      } finally {
+        if (reason === 'initial' && active) setLoading(false);
       }
     };
-
-    loadUserComplaints();
+    loadUserComplaints('initial');
+    return () => { active = false; };
   }, [getUserComplaints, user?.id]);
+
+  // Real-time subscription so newly lodged complaints appear automatically
+  useEffect(() => {
+    if (!database?.supabase || !user?.id) return; 
+    try {
+      const channel = database.supabase
+        .channel(`complaints-user-${user.id}`)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'complaints', filter: `user_id=eq.${user.id}` }, (payload) => {
+          console.log('[DashboardHome] Realtime payload:', payload.eventType, payload.new?.id || payload.old?.id);
+          // Refresh list silently
+          getUserComplaints(user.id).then(list => {
+            console.log('[DashboardHome] Realtime refresh, complaints count =', list.length);
+            setReports(list);
+          });
+        })
+        .subscribe(status => {
+          if (status === 'SUBSCRIBED') console.log('[DashboardHome] Realtime subscribed for user complaints');
+        });
+      return () => { database.supabase.removeChannel(channel); };
+    } catch (e) {
+      console.warn('Realtime subscription failed (user complaints):', e);
+    }
+  }, [database, user?.id, getUserComplaints]);
 
   // Calculate statistics
   const stats = useMemo(() => {

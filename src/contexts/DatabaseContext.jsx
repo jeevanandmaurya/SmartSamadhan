@@ -149,12 +149,39 @@ export const DatabaseProvider = ({ children }) => {
     }
   };
 
+  // Fetch admin by id (safer than username for email-based auth)
+  const getAdminById = async (adminId) => {
+    try {
+      if (!adminId || !database?.supabase) return null;
+      const { data, error } = await database.supabase
+        .from('admins')
+        .select('*')
+        .eq('id', adminId)
+        .maybeSingle();
+      if (error) throw error;
+      return data ? normalizeActor(data, 'admin') : null;
+    } catch (e) {
+      console.error('Error getting admin by id:', e);
+      return null;
+    }
+  };
+
   const getAllAdmins = async () => {
     try {
   const list = await database.getAllAdmins();
   return (list || []).map(a => normalizeActor(a, 'admin'));
     } catch (error) {
       console.error('Error getting all admins:', error);
+      return [];
+    }
+  };
+
+  const getAllUsers = async () => {
+    try {
+      const list = await database.getAllUsers();
+      return (list || []).map(u => normalizeActor(u, 'user'));
+    } catch (error) {
+      console.error('Error getting all users:', error);
       return [];
     }
   };
@@ -261,8 +288,10 @@ export const DatabaseProvider = ({ children }) => {
     // Admin functions
     getAdmin,
     getAllAdmins,
+    getAllUsers,
     getAdminsByLevel,
   deleteAdmin,
+  getAdminById,
 
     // Complaint functions
     getAllComplaints,
@@ -300,8 +329,16 @@ export const DatabaseProvider = ({ children }) => {
       submittedAt: c.submittedAt ?? c.submitted_at,
       // User linkage
       userId: c.userId ?? c.user_id,
+  // Attachments
+  attachments: c.attachments || [],
+  attachmentsCount: c.attachments_count ?? (Array.isArray(c.attachments) ? c.attachments.length : c.attachmentsCount),
       // Category breakdown (attempt to split if only category string present)
-      ...(deriveCategoryParts(c.category, c.mainCategory, c.subCategory1, c.specificIssue)),
+      ...(deriveCategoryParts(
+        c.category,
+        c.mainCategory ?? c.main_category,
+        c.subCategory1 ?? c.sub_category1,
+        c.specificIssue ?? c.specific_issue
+      )),
       // Preserve updates array
       updates: c.updates || []
     }));

@@ -28,42 +28,88 @@ export const AuthProvider = ({ children }) => {
         };
       };
 
-      const fetchAndEnrichProfile = async (sessionUser, attempt = 1) => {
+  // Enrich a freshly authenticated user with profile data (admins/users tables)
+  // IMPORTANT: Must receive the ORIGINAL session.user object (with user_metadata) –
+  // NOT the stripped provisional object. Passing a provisional (without user_metadata)
+  // caused admin metadata detection to fail and downgraded admins to regular users.
+  const fetchAndEnrichProfile = async (sessionUser, attempt = 1) => {
         try {
-          // Try users table
-            const { data: userProfile } = await supabase
-              .from('users')
-              .select('*')
-              .eq('id', sessionUser.id)
-              .maybeSingle();
-            if (userProfile) {
-              return normalizeProfile({ ...sessionUser, ...userProfile }, 'user');
-            }
-            // Try admins table
+          console.log(`[Auth] Enriching profile for user: ${sessionUser.email}`);
+
+          // SINGLE SOURCE OF TRUTH: Check only metadata for roles
+          const hasAdminMetadata = sessionUser.user_metadata?.is_admin === true;
+          const determinedRole = hasAdminMetadata ? 'admin' : 'user';
+
+          console.log(`[Auth] User has admin metadata: ${hasAdminMetadata}, determined role: ${determinedRole}`);
+
+          // Try to get profile data from appropriate table based on role
+          if (hasAdminMetadata) {
+            // Try admins table for admins
             const { data: adminProfile } = await supabase
               .from('admins')
               .select('*')
               .eq('id', sessionUser.id)
               .maybeSingle();
+
             if (adminProfile) {
-              return normalizeProfile({ ...sessionUser, ...adminProfile }, 'admin');
+              console.log(`[Auth] Found admin profile in admins table`);
+              const enrichedProfile = {
+                id: sessionUser.id,
+                email: sessionUser.email,
+                full_name: adminProfile.full_name || adminProfile.fullName || 'Administrator',
+                fullName: adminProfile.full_name || adminProfile.fullName || 'Administrator',
+                username: adminProfile.username || 'admin',
+                phone: adminProfile.phone,
+                address: adminProfile.address,
+                created_at: adminProfile.created_at || sessionUser.created_at,
+                role: 'admin'
+              };
+              return enrichedProfile;
+            } else {
+              console.log(`[Auth] No admin profile found, creating basic admin profile`);
+              // Create basic admin profile if not found in table
+              return normalizeProfile({
+                ...sessionUser,
+                full_name: sessionUser.user_metadata?.full_name || 'Administrator',
+                username: sessionUser.user_metadata?.username || 'admin',
+              }, 'admin');
             }
-            // If profile rows not yet created (race with trigger) retry a few times
-            if (attempt < 5) {
-              await new Promise(r => setTimeout(r, 300 * attempt));
-              return fetchAndEnrichProfile(sessionUser, attempt + 1);
+          } else {
+            // Try users table for regular users
+            const { data: userProfile } = await supabase
+              .from('users')
+              .select('*')
+              .eq('id', sessionUser.id)
+              .maybeSingle();
+
+            if (userProfile) {
+              console.log(`[Auth] Found user profile in users table`);
+              return normalizeProfile({ ...sessionUser, ...userProfile }, 'user');
+            } else {
+              console.log(`[Auth] No user profile found, creating basic user profile`);
+              return normalizeProfile({
+                ...sessionUser,
+                full_name: sessionUser.user_metadata?.full_name || 'User',
+                username: sessionUser.user_metadata?.username || 'user',
+              }, 'user');
             }
-            return sessionUser; // fallback
+          }
         } catch (err) {
-          console.warn('Profile enrichment failed', err);
-          return sessionUser;
+          console.warn('[Auth] Profile enrichment failed:', err.message);
+          // Emergency fallback: use metadata only
+          const hasAdminMetadata = sessionUser.user_metadata?.is_admin === true;
+          console.log(`[Auth] Emergency fallback - metadata only, role: ${hasAdminMetadata ? 'admin' : 'user'}`);
+          return normalizeProfile(sessionUser, hasAdminMetadata ? 'admin' : 'user');
         }
       };
 
       const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
         console.log('[Auth] onAuthStateChange event =', event, ' hasSession=', !!session);
         if (session?.user) {
-          // Provisional user (quickly unblock UI)
+          // Provisional user (quickly unblock UI) - check both metadata and default
+          const hasAdminMetadata = session.user.user_metadata?.is_admin === true;
+          console.log('[Auth] Provisional user has admin metadata:', hasAdminMetadata);
+
           const provisional = normalizeProfile({
             id: session.user.id,
             email: session.user.email,
@@ -72,13 +118,18 @@ export const AuthProvider = ({ children }) => {
             phone: session.user.user_metadata?.phone,
             address: session.user.user_metadata?.address,
             created_at: session.user.created_at,
-            role: session.user.user_metadata?.is_admin ? 'admin' : 'user'
-          }, session.user.user_metadata?.is_admin ? 'admin' : 'user');
+            role: hasAdminMetadata ? 'admin' : 'user',
+            // Preserve metadata snapshot so enrichment can reliably detect admin again
+            user_metadata: session.user.user_metadata
+          }, hasAdminMetadata ? 'admin' : 'user');
+
+          console.log('[Auth] Setting provisional user:', { id: provisional.id, email: provisional.email, role: provisional.role });
           setUser(prev => prev || provisional);
           setLoading(false); // allow protected routes to proceed
 
           // Enrich in background
-          const enriched = await fetchAndEnrichProfile(provisional);
+          // Use ORIGINAL session.user (contains full user_metadata) for enrichment.
+          const enriched = await fetchAndEnrichProfile(session.user);
           setUser(enriched);
           localStorage.setItem('user', JSON.stringify(enriched));
         } else {

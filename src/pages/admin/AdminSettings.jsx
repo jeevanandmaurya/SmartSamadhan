@@ -3,7 +3,7 @@ import { useAuth, useDatabase } from '../../contexts';
 
 function AdminSettings() {
   const { user } = useAuth();
-  const { getAdmin, getAllUsers, getAllComplaints } = useDatabase();
+  const { getAdmin, getAdminById, getAllUsers, getAllComplaints } = useDatabase();
   const [activeTab, setActiveTab] = useState('profile');
   const [adminData, setAdminData] = useState(null);
   const [users, setUsers] = useState([]);
@@ -13,11 +13,13 @@ function AdminSettings() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [admin, allUsers, allComplaints] = await Promise.all([
-          getAdmin(user.username),
+        // Prefer ID-based fetch (reliable) then fallback to username if needed
+        const [adminById, allUsers, allComplaints] = await Promise.all([
+          getAdminById(user.id),
           getAllUsers(),
           getAllComplaints()
         ]);
+        const admin = adminById || await getAdmin(user.username);
         setAdminData(admin);
         setUsers(allUsers);
         setComplaints(allComplaints);
@@ -29,7 +31,7 @@ function AdminSettings() {
     };
 
     loadData();
-  }, [getAdmin, getAllUsers, getAllComplaints, user.username]);
+  }, [getAdmin, getAdminById, getAllUsers, getAllComplaints, user.id, user.username]);
 
   const systemStats = {
     totalUsers: users.length,

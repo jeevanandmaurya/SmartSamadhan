@@ -1,10 +1,10 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAuth, useDatabase } from '../../contexts';
 import { InteractiveMap } from '../../components/common';
 
 function AdminDashboardHome() {
   const { user } = useAuth();
-  const { getAllComplaints, updateComplaintStatus } = useDatabase();
+  const { getAllComplaints, updateComplaintStatus, database } = useDatabase();
   const [updatingId, setUpdatingId] = useState(null);
   const [pendingStatus, setPendingStatus] = useState({});
   const [allComplaints, setAllComplaints] = useState([]);
@@ -17,22 +17,41 @@ function AdminDashboardHome() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedSortOption, setSelectedSortOption] = useState('date-newest');
 
-  useEffect(() => {
-    const loadComplaints = async () => {
-      try {
-        const complaints = await getAllComplaints();
-        console.log('Admin Dashboard - All complaints loaded:', complaints.length);
-        console.log('Admin Dashboard - Sample complaint:', complaints[0]);
-        setAllComplaints(complaints);
-      } catch (error) {
-        console.error('Error loading complaints:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadComplaints();
+  const loadComplaints = useCallback(async () => {
+    setLoading(true);
+    try {
+      const complaints = await getAllComplaints();
+      console.log('Admin Dashboard - All complaints loaded:', complaints.length);
+      console.log('Admin Dashboard - Sample complaint:', complaints[0]);
+      setAllComplaints(complaints);
+    } catch (error) {
+      console.error('Error loading complaints:', error);
+    } finally {
+      setLoading(false);
+    }
   }, [getAllComplaints]);
+
+  useEffect(() => { loadComplaints(); }, [loadComplaints]);
+
+  // Real-time subscription for admins to see new complaints immediately
+  useEffect(() => {
+    if (!database?.supabase) return;
+    try {
+      const channel = database.supabase
+        .channel('complaints-admin-feed')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'complaints' }, (payload) => {
+          console.log('[AdminDashboardHome] Realtime complaint change:', payload.eventType, payload.new?.id || payload.old?.id);
+          // Optimistically merge or reload (simpler reload for correctness)
+          loadComplaints();
+        })
+        .subscribe(status => {
+          if (status === 'SUBSCRIBED') console.log('[AdminDashboardHome] Realtime subscribed for complaints table');
+        });
+      return () => { database.supabase.removeChannel(channel); };
+    } catch (e) {
+      console.warn('Realtime subscription failed (admin complaints):', e);
+    }
+  }, [database, loadComplaints]);
 
   const analytics = useMemo(() => {
     const total = allComplaints.length;
@@ -170,106 +189,37 @@ function AdminDashboardHome() {
   const startIndex = (currentPage - 1) * entriesPerPage;
   const paginatedReports = filteredReports.slice(startIndex, startIndex + entriesPerPage);
 
-  return (
-    <div style={{
-      display: 'flex',
-      minHeight: '100vh',
-      backgroundColor: 'var(--bg-secondary)'
-    }}>
-      {/* Left Sidebar - Fixed & Compact */}
-      <div style={{
-        position: 'fixed',
-        left: 0,
-        top: '60px', // Below navbar
-        width: '220px',
-        height: 'calc(100vh - 60px)',
-        backgroundColor: 'var(--bg)',
-        borderRight: '1px solid var(--border)',
-        padding: '15px',
-        overflowY: 'auto',
-        zIndex: 100
-      }}>
-        <h3 style={{ marginBottom: '15px', color: 'var(--primary)', fontSize: '16px' }}>Dashboard</h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-          <button style={{
-            padding: '8px 12px',
-            backgroundColor: 'var(--primary)',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            textAlign: 'left',
-            fontSize: '13px'
-          }}>
-            📊 Analytics
-          </button>
-          <button style={{
-            padding: '8px 12px',
-            backgroundColor: 'var(--bg)',
-            color: 'var(--fg)',
-            border: '1px solid var(--border)',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            textAlign: 'left',
-            fontSize: '13px'
-          }}>
-            🗺️ Map View
-          </button>
-          <button style={{
-            padding: '8px 12px',
-            backgroundColor: 'var(--bg)',
-            color: 'var(--fg)',
-            border: '1px solid var(--border)',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            textAlign: 'left',
-            fontSize: '13px'
-          }}>
-            📋 Reports
-          </button>
-          <button style={{
-            padding: '8px 12px',
-            backgroundColor: 'var(--bg)',
-            color: 'var(--fg)',
-            border: '1px solid var(--border)',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            textAlign: 'left',
-            fontSize: '13px'
-          }}>
-            ⚙️ Settings
-          </button>
-          <hr style={{ border: 'none', borderTop: '1px solid var(--border)', margin: '8px 0' }} />
-          <button
-            onClick={() => {
-              localStorage.clear();
-              window.location.reload();
-            }}
-            style={{
-              padding: '6px 10px',
-              backgroundColor: '#ef4444',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              textAlign: 'left',
-              fontSize: '11px'
-            }}
-          >
-            🗑️ Clear Data
-          </button>
-        </div>
-      </div>
+  const handleStatusCommit = async (report) => {
+    const newStatus = pendingStatus[report.id] ?? report.status;
+    if (newStatus === report.status) return;
+    setUpdatingId(report.id);
+    // Optimistic UI update
+    setAllComplaints(prev => prev.map(c => c.id === report.id ? { ...c, status: newStatus } : c));
+    try {
+      await updateComplaintStatus(report.id, newStatus);
+    } catch (e) {
+      console.error('Failed to update status, reverting', e);
+      // Revert
+      await loadComplaints();
+    } finally {
+      setUpdatingId(null);
+    }
+  };
 
-      {/* Main Content - Scrollable */}
-      <div style={{
-        flex: 1,
-        marginLeft: '220px', // Account for compact sidebar
-        padding: '15px',
-        overflowY: 'auto',
-        height: 'calc(100vh - 60px)', // Below navbar
-        backgroundColor: 'var(--bg-secondary)'
-      }}>
+  const skeletonRow = (
+    <tr style={{ borderBottom: '1px solid var(--border)' }}>
+      <td colSpan={7} style={{ padding: 12 }}>
+        <div style={{ display: 'flex', gap: 12 }}>
+          {Array.from({ length: 5 }).map((_,i)=>(
+            <div key={i} style={{ flex: 1, height: 10, background: 'var(--border)', borderRadius: 4, animation: 'pulse 1.5s infinite' }} />
+          ))}
+        </div>
+      </td>
+    </tr>
+  );
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
         {/* Analytics Cards - Compact */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '15px', marginBottom: '20px' }}>
           <div className="card" style={{ padding: '15px', textAlign: 'center' }}>
@@ -290,8 +240,8 @@ function AdminDashboardHome() {
           </div>
         </div>
 
-        {/* Map Full Width with Collapsible Info */}
-        <div className="card" style={{ padding: '20px', marginBottom: '25px' }}>
+  {/* Map Full Width with Collapsible Info */}
+  <div className="card" style={{ padding: '20px', marginBottom: '25px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
             <h3 style={{ margin: 0 }}>Complaints Map</h3>
             <button
@@ -350,8 +300,8 @@ function AdminDashboardHome() {
           )}
         </div>
 
-        {/* Reports Management - Table UI like user dashboard */}
-        <div className="card" style={{ padding: '20px' }}>
+  {/* Reports Management - Table UI like user dashboard */}
+  <div className="card" style={{ padding: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: 12, flexWrap: 'wrap' }}>
             <h3 style={{ fontSize: '18px', margin: 0 }}>All Reports ({filteredReports.length})</h3>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -402,7 +352,8 @@ function AdminDashboardHome() {
                 </tr>
               </thead>
               <tbody>
-                {paginatedReports.map((report, index) => (
+                {loading && skeletonRow}
+                {!loading && paginatedReports.map((report, index) => (
                   <tr key={report.id} style={{ borderBottom: '1px solid var(--border)', background: (startIndex + index) % 2 === 0 ? 'var(--bg)' : 'var(--card)' }}>
                     <td style={{ padding: 12 }}>{startIndex + index + 1}</td>
                     <td style={{ padding: 12, fontWeight: 600 }}>{report.regNumber}</td>
@@ -426,11 +377,18 @@ function AdminDashboardHome() {
                           <option value="In Progress">In Progress</option>
                           <option value="Resolved">Resolved</option>
                         </select>
-                        <button onClick={async ()=>{ const newStatus = pendingStatus[report.id] ?? report.status; if (newStatus === report.status) return; setUpdatingId(report.id); try { await new Promise(r=>setTimeout(r,300)); updateComplaintStatus(report.id, newStatus); } finally { setUpdatingId(null); } }} disabled={updatingId === report.id} style={{ padding: '6px 10px', background: updatingId === report.id ? 'var(--muted)' : 'var(--primary)', color: '#fff', border: 'none', borderRadius: 6, cursor: updatingId === report.id ? 'not-allowed' : 'pointer', fontSize: 12 }}>{updatingId === report.id ? '...' : 'Update'}</button>
+                        <button onClick={()=>handleStatusCommit(report)} disabled={updatingId === report.id} style={{ padding: '6px 10px', background: updatingId === report.id ? 'var(--muted)' : 'var(--primary)', color: '#fff', border: 'none', borderRadius: 6, cursor: updatingId === report.id ? 'not-allowed' : 'pointer', fontSize: 12 }}>{updatingId === report.id ? '...' : 'Update'}</button>
                       </div>
                     </td>
                   </tr>
                 ))}
+                {!loading && paginatedReports.length === 0 && (
+                  <tr>
+                    <td colSpan={7} style={{ padding: 40, textAlign: 'center', color: 'var(--muted)', fontSize: 14 }}>
+                      No complaints found.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -448,9 +406,8 @@ function AdminDashboardHome() {
               <button onClick={()=> setCurrentPage(p=>Math.min(totalPages, p+1))} disabled={currentPage === totalPages} style={{ padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6, background: currentPage === totalPages ? 'var(--muted)' : 'var(--bg)', color: currentPage === totalPages ? '#fff' : 'var(--fg)' }}>Next</button>
             </div>
           </div>
-        </div>
-      </div>
     </div>
+  </div>
   );
 }
 

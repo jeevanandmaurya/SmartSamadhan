@@ -58,7 +58,10 @@ create table if not exists public.complaints (
     submitted_at timestamptz,
     date_submitted date,
     last_updated date,
-    updates jsonb default '[]'::jsonb
+    updates jsonb default '[]'::jsonb,
+    -- New attachment support (run ALTER TABLE to add if existing db)
+    attachments jsonb default '[]'::jsonb,
+    attachments_count int default 0
 );
 
 -----------------------------

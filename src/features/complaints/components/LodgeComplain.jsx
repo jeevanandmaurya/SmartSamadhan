@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useAuth, useDatabase } from '../../../contexts';
 import L from 'leaflet';
+import supabase from '../../../supabaseClient';
 
 function LodgeComplain() {
   const { user } = useAuth();
@@ -13,6 +14,9 @@ function LodgeComplain() {
   const [submittedRef, setSubmittedRef] = useState(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [embedded, setEmbedded] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState([]); // per-file progress
+  const [uploadError, setUploadError] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   // Form data with auto-filled user details
   const [formData, setFormData] = useState({
@@ -334,6 +338,7 @@ function LodgeComplain() {
       ...prev,
       attachments: [...prev.attachments, ...files]
     }));
+  setUploadProgress(prev => ([...prev, ...files.map(() => ({ percent: 0 }))]));
   };
 
   const removeAttachment = (index) => {
@@ -414,37 +419,85 @@ function LodgeComplain() {
     }
 
     setIsLoading(true);
+    setUploadError(null);
+
+    // Pre-generate complaint id so we can namespace uploads
+    const tempComplaintId = `COMP${Date.now()}`;
+
+    // 1. Upload attachments (if any) to Supabase Storage (bucket: complaints-media)
+    let attachmentsMeta = [];
+    if (formData.attachments.length > 0) {
+      if (!supabase) {
+        alert('Supabase not configured; cannot upload attachments');
+      } else {
+        setUploading(true);
+        const bucket = 'complaints-media';
+        // Attempt to ensure bucket exists (cannot create from client; document requirement)
+        // Iterate sequentially to capture progress
+        for (let i = 0; i < formData.attachments.length; i++) {
+          const file = formData.attachments[i];
+          try {
+            const path = `${tempComplaintId}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9_.-]/g,'_')}`;
+            // Supabase JS doesn't expose native progress events for simple upload; for large files recommend multipart/resumable.
+            const { data, error } = await supabase.storage.from(bucket).upload(path, file, { upsert: false });
+            if (error) throw error;
+            // Get a public or signed URL (prefer signed if bucket is private)
+            let publicUrl = null;
+            const { data: pub } = supabase.storage.from(bucket).getPublicUrl(path);
+            publicUrl = pub?.publicUrl || null;
+            attachmentsMeta.push({
+              name: file.name,
+              path,
+              size: file.size,
+              type: file.type,
+              url: publicUrl,
+              uploadedAt: new Date().toISOString()
+            });
+            setUploadProgress(up => {
+              const next = [...up];
+              if (next[i]) next[i].percent = 100;
+              return next;
+            });
+          } catch (err) {
+            console.error('Upload failed for file', file.name, err);
+            setUploadError(`Upload failed for ${file.name}: ${err.message}`);
+            // Optionally continue other files; break for now
+            break;
+          }
+        }
+        setUploading(false);
+      }
+    }
 
     try {
       const complaintData = {
-        title: formData.title,
-        description: formData.description,
+        id: tempComplaintId,
+        title: formData.title.trim(),
+        description: formData.description.trim(),
         category: `${formData.mainCategory} > ${formData.subCategory1} > ${formData.specificIssue}`,
-        city: formData.city,
+        mainCategory: formData.mainCategory,
+        subCategory1: formData.subCategory1,
+        specificIssue: formData.specificIssue,
+        city: formData.city.trim(),
         department: formData.department,
         location: formData.location,
         latitude: formData.latitude,
         longitude: formData.longitude,
         priority: formData.priority,
-        attachments: formData.attachments.length,
-        userDetails: {
-          fullName: formData.fullName,
-          email: formData.email,
-          phone: formData.phone,
-          address: formData.address
-        },
+        attachments: formData.attachments.length, // legacy count
+        attachmentsMeta,
         assignedTo: 'Unassigned',
         status: 'Pending',
         submittedAt: new Date().toISOString()
       };
 
-  const newComplaint = await addComplaint(user.id, complaintData);
-  setSubmittedRef(newComplaint?.regNumber || newComplaint?.reg_number || newComplaint?.id || null);
-  setIsSubmitted(true);
-
+      const newComplaint = await addComplaint(user.id, complaintData);
+      if (!newComplaint) throw new Error('Complaint was not created');
+      setSubmittedRef(newComplaint.regNumber || newComplaint.reg_number || newComplaint.id || null);
+      setIsSubmitted(true);
     } catch (error) {
       console.error('Error submitting complaint:', error);
-      alert('Error submitting complaint. Please try again.');
+      alert(`Error submitting complaint: ${error.message || 'Unknown error'}`);
     } finally {
       setIsLoading(false);
     }
@@ -985,22 +1038,36 @@ function LodgeComplain() {
                 {formData.attachments.length > 0 && (
                   <div style={{ marginTop: '10px' }}>
                     <h5>Attached Files:</h5>
-                    {formData.attachments.map((file, index) => (
-                      <div key={index} style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '8px',
-                        backgroundColor: 'var(--card-bg)',
-                        borderRadius: '4px',
-                        marginBottom: '5px'
-                      }}>
-                        <span>{file.name}</span>
-                        <button type="button" onClick={() => removeAttachment(index)} className="btn btn--ghost" style={{ color: '#ef4444', padding: '4px 8px', fontSize: 16, lineHeight: 1 }}>
-                          <i className="fas fa-times"></i>
-                        </button>
-                      </div>
-                    ))}
+                    {formData.attachments.map((file, index) => {
+                      const prog = uploadProgress[index]?.percent ?? 0;
+                      return (
+                        <div key={index} style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '8px',
+                          backgroundColor: 'var(--card-bg)',
+                          borderRadius: '4px',
+                          marginBottom: '5px',
+                          gap: 8
+                        }}>
+                          <div style={{ flex: 1, overflow: 'hidden' }}>
+                            <div style={{ fontSize: 13, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{file.name}</div>
+                            {uploading && (
+                              <div style={{ marginTop: 4, background: 'var(--border)', height: 6, borderRadius: 4, position: 'relative' }}>
+                                <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: prog + '%', background: '#3b82f6', borderRadius: 4, transition: 'width .3s' }} />
+                              </div>
+                            )}
+                          </div>
+                          {!uploading && (
+                            <button type="button" onClick={() => removeAttachment(index)} className="btn btn--ghost" style={{ color: '#ef4444', padding: '4px 8px', fontSize: 16, lineHeight: 1 }}>
+                              <i className="fas fa-times"></i>
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                    {uploadError && <div style={{ color: '#dc2626', fontSize: 12 }}>{uploadError}</div>}
                   </div>
                 )}
               </div>
@@ -1009,7 +1076,9 @@ function LodgeComplain() {
 
           {/* Submit Button */}
           <div style={{ marginTop: '20px' }}>
-            <button type="submit" disabled={isLoading || !formData.agreementAccepted} className="btn btn--primary" style={{ width: '100%', padding: '14px', fontSize: 17, fontWeight: 600, opacity: (isLoading || !formData.agreementAccepted) ? 0.7 : 1, cursor: (isLoading || !formData.agreementAccepted) ? 'not-allowed' : 'pointer' }}>{isLoading ? 'Submitting...' : 'Report Issue'}</button>
+            <button type="submit" disabled={isLoading || !formData.agreementAccepted || uploading} className="btn btn--primary" style={{ width: '100%', padding: '14px', fontSize: 17, fontWeight: 600, opacity: (isLoading || !formData.agreementAccepted || uploading) ? 0.7 : 1, cursor: (isLoading || !formData.agreementAccepted || uploading) ? 'not-allowed' : 'pointer' }}>
+              {uploading ? 'Uploading...' : (isLoading ? 'Submitting...' : 'Report Issue')}
+            </button>
           </div>
         </form>
       </div>

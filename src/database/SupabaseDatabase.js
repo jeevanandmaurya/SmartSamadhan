@@ -226,24 +226,49 @@ export class SupabaseDatabase extends BaseDatabase {
 
   async addComplaint(userId, complaintData) {
     await this.initialize();
+    const nowISO = new Date().toISOString();
+    const today = nowISO.split('T')[0];
+
+    // Accept both camelCase and snake_case from caller
+    const generatedId = `COMP${Date.now()}`;
     const newComplaint = {
-      ...complaintData,
-      id: `COMP${Date.now()}`,
+      id: complaintData.id || generatedId,
       user_id: userId,
-      reg_number: `REG${Date.now().toString().slice(-3)}`,
+      reg_number: complaintData.regNumber || complaintData.reg_number || `REG${Date.now().toString().slice(-3)}`,
+      title: complaintData.title,
+      description: complaintData.description,
       status: complaintData.status || 'Pending',
-      assigned_to: complaintData.assignedTo || 'Unassigned',
-      submitted_at: complaintData.submittedAt || new Date().toISOString(),
-      date_submitted: new Date().toISOString().split('T')[0],
-      last_updated: new Date().toISOString().split('T')[0],
+      priority: complaintData.priority || 'Medium',
+      category: complaintData.category,
+      main_category: complaintData.mainCategory || complaintData.main_category || null,
+      sub_category1: complaintData.subCategory1 || complaintData.sub_category1 || null,
+      specific_issue: complaintData.specificIssue || complaintData.specific_issue || null,
+      department: complaintData.department,
+      city: complaintData.city,
+      location: complaintData.location,
+      latitude: complaintData.latitude,
+      longitude: complaintData.longitude,
+      assigned_to: complaintData.assignedTo || complaintData.assigned_to || 'Unassigned',
+      submitted_at: complaintData.submittedAt || nowISO,
+      date_submitted: today,
+      last_updated: today,
       updates: [
         {
-          date: new Date().toISOString().split('T')[0],
+          date: today,
           status: 'Submitted',
           note: 'Issue reported and registered'
         }
       ]
     };
+
+    // Optional attachments metadata support (requires DB columns: attachments jsonb, attachments_count int)
+    if (Array.isArray(complaintData.attachmentsMeta) && complaintData.attachmentsMeta.length > 0) {
+      newComplaint.attachments = complaintData.attachmentsMeta; // json array
+      newComplaint.attachments_count = complaintData.attachmentsMeta.length;
+    } else if (typeof complaintData.attachments === 'number') {
+      // legacy numeric count only
+      newComplaint.attachments_count = complaintData.attachments;
+    }
 
     const { data, error } = await this.supabase
       .from('complaints')
@@ -251,7 +276,10 @@ export class SupabaseDatabase extends BaseDatabase {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase addComplaint failed:', error);
+      throw error;
+    }
     return data;
   }
 

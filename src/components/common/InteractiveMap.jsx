@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { useDatabase } from '../../contexts';
 import L from 'leaflet';
@@ -253,37 +253,85 @@ function PriorityAreas({ complaints, showPriorityAreas }) {
   return null;
 }
 
+// Helper component to auto-fit bounds when data changes
+function FitBoundsHandler({ points }) {
+  const map = useMap();
+  useEffect(() => {
+    if (!map) return;
+    if (!points || points.length === 0) return;
+    if (points.length === 1) {
+      map.setView(points[0], 15, { animate: true });
+      return;
+    }
+    const bounds = L.latLngBounds(points);
+    if (bounds.isValid()) {
+      map.fitBounds(bounds, { padding: [30, 30] });
+    }
+  }, [map, points]);
+  return null;
+}
+
 function InteractiveMap({ height = '500px' }) {
-  const { getAllComplaints } = useDatabase();
+  const { getAllComplaints, database } = useDatabase();
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [mapView, setMapView] = useState('markers'); // 'markers', 'heatmap', 'priority'
+  const [error, setError] = useState(null);
+  const [mapView, setMapView] = useState(() => localStorage.getItem('ss_map_view') || 'markers'); // 'markers', 'heatmap', 'priority'
+  const [autoFitCounter, setAutoFitCounter] = useState(0); // trigger refit
+  const isMountedRef = useRef(false);
 
-  useEffect(() => {
-    const loadComplaints = async () => {
-      try {
-        const allComplaints = await getAllComplaints();
-        console.log('All complaints loaded:', allComplaints.length);
+  const loadComplaints = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
+    setError(null);
+    try {
+      const allComplaints = await getAllComplaints();
+      // Normalize + parse coordinates (accept string numbers)
+      const withCoords = (allComplaints || []).map(c => {
+        const lat = parseFloat(c.latitude ?? c.lat);
+        const lng = parseFloat(c.longitude ?? c.lng);
+        return { ...c, latitude: lat, longitude: lng };
+      }).filter(c => Number.isFinite(c.latitude) && Number.isFinite(c.longitude));
 
-        // Filter complaints that have coordinates
-        const complaintsWithCoords = allComplaints.filter(c =>
-          c.latitude && c.longitude &&
-          !isNaN(c.latitude) && !isNaN(c.longitude)
-        );
-
-        console.log('Complaints with coordinates:', complaintsWithCoords.length);
-        console.log('Sample complaint:', complaintsWithCoords[0]);
-
-        setComplaints(complaintsWithCoords);
-      } catch (error) {
-        console.error('Error loading complaints:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadComplaints();
+      setComplaints(withCoords);
+      // Trigger bounds refit only after initial mount or when dataset size changes
+      setAutoFitCounter(c => c + 1);
+    } catch (e) {
+      console.error('Error loading complaints (map):', e);
+      setError(e.message || 'Failed to load complaints');
+    } finally {
+      setLoading(false);
+    }
   }, [getAllComplaints]);
+
+  // Initial load
+  useEffect(() => { loadComplaints(); }, [loadComplaints]);
+
+  // Persist map view selection
+  useEffect(() => { localStorage.setItem('ss_map_view', mapView); }, [mapView]);
+
+  // Real-time subscription (Supabase) to keep map fresh
+  useEffect(() => {
+    if (!database?.supabase) return;
+    // Only set up once after first mount
+    if (isMountedRef.current) return;
+    isMountedRef.current = true;
+    try {
+      const channel = database.supabase
+        .channel('complaints-realtime')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'complaints' }, () => {
+          // Silent refresh (avoid flicker)
+          loadComplaints(true);
+        })
+        .subscribe(status => {
+          if (status === 'SUBSCRIBED') {
+            console.log('[InteractiveMap] Realtime subscribed');
+          }
+        });
+      return () => { database.supabase.removeChannel(channel); };
+    } catch (e) {
+      console.warn('Realtime subscription failed:', e);
+    }
+  }, [database, loadComplaints]);
 
   if (loading) {
     return (
@@ -299,10 +347,11 @@ function InteractiveMap({ height = '500px' }) {
       </div>
     );
   }
-
-  // Default center (can be made dynamic based on user's location)
+  // Default center (fallback if no complaints)
   const defaultCenter = [26.8467, 80.9462]; // Lucknow coordinates
   const defaultZoom = 12;
+
+  const points = complaints.map(c => [c.latitude, c.longitude]);
 
   return (
     <div style={{ height, borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
@@ -316,6 +365,9 @@ function InteractiveMap({ height = '500px' }) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+
+        {/* Auto fit to complaint markers */}
+        <FitBoundsHandler points={points} key={autoFitCounter} />
 
         {/* Conditionally render layers based on selected view */}
         <MarkerCluster
@@ -347,8 +399,9 @@ function InteractiveMap({ height = '500px' }) {
         border: '1px solid var(--border)',
         padding: '6px 8px',
         borderRadius: '10px',
-        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-        zIndex: 1200,
+  boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+  // Lower than modal overlays (admin signout uses 1200)
+  zIndex: 800,
         alignItems: 'center'
       }}>
         <button
@@ -391,8 +444,22 @@ function InteractiveMap({ height = '500px' }) {
           }}
         >🎯</button>
         <button
-          onClick={() => window.location.reload()}
+          onClick={() => loadComplaints()}
+          disabled={loading}
           title="Refresh Data"
+          style={{
+            padding: '4px 8px',
+            fontSize: 12,
+            borderRadius: 6,
+            border: '1px solid var(--border)',
+            background: loading ? 'var(--muted)' : 'var(--bg)',
+            color: 'var(--fg)',
+            cursor: loading ? 'not-allowed' : 'pointer'
+          }}
+        >🔄</button>
+        <button
+          onClick={() => setAutoFitCounter(c => c + 1)}
+          title="Fit Bounds"
           style={{
             padding: '4px 8px',
             fontSize: 12,
@@ -402,10 +469,10 @@ function InteractiveMap({ height = '500px' }) {
             color: 'var(--fg)',
             cursor: 'pointer'
           }}
-        >🔄</button>
+        >🗺️</button>
       </div>
 
-      {complaints.length === 0 && (
+    {complaints.length === 0 && (
         <div style={{
           position: 'absolute',
           top: '50%',
@@ -417,7 +484,7 @@ function InteractiveMap({ height = '500px' }) {
           borderRadius: '8px',
           boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
           textAlign: 'center',
-          zIndex: 1000,
+      zIndex: 750,
           minWidth: '250px'
         }}>
           <div style={{ fontSize: '36px', marginBottom: '10px' }}>📍</div>
@@ -436,6 +503,22 @@ function InteractiveMap({ height = '500px' }) {
           }}>
             Add location coordinates to complaints to see them on the map
           </p>
+        </div>
+      )}
+    {error && (
+        <div style={{
+          position: 'absolute',
+          bottom: 10,
+          right: 10,
+          background: 'var(--card)',
+          border: '1px solid var(--border)',
+          padding: '8px 12px',
+          borderRadius: 8,
+          fontSize: 12,
+      color: 'var(--danger, #ef4444)',
+      zIndex: 780
+        }}>
+          Map data error: {error}
         </div>
       )}
     </div>

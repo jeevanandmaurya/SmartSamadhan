@@ -12,28 +12,51 @@ function AdminLogin() {
   const navigate = useNavigate();
   const { login, user, usingSupabase } = useAuth();
 
-  // Redirect if already logged in
+  // Debug: Log user changes for troubleshooting
   useEffect(() => {
     if (user) {
-      navigate(user.role === 'admin' ? '/admin-dashboard' : '/user-dashboard');
+      console.log('🔍 AdminLogin: User state changed:', {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        hasAdminRole: user.role === 'admin',
+        fullName: user.fullName,
+        user_metadata: user.user_metadata
+      });
+
+      // Navigate based on role
+      if (user.role === 'admin') {
+        console.log('🔍 AdminLogin: Redirecting to ADMIN DASHBOARD');
+        navigate('/admin-dashboard', { replace: true });
+      } else {
+        console.log('🔍 AdminLogin: Would redirect to USER DASHBOARD (role mismatch)', user.role);
+        // Don't navigate to user dashboard from admin login - this causes the glimpse
+      }
+    } else {
+      console.log('🔍 AdminLogin: User is null');
     }
   }, [user, navigate]);
+
+  const [loginSuccess, setLoginSuccess] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+    console.log('🔍 AdminLogin: Starting login process for:', username);
+
     if (!username || !password) {
       setError(`Please enter your ${usingSupabase ? 'admin email' : 'username/email'} and password.`);
       return;
     }
+
     // Use auth context for authentication
     const success = await login(username, password);
+    console.log('🔍 AdminLogin: Login result:', success);
+
     if (success) {
-      // Proactive navigation (listener will also redirect if role differs)
-      setTimeout(() => {
-        const target = (user?.role === 'admin') ? '/admin-dashboard' : '/user-dashboard';
-        navigate(target);
-      }, 50);
+      console.log('🔍 AdminLogin: Login successful, waiting for user role determination...');
+      setLoginSuccess(true);
+      // Don't navigate immediately - let the useEffect handle navigation when user is updated
     } else {
       setError('Invalid credentials. Make sure you are using a registered admin email.');
     }
@@ -62,7 +85,34 @@ function AdminLogin() {
             </div>
           )}
 
-          <form onSubmit={handleLogin}>
+          {loginSuccess && !user && (
+            <div className="card" style={{ borderColor: '#3b82f6', background: '#eff6ff', color: '#1d4ed8', marginBottom: 12 }}>
+              🔍 Authenticating... Checking your admin status and loading dashboard...
+              <br/>
+              <small>
+                How we check admin status:
+                <br/>• Step 1: Check if you exist in admins table
+                <br/>• Step 2: Check if your metadata has is_admin=true
+                <br/>• Step 3: Default to user role if neither found
+              </small>
+            </div>
+          )}
+
+          {user && user.role !== 'admin' && (
+            <div className="card" style={{ borderColor: '#f97316', background: '#fff7ed', color: '#9a3412', marginBottom: 12 }}>
+              ⚠️ Admin verification in progress... Current role: {user.role}
+              <br/>
+              <small>Checking admin privileges...</small>
+            </div>
+          )}
+
+          {user && user.role === 'admin' && (
+            <div className="card" style={{ borderColor: '#10b981', background: '#ecfdf5', color: '#064e3b', marginBottom: 12 }}>
+              ✅ Admin verified! Redirecting to admin dashboard...
+            </div>
+          )}
+
+      <form onSubmit={handleLogin} noValidate>
             {/* Username */}
             <div className="field">
               <label htmlFor="username">{usingSupabase ? 'Admin Email' : 'Username or Email'}</label>
@@ -75,6 +125,7 @@ function AdminLogin() {
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 autoComplete="username"
+        aria-required="true"
               />
             </div>
 
@@ -136,7 +187,7 @@ function AdminLogin() {
 
             {/* Actions */}
             <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
-              <button type="submit" className="btn btn--primary" style={{ flex: '1 1 0' }}>Sign in</button>
+              <button type="submit" className="btn btn--primary" style={{ flex: '1 1 0' }} disabled={loginSuccess && !user}>Sign in</button>
               <button type="button" onClick={handleReset} className="btn" style={{ flex: '1 1 0' }}>Reset</button>
             </div>
           </form>
