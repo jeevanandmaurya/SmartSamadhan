@@ -88,14 +88,16 @@ function UserDashboard() {
           onClick={toggleSidebar}
           style={{
             position: 'fixed',
-            top: '20px',
-            left: '20px',
+            // Positioned below the top navbar/title so it doesn't cover "Smart Samadhan"
+            top: '60px',
+            // Flush to left edge as requested
+            left: 0,
             zIndex: 1001,
             backgroundColor: 'var(--primary)',
             color: '#fff',
             border: 'none',
-            borderRadius: '5px',
-            padding: '10px',
+            borderRadius: '0 6px 6px 0',
+            padding: '15px 8px',
             cursor: 'pointer',
             fontSize: '18px'
           }}
@@ -115,7 +117,9 @@ function UserDashboard() {
         left: isMobile ? (sidebarOpen ? '0' : '-100%') : '0',
         top: isMobile ? '0' : '60px',
         height: isMobile ? '100vh' : 'calc(100vh - 60px)',
-        zIndex: 90,
+  // zIndex was below the overlay (999) which made the sidebar unclickable on mobile.
+  // Raise above overlay similar to AdminDashboard (>=1050) so interactions work.
+  zIndex: 1050,
         transition: 'left 0.3s ease',
         display: isMobile && !sidebarOpen ? 'none' : 'block',
         boxShadow: isMobile ? '2px 0 8px rgba(0, 0, 0, 0.15)' : 'none',
@@ -133,7 +137,8 @@ function UserDashboard() {
               onClick={() => handleMenuClick(item.id)}
               style={{
                 width: '100%',
-                padding: '12px 20px',
+                // Compacted padding for better vertical density
+                padding: '8px 14px',
                 backgroundColor: activeSection === item.id ? 'var(--primary)' : 'transparent',
                 color: activeSection === item.id ? '#fff' : 'var(--fg)',
                 border: 'none',
@@ -141,9 +146,10 @@ function UserDashboard() {
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '10px',
-                fontSize: '16px',
-                transition: 'all 0.2s'
+                gap: '8px',
+                fontSize: '14px',
+                lineHeight: 1.2,
+                transition: 'background .2s, color .2s'
               }}
             >
               <i className={item.icon}></i>

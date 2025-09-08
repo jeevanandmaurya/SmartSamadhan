@@ -182,32 +182,32 @@ function ManageReports() {
 
   return (
     <div className="manage-reports">
-      <div className="reports-header">
-        <h2>Manage Reports</h2>
+      <div className="reports-header" style={{ marginBottom: '8px' }}>
+        <h2 style={{ fontSize: '18px', margin: '0 0 4px 0' }}>Manage Reports</h2>
         <div className="filters-section">
           <div className="search-bar">
             <input
               type="text"
-              placeholder="Search reports..."
+              placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="filters">
             <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
-              <option value="all">All Status</option>
+              <option value="all">Status *</option>
               <option value="Pending">Pending</option>
               <option value="In Progress">In Progress</option>
               <option value="Resolved">Resolved</option>
             </select>
             <select value={filterDepartment} onChange={(e) => setFilterDepartment(e.target.value)}>
-              <option value="all">All Departments</option>
+              <option value="all">Dept *</option>
               {departments.map(dept => (
                 <option key={dept} value={dept}>{dept}</option>
               ))}
             </select>
             <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)}>
-              <option value="all">All Priorities</option>
+              <option value="all">Priority *</option>
               {priorities.map(priority => (
                 <option key={priority} value={priority}>{priority}</option>
               ))}
@@ -217,9 +217,9 @@ function ManageReports() {
       </div>
 
       <div className="table-container">
-        <div className="table-controls">
+        <div className="table-controls" style={{ gap: '8px' }}>
           <div className="entries-control">
-            <label>Show entries:</label>
+            <label style={{ fontSize: '12px' }}>Show:</label>
             <select value={entriesPerPage} onChange={(e) => setEntriesPerPage(Number(e.target.value))}>
               <option value={5}>5</option>
               <option value={10}>10</option>
@@ -228,7 +228,7 @@ function ManageReports() {
             </select>
           </div>
           <div className="sort-control">
-            <label>Sort by:</label>
+            <label style={{ fontSize: '12px' }}>Sort:</label>
             <select value={selectedSortOption} onChange={handleSortChange}>
               <option value="date-newest">Date (Newest First)</option>
               <option value="date-oldest">Date (Oldest First)</option>
@@ -241,11 +241,11 @@ function ManageReports() {
           </div>
         </div>
 
-        <table className="reports-table">
+        <table className="reports-table" style={{ fontSize: '13px' }}>
           <thead>
             <tr>
               <th onClick={() => handleSort('regNumber')} className="sortable">
-                Reg. No. {getSortIcon('regNumber')}
+                Reg # {getSortIcon('regNumber')}
               </th>
               <th onClick={() => handleSort('userName')} className="sortable">
                 User {getSortIcon('userName')}
@@ -254,10 +254,10 @@ function ManageReports() {
                 Issue {getSortIcon('description')}
               </th>
               <th onClick={() => handleSort('department')} className="sortable">
-                Department {getSortIcon('department')}
+                Dept {getSortIcon('department')}
               </th>
               <th onClick={() => handleSort('priority')} className="sortable">
-                Priority {getSortIcon('priority')}
+                Prio {getSortIcon('priority')}
               </th>
               <th onClick={() => handleSort('status')} className="sortable">
                 Status {getSortIcon('status')}
@@ -265,7 +265,7 @@ function ManageReports() {
               <th onClick={() => handleSort('dateSubmitted')} className="sortable">
                 Date {getSortIcon('dateSubmitted')}
               </th>
-              <th>Actions</th>
+              <th>Act</th>
             </tr>
           </thead>
           <tbody>
@@ -275,13 +275,13 @@ function ManageReports() {
                 <td>{complaint.userName}</td>
                 <td className="issue-cell">
                   <div className="issue-content">
-                    <strong>{complaint.title}</strong>
-                    <p>{complaint.description}</p>
-                    <small>{complaint.mainCategory} → {complaint.subCategory1} → {complaint.specificIssue}</small>
-                    <small>{complaint.city}, {complaint.location}</small>
+                    <strong style={{ fontSize: '13px' }}>{complaint.title}</strong>
+                    <p style={{ fontSize: '12px', lineHeight: 1.3 }}>{complaint.description}</p>
+                    <small style={{ fontSize: '11px' }}>{complaint.mainCategory} → {complaint.subCategory1} → {complaint.specificIssue}</small>
+                    <small style={{ fontSize: '11px' }}>{complaint.city}, {complaint.location}</small>
                     {complaint.attachmentsMeta && complaint.attachmentsMeta.length > 0 && (
                       <div className="attachments-preview">
-                        <small><strong>Attachments:</strong></small>
+                        <small style={{ fontSize: '11px' }}><strong>Files:</strong></small>
                         <ul>
                           {complaint.attachmentsMeta.map((att, index) => (
                             <li key={index}>
@@ -321,6 +321,7 @@ function ManageReports() {
                           <button
                             onClick={() => handleStatusUpdate(complaint.id, 'Resolved')}
                             className="resolve-btn"
+                            style={{ fontSize: '11px', padding: '4px 6px' }}
                           >
                             Resolve
                           </button>
@@ -329,6 +330,7 @@ function ManageReports() {
                           <button
                             onClick={() => handleStatusUpdate(complaint.id, 'In Progress')}
                             className="progress-btn"
+                            style={{ fontSize: '11px', padding: '4px 6px' }}
                           >
                             In Progress
                           </button>
@@ -337,6 +339,7 @@ function ManageReports() {
                           <button
                             onClick={() => handleStatusUpdate(complaint.id, 'Pending')}
                             className="pending-btn"
+                            style={{ fontSize: '11px', padding: '4px 6px' }}
                           >
                             Pending
                           </button>
@@ -354,11 +357,11 @@ function ManageReports() {
           <div className="no-results">No reports found matching your criteria.</div>
         )}
 
-        <div className="pagination">
-          <div className="pagination-info">
-            Showing {startIndex + 1} to {Math.min(startIndex + entriesPerPage, filteredComplaints.length)} of {filteredComplaints.length} entries
+        <div className="pagination" style={{ fontSize: '12px' }}>
+          <div className="pagination-info" style={{ fontSize: '11px' }}>
+            {startIndex + 1}-{Math.min(startIndex + entriesPerPage, filteredComplaints.length)} / {filteredComplaints.length}
           </div>
-          <div className="pagination-controls">
+          <div className="pagination-controls" style={{ gap: '4px' }}>
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}

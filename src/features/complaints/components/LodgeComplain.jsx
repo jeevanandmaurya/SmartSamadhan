@@ -17,6 +17,7 @@ function LodgeComplain() {
   const [uploadProgress, setUploadProgress] = useState([]); // per-file progress
   const [uploadError, setUploadError] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   // Form data with auto-filled user details
   const [formData, setFormData] = useState({
@@ -520,25 +521,31 @@ function LodgeComplain() {
     // Heuristic: if a parent has large padding and width less than 900 or sidebar present, treat as embedded
     const parent = document.getElementById('lodge-complain-root-container');
     if (parent) setEmbedded(true);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 520);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   },[]);
 
   if (isSubmitted) {
     return (
       <div className={embedded ? '' : 'section section--narrow'} id="lodge-complain-root-container">
-      <div className="card" style={{ padding: '20px', textAlign: 'center' }}>
-          <i style={{ fontSize: '36px', color: '#10b981', marginBottom: '12px' }} className="fas fa-check-circle"></i>
-          <h2 style={{ color: 'var(--primary)', marginBottom: '6px', fontSize: '18px' }}>Issue Reported Successfully!</h2>
+        <div className="card" style={{ padding: '16px', textAlign: 'center' }}>
+          <i style={{ fontSize: '30px', color: '#10b981', marginBottom: '8px' }} className="fas fa-check-circle"></i>
+          <h2 style={{ color: 'var(--primary)', marginBottom: '4px', fontSize: '16px' }}>Reported!</h2>
           {submittedRef && (
-            <p style={{ color: 'var(--muted)', marginBottom: '12px', fontSize: '13px' }}>
-              Reference: <strong>{submittedRef}</strong>
+            <p style={{ color: 'var(--muted)', marginBottom: '8px', fontSize: '12px' }}>
+              Ref: <strong>{submittedRef}</strong>
             </p>
           )}
-          <p style={{ color: 'var(--muted)', marginBottom: '16px', fontSize: '13px' }}>
-            Your report will be reviewed by the concerned department.
+          <p style={{ color: 'var(--muted)', marginBottom: '12px', fontSize: '12px' }}>
+            We will review and update the status soon.
           </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
-            <button onClick={() => window.location.reload()} className="btn btn--primary" style={{ fontSize: 13, padding: '8px 16px' }}>Submit Another Complaint</button>
-            <button onClick={() => window.location.href = '/user-dashboard'} className="btn btn--outline" style={{ fontSize: 13, padding: '8px 16px' }}>Go to Dashboard</button>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
+            <button onClick={() => window.location.reload()} className="btn btn--primary" style={{ fontSize: 12, padding: '6px 12px' }}>Report Another</button>
+            <button onClick={() => window.location.href = '/user-dashboard'} className="btn btn--outline" style={{ fontSize: 12, padding: '6px 12px' }}>Dashboard</button>
           </div>
         </div>
       </div>
@@ -546,40 +553,32 @@ function LodgeComplain() {
   }
 
   return (
-    <div className={embedded ? '' : 'section section--narrow'} id="lodge-complain-root-container">
-      <div className="card" style={{ padding: '16px' }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '6px', fontSize: '20px' }}>Report Civic Issues</h2>
-        <p style={{ textAlign: 'center', color: 'var(--muted)', marginBottom: '12px', fontSize: '13px' }}>
-          Report everyday problems like potholes, streetlights, and overflowing trash bins to help improve your community
+    <div className={embedded ? '' : 'section section--narrow'} id="lodge-complain-root-container" style={{ overflowX: 'hidden' }}>
+      <div className="card" style={{ padding: '14px', overflow: 'hidden' }}>
+        <h2 style={{ textAlign: 'center', marginBottom: '4px', fontSize: '18px' }}>Report Civic Issues</h2>
+        <p style={{ textAlign: 'center', color: 'var(--muted)', marginBottom: '10px', fontSize: '12px', lineHeight: 1.4 }}>
+          Report everyday problems (potholes, streetlights, garbage etc.) to improve your community.
         </p>
 
         <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '12px' }}>
           {/* Agreement Section */}
           <div className="card" style={{
-            padding: '20px',
+            padding: '12px',
             backgroundColor: 'var(--warning-bg, #fff3cd)',
             border: '1px solid var(--warning-border, #ffeaa7)'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--warning-text, #856404)', marginBottom: '15px' }}>
-              <i className="fas fa-exclamation-triangle" style={{ color: '#f59e0b', fontSize: '20px' }}></i>
-              <h4 style={{ margin: 0, color: 'var(--warning-text, #856404)' }}>Important Notice</h4>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--warning-text, #856404)', marginBottom: '8px' }}>
+              <i className="fas fa-exclamation-triangle" style={{ color: '#f59e0b', fontSize: '16px' }}></i>
+              <h4 style={{ margin: 0, color: 'var(--warning-text, #856404)', fontSize: '14px' }}>Notice</h4>
             </div>
-            <p style={{ color: 'var(--warning-text, #856404)', marginBottom: '15px', fontWeight: 'bold' }}>
-              The following types of grievances/matters are NOT to be raised through this portal:
+            <p style={{ color: 'var(--warning-text, #856404)', marginBottom: '8px', fontWeight: 'bold', fontSize: '12px', lineHeight: 1.4 }}>
+              Don't use for: RTI, court/subjudice, religious matters, internal govt service issues (unless channels exhausted), pension issues.
             </p>
-            <ul style={{ color: 'var(--warning-text, #856404)', margin: '0', paddingLeft: '20px' }}>
-              <li><strong>RTI Matters</strong> - Use RTI portal for information requests</li>
-              <li><strong>Court related / Subjudice matters</strong> - Matters under court consideration</li>
-              <li><strong>Religious matters</strong> - Religious disputes and matters</li>
-              <li><strong>Government employee grievances</strong> concerning service matters including disciplinary proceedings (unless prescribed channels exhausted as per DoPT OM No. 11013/08/2013-Estt.(A-III) dated 31.08.2015)</li>
-              <li><strong>Pension issues</strong> - Use Lodge Pension Grievance option or click <a href="#" style={{ color: 'var(--warning-text, #856404)', textDecoration: 'underline' }}>here</a></li>
-            </ul>
-
-            <div style={{ marginTop: '20px' }}>
+            <div style={{ marginTop: '6px' }}>
               <label style={{ display: 'flex', alignItems: 'flex-start', cursor: 'pointer' }}>
-                <input type="checkbox" name="agreementAccepted" checked={formData.agreementAccepted} onChange={handleInputChange} style={{ marginRight: '10px', marginTop: 2 }} required />
-                <span style={{ fontSize: '14px', lineHeight: '1.5' }}>
-                  I agree that my grievance does not fall in any of the above listed categories and I am authorized to lodge this complaint.
+                <input type="checkbox" name="agreementAccepted" checked={formData.agreementAccepted} onChange={handleInputChange} style={{ marginRight: '6px', marginTop: 2 }} required />
+                <span style={{ fontSize: '12px', lineHeight: '1.4' }}>
+                  I confirm my issue is eligible.
                 </span>
               </label>
             </div>
@@ -587,13 +586,13 @@ function LodgeComplain() {
 
           {/* User Details Section */}
           <div>
-            <h3 style={{ color: 'var(--primary)', marginBottom: '10px', fontSize: '16px' }}>
+      <h3 style={{ color: 'var(--primary)', marginBottom: '6px', fontSize: '14px' }}>
               <i className="fas fa-user" style={{ color: 'var(--primary)', marginRight: '8px' }}></i>
               Your Details
             </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '8px' }}>
               <div>
-                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px', fontSize: '14px' }}>
+        <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
                   Full Name *
                 </label>
                 <input
@@ -605,18 +604,18 @@ function LodgeComplain() {
                   required
                   style={{
                     width: '100%',
-                    padding: '8px 10px',
+                    padding: '6px 8px',
                     border: '1px solid var(--border)',
                     borderRadius: '4px',
                     backgroundColor: 'var(--bg)',
                     color: 'var(--fg)',
-                    fontSize: '14px'
+                    fontSize: '13px'
                   }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px', fontSize: '14px' }}>
+                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
                   Email *
                 </label>
                 <input
@@ -628,18 +627,18 @@ function LodgeComplain() {
                   required
                   style={{
                     width: '100%',
-                    padding: '8px 10px',
+                    padding: '6px 8px',
                     border: '1px solid var(--border)',
                     borderRadius: '4px',
                     backgroundColor: 'var(--bg)',
                     color: 'var(--fg)',
-                    fontSize: '14px'
+                    fontSize: '13px'
                   }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px', fontSize: '14px' }}>
+                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
                   Phone Number *
                 </label>
                 <input
@@ -651,18 +650,18 @@ function LodgeComplain() {
                   required
                   style={{
                     width: '100%',
-                    padding: '8px 10px',
+                    padding: '6px 8px',
                     border: '1px solid var(--border)',
                     borderRadius: '4px',
                     backgroundColor: 'var(--bg)',
                     color: 'var(--fg)',
-                    fontSize: '14px'
+                    fontSize: '13px'
                   }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px', fontSize: '14px' }}>
+                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
                   Address
                 </label>
                 <input
@@ -673,12 +672,12 @@ function LodgeComplain() {
                   placeholder="Your address"
                   style={{
                     width: '100%',
-                    padding: '8px 10px',
+                    padding: '6px 8px',
                     border: '1px solid var(--border)',
                     borderRadius: '4px',
                     backgroundColor: 'var(--bg)',
                     color: 'var(--fg)',
-                    fontSize: '14px'
+                    fontSize: '13px'
                   }}
                 />
               </div>
@@ -687,13 +686,13 @@ function LodgeComplain() {
 
           {/* Location & Department Selection */}
           <div>
-            <h3 style={{ color: 'var(--primary)', marginBottom: '10px', fontSize: '16px' }}>
+      <h3 style={{ color: 'var(--primary)', marginBottom: '6px', fontSize: '14px' }}>
               <i className="fas fa-map-marker-alt" style={{ color: 'var(--primary)', marginRight: '8px' }}></i>
               Location & Department
             </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit,minmax(150px,1fr))', gap: '10px' }}>
               <div>
-                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px', fontSize: '14px' }}>
+        <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
                   City/Municipality *
                 </label>
                 <input
@@ -705,18 +704,18 @@ function LodgeComplain() {
                   required
                   style={{
                     width: '100%',
-                    padding: '8px 10px',
+                    padding: '6px 8px',
                     border: '1px solid var(--border)',
                     borderRadius: '4px',
                     backgroundColor: 'var(--bg)',
                     color: 'var(--fg)',
-                    fontSize: '14px'
+                    fontSize: '13px'
                   }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px', fontSize: '14px' }}>
+                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
                   Concerned Department *
                 </label>
                 <select
@@ -735,12 +734,12 @@ function LodgeComplain() {
                   required
                   style={{
                     width: '100%',
-                    padding: '8px 10px',
+                    padding: '6px 8px',
                     border: '1px solid var(--border)',
                     borderRadius: '4px',
                     backgroundColor: 'var(--bg)',
                     color: 'var(--fg)',
-                    fontSize: '14px'
+                    fontSize: '13px'
                   }}
                 >
                   <option value="">Select Department</option>
@@ -758,14 +757,14 @@ function LodgeComplain() {
 
           {/* Category Selection */}
           <div>
-            <h3 style={{ color: 'var(--primary)', marginBottom: '10px', fontSize: '16px' }}>
+            <h3 style={{ color: 'var(--primary)', marginBottom: '6px', fontSize: '14px' }}>
               <i className="fas fa-folder" style={{ color: 'var(--primary)', marginRight: '8px' }}></i>
               Issue Category
             </h3>
-            <div style={{ display: 'grid', gap: '10px' }}>
+            <div style={{ display: 'grid', gap: '8px' }}>
               {/* Main Category Selection */}
               <div>
-                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px', fontSize: '14px' }}>
+                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
                   Main Category *
                 </label>
                 <select
@@ -783,12 +782,12 @@ function LodgeComplain() {
                   required
                   style={{
                     width: '100%',
-                    padding: '8px 10px',
+                    padding: '6px 8px',
                     border: '1px solid var(--border)',
                     borderRadius: '4px',
                     backgroundColor: 'var(--bg)',
                     color: 'var(--fg)',
-                    fontSize: '14px'
+                    fontSize: '13px'
                   }}
                 >
                   <option value="">Select Main Category</option>
@@ -800,9 +799,9 @@ function LodgeComplain() {
 
               {/* Sub Category and Specific Issue in one row when both are available */}
               {formData.mainCategory && (
-                <div style={{ display: 'grid', gridTemplateColumns: formData.subCategory1 ? '1fr 1fr' : '1fr', gap: '12px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : (formData.subCategory1 ? '1fr 1fr' : '1fr'), gap: '10px' }}>
                   <div>
-                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px', fontSize: '14px' }}>
+          <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
                       Sub Category *
                     </label>
                     <select
@@ -819,12 +818,12 @@ function LodgeComplain() {
                       required
                       style={{
                         width: '100%',
-                        padding: '8px 10px',
+                        padding: '6px 8px',
                         border: '1px solid var(--border)',
                         borderRadius: '4px',
                         backgroundColor: 'var(--bg)',
                         color: 'var(--fg)',
-                        fontSize: '14px'
+                        fontSize: '13px'
                       }}
                     >
                       <option value="">Select Sub Category</option>
@@ -839,7 +838,7 @@ function LodgeComplain() {
                   {/* Specific Issue Selection */}
                   {formData.subCategory1 && (
                     <div>
-                      <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px', fontSize: '14px' }}>
+                      <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
                         Specific Issue *
                       </label>
                       <select
@@ -849,12 +848,12 @@ function LodgeComplain() {
                         required
                         style={{
                           width: '100%',
-                          padding: '8px 10px',
+                          padding: '6px 8px',
                           border: '1px solid var(--border)',
                           borderRadius: '4px',
                           backgroundColor: 'var(--bg)',
                           color: 'var(--fg)',
-                          fontSize: '14px'
+                          fontSize: '13px'
                         }}
                       >
                         <option value="">Select Specific Issue</option>
@@ -874,13 +873,13 @@ function LodgeComplain() {
 
           {/* Complaint Details */}
           <div>
-            <h3 style={{ color: 'var(--primary)', marginBottom: '10px', fontSize: '16px' }}>
+      <h3 style={{ color: 'var(--primary)', marginBottom: '6px', fontSize: '14px' }}>
               <i className="fas fa-file-alt" style={{ color: 'var(--primary)', marginRight: '8px' }}></i>
               Complaint Details
             </h3>
-            <div style={{ display: 'grid', gap: '12px' }}>
+      <div style={{ display: 'grid', gap: '10px' }}>
               <div>
-                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px', fontSize: '14px' }}>
+        <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
                   Complaint Title *
                 </label>
                 <input
@@ -892,18 +891,18 @@ function LodgeComplain() {
                   required
                   style={{
                     width: '100%',
-                    padding: '8px 10px',
+                    padding: '6px 8px',
                     border: '1px solid var(--border)',
                     borderRadius: '4px',
                     backgroundColor: 'var(--bg)',
                     color: 'var(--fg)',
-                    fontSize: '14px'
+                    fontSize: '13px'
                   }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px', fontSize: '14px' }}>
+                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
                   Detailed Description *
                 </label>
                 <textarea
@@ -915,12 +914,12 @@ function LodgeComplain() {
                   rows={4}
                   style={{
                     width: '100%',
-                    padding: '8px 10px',
+                    padding: '6px 8px',
                     border: '1px solid var(--border)',
                     borderRadius: '4px',
                     backgroundColor: 'var(--bg)',
                     color: 'var(--fg)',
-                    fontSize: '14px',
+                    fontSize: '13px',
                     resize: 'vertical',
                     fontFamily: 'inherit'
                   }}
@@ -928,22 +927,22 @@ function LodgeComplain() {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px', fontSize: '14px' }}>
-                  Priority Level, Location & Map
+                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
+                  Priority / Location & Map
                 </label>
-                <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto', gap: '8px', alignItems: 'end' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'auto 1fr auto', gap: '6px', alignItems: isMobile ? 'stretch' : 'end' }}>
                   <select
                     name="priority"
                     value={formData.priority}
                     onChange={handleInputChange}
                     style={{
-                      width: '100px',
-                      padding: '8px 10px',
+                      width: '90px',
+                      padding: '6px 8px',
                       border: '1px solid var(--border)',
                       borderRadius: '4px',
                       backgroundColor: 'var(--bg)',
                       color: 'var(--fg)',
-                      fontSize: '14px'
+                      fontSize: '13px'
                     }}
                   >
                     <option value="Low">Low</option>
@@ -960,16 +959,16 @@ function LodgeComplain() {
                     placeholder="Enter location or use GPS"
                     required
                     style={{
-                      padding: '8px 10px',
+          padding: '6px 8px',
                       border: '1px solid var(--border)',
                       borderRadius: '4px',
                       backgroundColor: 'var(--bg)',
                       color: 'var(--fg)',
-                      fontSize: '14px'
+          fontSize: '13px'
                     }}
                   />
 
-              <button type="button" onClick={getCurrentLocation} disabled={locationLoading} className="btn btn--primary" style={{ fontSize: 13, padding: '8px 12px', whiteSpace: 'nowrap' }}>
+        <button type="button" onClick={getCurrentLocation} disabled={locationLoading} className="btn btn--primary" style={{ fontSize: 12, padding: '6px 10px', whiteSpace: 'nowrap' }}>
                 <i className="fas fa-crosshairs" style={{ marginRight: locationLoading ? '4px' : '0' }}></i>
                 {locationLoading ? 'Getting...' : 'GPS'}
               </button>
@@ -977,13 +976,13 @@ function LodgeComplain() {
 
                 {/* Map picker - Bhuvan/OSM via Leaflet */}
                 <div style={{ marginTop: '10px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                    <span style={{ color: 'var(--muted)', fontSize: '12px' }}>Pick location on map:</span>
-                    <button type="button" onClick={() => { const overlay = document.getElementById('map-overlay'); if (overlay) { overlay.style.display = overlay.style.display === 'flex' ? 'none' : 'flex'; } }} className="btn btn--outline" style={{ padding: '4px 10px', fontSize: 12 }}>
-                      <i className="fas fa-expand" style={{ marginRight: '4px' }}></i>Expand Map
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span style={{ color: 'var(--muted)', fontSize: '11px' }}>Pick location:</span>
+                    <button type="button" onClick={() => { const overlay = document.getElementById('map-overlay'); if (overlay) { overlay.style.display = overlay.style.display === 'flex' ? 'none' : 'flex'; } }} className="btn btn--outline" style={{ padding: '4px 8px', fontSize: 11 }}>
+                      <i className="fas fa-expand" style={{ marginRight: '4px' }}></i>Expand
                     </button>
                   </div>
-                  <div id="complaint-map" style={{ height: 200, width: '100%', border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden' }} />
+                  <div id="complaint-map" style={{ height: isMobile ? 160 : 180, width: '100%', border: '1px solid var(--border)', borderRadius: 6, overflow: 'hidden' }} />
 
                   {/* Map Overlay */}
                   <div id="map-overlay" style={{
@@ -1000,11 +999,12 @@ function LodgeComplain() {
                   }}>
                     <div style={{
                       backgroundColor: 'var(--bg)',
-                      borderRadius: '8px',
-                      padding: '20px',
-                      maxWidth: '90vw',
+                      borderRadius: '6px',
+                      padding: '14px',
+                      maxWidth: '92vw',
                       maxHeight: '90vh',
-                      position: 'relative'
+                      position: 'relative',
+                      overflow: 'hidden'
                     }}>
                       <div style={{
                         display: 'flex',
@@ -1012,16 +1012,16 @@ function LodgeComplain() {
                         alignItems: 'center',
                         marginBottom: '10px'
                       }}>
-                        <h4 style={{ margin: 0, color: 'var(--primary)' }}>Select Location</h4>
-                        <button onClick={() => { const overlay = document.getElementById('map-overlay'); if (overlay) overlay.style.display = 'none'; }} className="btn btn--ghost" style={{ fontSize: 18, padding: '4px 10px', lineHeight: 1 }}>
+                        <h4 style={{ margin: 0, color: 'var(--primary)', fontSize: '14px' }}>Select Location</h4>
+                        <button onClick={() => { const overlay = document.getElementById('map-overlay'); if (overlay) overlay.style.display = 'none'; }} className="btn btn--ghost" style={{ fontSize: 16, padding: '4px 8px', lineHeight: 1 }}>
                           <i className="fas fa-times"></i>
                         </button>
                       </div>
                       <div id="complaint-map-expanded" style={{
-                        height: '70vh',
-                        width: '70vw',
+                        height: isMobile ? '60vh' : '68vh',
+                        width: isMobile ? '82vw' : '70vw',
                         border: '1px solid var(--border)',
-                        borderRadius: 8,
+                        borderRadius: 6,
                         overflow: 'hidden'
                       }} />
                     </div>
@@ -1030,7 +1030,7 @@ function LodgeComplain() {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '6px', fontSize: '14px' }}>
+                <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
                   Attachments (Images/PDFs)
                 </label>
                 <input
@@ -1040,12 +1040,12 @@ function LodgeComplain() {
                   onChange={handleFileUpload}
                   style={{
                     width: '100%',
-                    padding: '8px 10px',
+                    padding: '6px 8px',
                     border: '1px solid var(--border)',
                     borderRadius: '4px',
                     backgroundColor: 'var(--bg)',
                     color: 'var(--fg)',
-                    fontSize: '14px'
+                    fontSize: '13px'
                   }}
                 />
                 {formData.attachments.length > 0 && (
@@ -1065,7 +1065,7 @@ function LodgeComplain() {
                           gap: 8
                         }}>
                           <div style={{ flex: 1, overflow: 'hidden' }}>
-                            <div style={{ fontSize: 13, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{file.name}</div>
+                            <div style={{ fontSize: 12, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: isMobile ? 140 : 220 }}>{file.name}</div>
                             {uploading && (
                               <div style={{ marginTop: 4, background: 'var(--border)', height: 6, borderRadius: 4, position: 'relative' }}>
                                 <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: prog + '%', background: '#3b82f6', borderRadius: 4, transition: 'width .3s' }} />
@@ -1073,7 +1073,7 @@ function LodgeComplain() {
                             )}
                           </div>
                           {!uploading && (
-                            <button type="button" onClick={() => removeAttachment(index)} className="btn btn--ghost" style={{ color: '#ef4444', padding: '4px 8px', fontSize: 16, lineHeight: 1 }}>
+                            <button type="button" onClick={() => removeAttachment(index)} className="btn btn--ghost" style={{ color: '#ef4444', padding: '4px 6px', fontSize: 14, lineHeight: 1 }}>
                               <i className="fas fa-times"></i>
                             </button>
                           )}
@@ -1088,9 +1088,9 @@ function LodgeComplain() {
           </div>
 
           {/* Submit Button */}
-          <div style={{ marginTop: '20px' }}>
-            <button type="submit" disabled={isLoading || !formData.agreementAccepted || uploading} className="btn btn--primary" style={{ width: '100%', padding: '14px', fontSize: 17, fontWeight: 600, opacity: (isLoading || !formData.agreementAccepted || uploading) ? 0.7 : 1, cursor: (isLoading || !formData.agreementAccepted || uploading) ? 'not-allowed' : 'pointer' }}>
-              {uploading ? 'Uploading...' : (isLoading ? 'Submitting...' : 'Report Issue')}
+          <div style={{ marginTop: '12px' }}>
+            <button type="submit" disabled={isLoading || !formData.agreementAccepted || uploading} className="btn btn--primary" style={{ width: '100%', padding: '10px', fontSize: 15, fontWeight: 600, opacity: (isLoading || !formData.agreementAccepted || uploading) ? 0.7 : 1, cursor: (isLoading || !formData.agreementAccepted || uploading) ? 'not-allowed' : 'pointer' }}>
+              {uploading ? 'Uploading...' : (isLoading ? 'Submitting...' : 'Submit Report')}
             </button>
           </div>
         </form>

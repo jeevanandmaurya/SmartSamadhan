@@ -119,47 +119,48 @@ function EditProfile() {
 
   return (
     <div>
-      <div className="card" style={{ padding: '20px', marginBottom: '20px' }}>
-        <h2>Edit Profile</h2>
-        <p>Update your personal information and preferences.</p>
+      <div className="card" style={{ padding: '14px', marginBottom: '14px' }}>
+        <h2 style={{ fontSize: '18px', margin: '0 0 4px 0' }}>Edit Profile</h2>
+        <p style={{ fontSize: '12px', margin: 0 }}>Update your personal information.</p>
       </div>
 
       {isSaved && (
         <div className="card" style={{
-          padding: '15px',
-          marginBottom: '20px',
+          padding: '10px',
+          marginBottom: '14px',
           backgroundColor: '#d1fae5',
           border: '1px solid #10b981',
-          color: '#065f46'
+          color: '#065f46',
+          fontSize: '12px'
         }}>
-          ✅ Profile updated successfully!
+          ✅ Profile updated!
         </div>
       )}
 
-      <div className="card" style={{ padding: '20px' }}>
+    <div className="card" style={{ padding: '14px' }}>
         <form onSubmit={handleSubmit}>
-          <div style={{ display: 'grid', gap: '20px' }}>
+      <div style={{ display: 'grid', gap: '12px' }}>
 
             {/* Profile Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '20px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '4px' }}>
               <div style={{
-                width: '80px',
-                height: '80px',
+        width: '60px',
+        height: '60px',
                 borderRadius: '50%',
                 backgroundColor: 'var(--primary)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: '#fff',
-                fontSize: '32px',
+        fontSize: '24px',
                 fontWeight: 'bold'
               }}>
                 {(formData.fullName || 'U').charAt(0).toUpperCase()}
               </div>
               <div>
-                <h3 style={{ margin: '0 0 5px 0' }}>{user.fullName}</h3>
-                <p style={{ margin: '0', color: 'var(--muted)' }}>@{user.username}</p>
-                <p style={{ margin: '5px 0 0 0', fontSize: '12px', color: 'var(--muted)' }}>
+        <h3 style={{ margin: '0 0 2px 0', fontSize: '16px' }}>{user.fullName}</h3>
+        <p style={{ margin: '0', color: 'var(--muted)', fontSize: '12px' }}>@{user.username}</p>
+        <p style={{ margin: '3px 0 0 0', fontSize: '11px', color: 'var(--muted)' }}>
                   Member since: {new Date(user.createdAt || '2025-01-01').toLocaleDateString()}
                 </p>
               </div>
@@ -167,14 +168,7 @@ function EditProfile() {
 
             {/* Full Name */}
             <div>
-              <label style={{
-                display: 'block',
-                fontWeight: 'bold',
-                marginBottom: '8px',
-                color: 'var(--fg)'
-              }}>
-                Full Name *
-              </label>
+              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', color: 'var(--fg)', fontSize: '12px' }}>Full Name *</label>
               <input
                 type="text"
                 name="fullName"
@@ -184,26 +178,19 @@ function EditProfile() {
                 required
                 style={{
                   width: '100%',
-                  padding: '12px',
+                  padding: '8px 10px',
                   border: '1px solid var(--border)',
                   borderRadius: '4px',
                   backgroundColor: 'var(--bg)',
                   color: 'var(--fg)',
-                  fontSize: '16px'
+                  fontSize: '14px'
                 }}
               />
             </div>
 
             {/* Email */}
             <div>
-              <label style={{
-                display: 'block',
-                fontWeight: 'bold',
-                marginBottom: '8px',
-                color: 'var(--fg)'
-              }}>
-                Email Address *
-              </label>
+              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', color: 'var(--fg)', fontSize: '12px' }}>Email *</label>
               <input
                 type="email"
                 name="email"
@@ -213,26 +200,19 @@ function EditProfile() {
                 required
                 style={{
                   width: '100%',
-                  padding: '12px',
+                  padding: '8px 10px',
                   border: '1px solid var(--border)',
                   borderRadius: '4px',
                   backgroundColor: 'var(--bg)',
                   color: 'var(--fg)',
-                  fontSize: '16px'
+                  fontSize: '14px'
                 }}
               />
             </div>
 
             {/* Phone */}
             <div>
-              <label style={{
-                display: 'block',
-                fontWeight: 'bold',
-                marginBottom: '8px',
-                color: 'var(--fg)'
-              }}>
-                Phone Number *
-              </label>
+              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', color: 'var(--fg)', fontSize: '12px' }}>Phone *</label>
               <input
                 type="tel"
                 name="phone"
@@ -242,26 +222,19 @@ function EditProfile() {
                 required
                 style={{
                   width: '100%',
-                  padding: '12px',
+                  padding: '8px 10px',
                   border: '1px solid var(--border)',
                   borderRadius: '4px',
                   backgroundColor: 'var(--bg)',
                   color: 'var(--fg)',
-                  fontSize: '16px'
+                  fontSize: '14px'
                 }}
               />
             </div>
 
             {/* Address */}
             <div>
-              <label style={{
-                display: 'block',
-                fontWeight: 'bold',
-                marginBottom: '8px',
-                color: 'var(--fg)'
-              }}>
-                Address *
-              </label>
+              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', color: 'var(--fg)', fontSize: '12px' }}>Address *</label>
               <textarea
                 name="address"
                 value={formData.address}
@@ -271,12 +244,12 @@ function EditProfile() {
                 rows={4}
                 style={{
                   width: '100%',
-                  padding: '12px',
+                  padding: '8px 10px',
                   border: '1px solid var(--border)',
                   borderRadius: '4px',
                   backgroundColor: 'var(--bg)',
                   color: 'var(--fg)',
-                  fontSize: '16px',
+                  fontSize: '14px',
                   resize: 'vertical',
                   fontFamily: 'inherit'
                 }}
@@ -284,41 +257,41 @@ function EditProfile() {
             </div>
 
             {/* Account Information (Read-only) */}
-            <div style={{ padding: '15px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
-              <h4 style={{ margin: '0 0 15px 0', color: 'var(--primary)' }}>Account Information</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+            <div style={{ padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
+              <h4 style={{ margin: '0 0 10px 0', color: 'var(--primary)', fontSize: '13px' }}>Account Info</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
                 <div>
-                  <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>USERNAME</div>
-                  <div style={{ fontWeight: 'bold' }}>{user.username}</div>
+                  <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '3px' }}>USERNAME</div>
+                  <div style={{ fontWeight: 'bold', fontSize: '12px' }}>{user.username}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>USER ID</div>
-                  <div style={{ fontWeight: 'bold' }}>{user.id}</div>
+                  <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '3px' }}>USER ID</div>
+                  <div style={{ fontWeight: 'bold', fontSize: '12px' }}>{user.id}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>ACCOUNT TYPE</div>
-                  <div style={{ fontWeight: 'bold' }}>{user.permissionLevel?.startsWith('admin') ? 'Administrator' : 'Citizen Account'}</div>
+                  <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '3px' }}>ACCOUNT TYPE</div>
+                  <div style={{ fontWeight: 'bold', fontSize: '12px' }}>{user.permissionLevel?.startsWith('admin') ? 'Administrator' : 'Citizen'}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>MEMBER SINCE</div>
-                  <div style={{ fontWeight: 'bold' }}>{new Date(user.createdAt || '2025-01-01').toLocaleDateString()}</div>
+                  <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '3px' }}>MEMBER SINCE</div>
+                  <div style={{ fontWeight: 'bold', fontSize: '12px' }}>{new Date(user.createdAt || '2025-01-01').toLocaleDateString()}</div>
                 </div>
               </div>
             </div>
 
             {/* Submit Buttons */}
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '20px' }}>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '6px' }}>
               <button
                 type="submit"
                 disabled={isLoading}
                 style={{
-                  padding: '12px 24px',
+                  padding: '8px 16px',
                   backgroundColor: isLoading ? 'var(--muted)' : 'var(--primary)',
                   color: '#fff',
                   border: 'none',
                   borderRadius: '4px',
                   cursor: isLoading ? 'not-allowed' : 'pointer',
-                  fontSize: '16px',
+                  fontSize: '14px',
                   fontWeight: 'bold'
                 }}
               >
@@ -328,13 +301,13 @@ function EditProfile() {
                 type="button"
                 onClick={handleReset}
                 style={{
-                  padding: '12px 24px',
+                  padding: '8px 16px',
                   backgroundColor: 'var(--bg)',
                   color: 'var(--fg)',
                   border: '1px solid var(--border)',
                   borderRadius: '4px',
                   cursor: 'pointer',
-                  fontSize: '16px'
+                  fontSize: '14px'
                 }}
               >
                 Reset Changes
@@ -345,34 +318,34 @@ function EditProfile() {
       </div>
 
       {/* Profile Statistics */}
-      <div className="card" style={{ padding: '20px', marginTop: '20px' }}>
-        <h3 style={{ marginBottom: '15px' }}>Your Activity Summary</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '15px' }}>
-          <div style={{ textAlign: 'center', padding: '15px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
-            <div style={{ fontSize: '24px', marginBottom: '5px' }}>📋</div>
-            <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>TOTAL COMPLAINTS</div>
-            <div style={{ fontSize: '20px', fontWeight: 'bold' }}>
+      <div className="card" style={{ padding: '14px', marginTop: '14px' }}>
+        <h3 style={{ marginBottom: '10px', fontSize: '16px' }}>Activity Summary</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px' }}>
+          <div style={{ textAlign: 'center', padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
+            <div style={{ fontSize: '20px', marginBottom: '4px' }}>📋</div>
+            <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '4px' }}>TOTAL</div>
+            <div style={{ fontSize: '16px', fontWeight: 'bold' }}>
               {userDataComplaintsLength}
             </div>
           </div>
-          <div style={{ textAlign: 'center', padding: '15px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
-            <div style={{ fontSize: '24px', marginBottom: '5px', color: '#10b981' }}>✅</div>
-            <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>RESOLVED</div>
-            <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981' }}>
+          <div style={{ textAlign: 'center', padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
+            <div style={{ fontSize: '20px', marginBottom: '4px', color: '#10b981' }}>✅</div>
+            <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '4px' }}>RESOLVED</div>
+            <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#10b981' }}>
               {userDataStatusCount('Resolved')}
             </div>
           </div>
-          <div style={{ textAlign: 'center', padding: '15px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
-            <div style={{ fontSize: '24px', marginBottom: '5px', color: '#f59e0b' }}>⏳</div>
-            <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>IN PROGRESS</div>
-            <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#f59e0b' }}>
+          <div style={{ textAlign: 'center', padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
+            <div style={{ fontSize: '20px', marginBottom: '4px', color: '#f59e0b' }}>⏳</div>
+            <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '4px' }}>PROGRESS</div>
+            <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#f59e0b' }}>
               {userDataStatusCount('In Progress')}
             </div>
           </div>
-          <div style={{ textAlign: 'center', padding: '15px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
-            <div style={{ fontSize: '24px', marginBottom: '5px', color: '#ef4444' }}>⏸️</div>
-            <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>PENDING</div>
-            <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#ef4444' }}>
+          <div style={{ textAlign: 'center', padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
+            <div style={{ fontSize: '20px', marginBottom: '4px', color: '#ef4444' }}>⏸️</div>
+            <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '4px' }}>PENDING</div>
+            <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#ef4444' }}>
               {userDataStatusCount('Pending')}
             </div>
           </div>

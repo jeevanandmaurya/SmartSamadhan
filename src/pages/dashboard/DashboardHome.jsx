@@ -221,46 +221,46 @@ function DashboardHome() {
   return (
     <div>
       {/* Statistics Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-        <div className="card" style={{ padding: '20px', textAlign: 'center', border: '2px solid var(--primary)' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '14px', marginBottom: '20px' }}>
+        <div className="card" style={{ padding: '14px', textAlign: 'center', border: '2px solid var(--primary)' }}>
           <h3 style={{ margin: '0 0 10px 0', color: 'var(--primary)' }}>Total Registered</h3>
-          <p style={{ fontSize: '2.5rem', fontWeight: 'bold', margin: '0', color: 'var(--primary)' }}>{stats.total}</p>
+          <p style={{ fontSize: '2rem', fontWeight: 'bold', margin: '0', color: 'var(--primary)' }}>{stats.total}</p>
         </div>
-        <div className="card" style={{ padding: '20px', textAlign: 'center', border: '2px solid #f59e0b' }}>
+        <div className="card" style={{ padding: '14px', textAlign: 'center', border: '2px solid #f59e0b' }}>
           <h3 style={{ margin: '0 0 10px 0', color: '#f59e0b' }}>Pending</h3>
-          <p style={{ fontSize: '2.5rem', fontWeight: 'bold', margin: '0', color: '#f59e0b' }}>{stats.pending}</p>
+          <p style={{ fontSize: '2rem', fontWeight: 'bold', margin: '0', color: '#f59e0b' }}>{stats.pending}</p>
         </div>
-        <div className="card" style={{ padding: '20px', textAlign: 'center', border: '2px solid #10b981' }}>
+        <div className="card" style={{ padding: '14px', textAlign: 'center', border: '2px solid #10b981' }}>
           <h3 style={{ margin: '0 0 10px 0', color: '#10b981' }}>Closed</h3>
-          <p style={{ fontSize: '2.5rem', fontWeight: 'bold', margin: '0', color: '#10b981' }}>{stats.resolved}</p>
+          <p style={{ fontSize: '2rem', fontWeight: 'bold', margin: '0', color: '#10b981' }}>{stats.resolved}</p>
         </div>
       </div>
 
       {/* Reports Table */}
-      <div className="card" style={{ padding: '20px' }}>
-        <h3 style={{ marginBottom: '20px' }}>Your Complaints</h3>
+      <div className="card" style={{ padding: '16px' }}>
+        <h3 style={{ margin: '0 0 12px', fontSize: '16px', lineHeight: 1.2 }}>Your Complaints</h3>
 
         {/* Search, Sort and Entries Controls */}
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: '20px',
+          marginBottom: '14px',
           flexWrap: 'wrap',
-          gap: '15px'
+          gap: '12px'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <label style={{ fontWeight: 'bold' }}>Show</label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
+            <label style={{ fontWeight: 600 }}>Show</label>
             <select
               value={entriesPerPage}
               onChange={handleEntriesChange}
               style={{
-                padding: '8px 12px',
+                padding: '4px 8px',
                 border: '1px solid var(--border)',
                 borderRadius: '4px',
                 backgroundColor: 'var(--bg)',
                 color: 'var(--fg)',
-                fontSize: '14px'
+                fontSize: '12px'
               }}
             >
               <option value={10}>10</option>
@@ -269,20 +269,19 @@ function DashboardHome() {
             </select>
             <span>entries</span>
           </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <label style={{ fontWeight: 'bold' }}>Sort by:</label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
+            <label style={{ fontWeight: 600 }}>Sort:</label>
             <select
               value={selectedSortOption}
               onChange={handleSortChange}
               style={{
-                padding: '8px 12px',
+                padding: '4px 8px',
                 border: '1px solid var(--border)',
                 borderRadius: '4px',
                 backgroundColor: 'var(--bg)',
                 color: 'var(--fg)',
-                fontSize: '14px',
-                minWidth: '150px'
+                fontSize: '12px',
+                minWidth: '130px'
               }}
             >
               <optgroup label="Date">
@@ -301,21 +300,21 @@ function DashboardHome() {
             </select>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <label style={{ fontWeight: 'bold' }}>Search:</label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
+            <label style={{ fontWeight: 600 }}>Search:</label>
             <input
               type="text"
               placeholder="Search"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
-                padding: '8px 12px',
+                padding: '4px 8px',
                 border: '1px solid var(--border)',
                 borderRadius: '4px',
                 backgroundColor: 'var(--bg)',
                 color: 'var(--fg)',
-                fontSize: '14px',
-                minWidth: '200px'
+                fontSize: '12px',
+                minWidth: '150px'
               }}
             />
           </div>
@@ -327,27 +326,28 @@ function DashboardHome() {
             borderCollapse: 'collapse',
             backgroundColor: 'var(--card-bg)',
             borderRadius: '8px',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            fontSize: '13px'
           }}>
             <thead>
               <tr style={{ backgroundColor: 'var(--bg)', borderBottom: '2px solid var(--border)' }}>
-                <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold', cursor: 'pointer' }}
+                <th title="Serial Number" style={{ padding: '8px', textAlign: 'left', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
                     onClick={() => handleSort('id')}>
-                  S.No {getSortIcon('id')}
+                  # {getSortIcon('id')}
                 </th>
-                <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold', cursor: 'pointer' }}
+                <th title="Registration Number" style={{ padding: '8px', textAlign: 'left', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
                     onClick={() => handleSort('regNumber')}>
-                  Registration Number {getSortIcon('regNumber')}
+                  Reg # {getSortIcon('regNumber')}
                 </th>
-                <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold', cursor: 'pointer' }}
+                <th title="Receiving Date" style={{ padding: '8px', textAlign: 'left', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
                     onClick={() => handleSort('dateSubmitted')}>
-                  Receiving Date {getSortIcon('dateSubmitted')}
+                  Date {getSortIcon('dateSubmitted')}
                 </th>
-                <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold', cursor: 'pointer' }}
+                <th title="Complaint Description" style={{ padding: '8px', textAlign: 'left', fontWeight: 600, cursor: 'pointer' }}
                     onClick={() => handleSort('description')}>
-                  Complaint Description {getSortIcon('description')}
+                  Description {getSortIcon('description')}
                 </th>
-                <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold', cursor: 'pointer' }}
+                <th title="Status" style={{ padding: '8px', textAlign: 'left', fontWeight: 600, cursor: 'pointer' }}
                     onClick={() => handleSort('status')}>
                   Status {getSortIcon('status')}
                 </th>
@@ -362,10 +362,10 @@ function DashboardHome() {
                 }}
                 onClick={() => setSelectedComplaint(report)}
                 >
-                  <td style={{ padding: '12px' }}>{startIndex + index + 1}</td>
-                  <td style={{ padding: '12px', fontWeight: 'bold' }}>{report.regNumber}</td>
-                  <td style={{ padding: '12px' }}>{new Date(report.dateSubmitted).toLocaleDateString()}</td>
-                  <td style={{ padding: '12px', maxWidth: '300px' }}>
+                  <td style={{ padding: '8px' }}>{startIndex + index + 1}</td>
+                  <td style={{ padding: '8px', fontWeight: 600 }}>{report.regNumber}</td>
+                  <td style={{ padding: '8px', whiteSpace: 'nowrap' }}>{new Date(report.dateSubmitted).toLocaleDateString()}</td>
+                  <td style={{ padding: '8px', maxWidth: '260px' }}>
                     <div style={{
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
@@ -377,7 +377,7 @@ function DashboardHome() {
                     </div>
                     {report.mainCategory && (
                       <div style={{
-                        fontSize: '11px',
+                        fontSize: '10px',
                         color: 'var(--muted)',
                         marginTop: '2px'
                       }}>
@@ -385,15 +385,15 @@ function DashboardHome() {
                       </div>
                     )}
                   </td>
-                  <td style={{ padding: '12px' }}>
+                  <td style={{ padding: '8px' }}>
                     <span
                       style={{
-                        padding: '4px 8px',
-                        borderRadius: '12px',
+                        padding: '3px 6px',
+                        borderRadius: '10px',
                         backgroundColor: getStatusColor(report.status),
                         color: '#fff',
-                        fontSize: '12px',
-                        fontWeight: 'bold'
+                        fontSize: '11px',
+                        fontWeight: 600
                       }}
                     >
                       {report.status}
@@ -410,9 +410,10 @@ function DashboardHome() {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginTop: '20px',
+          marginTop: '14px',
           flexWrap: 'wrap',
-          gap: '15px'
+          gap: '10px',
+          fontSize: '12px'
         }}>
           <div style={{ color: 'var(--muted)', fontSize: '14px' }}>
             Showing {filteredReports.length > 0 ? startIndex + 1 : 0} to {Math.min(startIndex + entriesPerPage, filteredReports.length)} of {filteredReports.length} entries
@@ -424,13 +425,13 @@ function DashboardHome() {
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
               style={{
-                padding: '8px 12px',
+                padding: '6px 10px',
                 border: '1px solid var(--border)',
                 borderRadius: '4px',
                 backgroundColor: currentPage === 1 ? 'var(--muted)' : 'var(--bg)',
                 color: currentPage === 1 ? '#fff' : 'var(--fg)',
                 cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                fontSize: '14px'
+                fontSize: '12px'
               }}
             >
               Previous
@@ -444,13 +445,13 @@ function DashboardHome() {
                   key={pageNum}
                   onClick={() => handlePageChange(pageNum)}
                   style={{
-                    padding: '8px 12px',
+                    padding: '6px 10px',
                     border: '1px solid var(--border)',
                     borderRadius: '4px',
                     backgroundColor: currentPage === pageNum ? 'var(--primary)' : 'var(--bg)',
                     color: currentPage === pageNum ? '#fff' : 'var(--fg)',
                     cursor: 'pointer',
-                    fontSize: '14px'
+                    fontSize: '12px'
                   }}
                 >
                   {pageNum}
@@ -462,13 +463,13 @@ function DashboardHome() {
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
               style={{
-                padding: '8px 12px',
+                padding: '6px 10px',
                 border: '1px solid var(--border)',
                 borderRadius: '4px',
                 backgroundColor: currentPage === totalPages ? 'var(--muted)' : 'var(--bg)',
                 color: currentPage === totalPages ? '#fff' : 'var(--fg)',
                 cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                fontSize: '14px'
+                fontSize: '12px'
               }}
             >
               Next

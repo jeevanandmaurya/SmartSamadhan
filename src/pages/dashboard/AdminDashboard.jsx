@@ -92,9 +92,9 @@ function AdminDashboard() {
           onClick={toggleSidebar}
           aria-label="Open navigation"
           style={{
-            position: 'fixed', top: 16, left: 16, zIndex: 1100,
-            background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 6,
-            padding: '10px 12px', cursor: 'pointer', fontSize: 18
+            position: 'fixed', top: 70, left: 0, zIndex: 1100,
+            background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: '0 6px 6px 0',
+            padding: '10px 14px', cursor: 'pointer', fontSize: 18
           }}>☰</button>
       )}
 
@@ -125,17 +125,18 @@ function AdminDashboard() {
               onClick={() => handleMenuClick(item.id)}
               style={{
                 width: '100%',
-                padding: '12px 20px',
+                padding: '8px 14px',
                 background: activeSection === item.id ? 'var(--primary)' : 'transparent',
                 color: activeSection === item.id ? '#fff' : 'var(--fg)',
                 border: 'none',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 10,
+                gap: 8,
                 cursor: 'pointer',
-                fontSize: 15,
+                fontSize: 14,
+                lineHeight: 1.2,
                 textAlign: 'left',
-                transition: 'background .2s'
+                transition: 'background .2s, color .2s'
               }}
             >
               <i className={item.icon} style={{ width: 18 }}></i>
