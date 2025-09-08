@@ -218,42 +218,44 @@ function UserManagement() {
             {/* Complaint History */}
             <div>
               <h4 style={{ marginBottom: '15px' }}>Complaint History ({selectedUser.complaints?.length || 0})</h4>
-              {!selectedUser.permissionLevel?.startsWith('admin') && selectedUser.complaints?.length === 0 ? (
-                <div style={{ padding: '20px', textAlign: 'center', color: 'var(--muted)', backgroundColor: 'var(--bg)', borderRadius: '4px' }}>
-                  No complaints submitted yet
-                </div>
-              ) : !selectedUser.permissionLevel?.startsWith('admin') && (
-                <div style={{ display: 'grid', gap: '10px', maxHeight: '400px', overflowY: 'auto' }}>
-                  {selectedUser.complaints.map((complaint) => (
-                    <div key={complaint.id} style={{ padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '4px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '8px' }}>
-                        <h5 style={{ margin: '0', fontSize: '14px' }}>{complaint.title || complaint.issue}</h5>
-                        <span style={{
-                          padding: '2px 6px',
-                          borderRadius: '8px',
-                          backgroundColor: complaint.status === 'Resolved' ? '#10b981' :
-                                         complaint.status === 'In Progress' ? '#f59e0b' : '#ef4444',
-                          color: '#fff',
-                          fontSize: '10px',
-                          fontWeight: 'bold'
-                        }}>
-                          {complaint.status}
-                        </span>
-                      </div>
-                      <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '4px' }}>
-                        📋 {complaint.regNumber} | 🏢 {complaint.department}
-                      </div>
-                      <div style={{ fontSize: '12px', color: 'var(--muted)' }}>
-                        📅 {new Date(complaint.dateSubmitted).toLocaleDateString()}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-               {selectedUser.permissionLevel?.startsWith('admin') && (
+              
+              {selectedUser.permissionLevel?.startsWith('admin') ? (
                 <div style={{ padding: '20px', textAlign: 'center', color: 'var(--muted)', backgroundColor: 'var(--bg)', borderRadius: '4px' }}>
                   Admins do not submit complaints.
                 </div>
+              ) : (
+                (!selectedUser.complaints || selectedUser.complaints.length === 0) ? (
+                  <div style={{ padding: '20px', textAlign: 'center', color: 'var(--muted)', backgroundColor: 'var(--bg)', borderRadius: '4px' }}>
+                    No complaints submitted yet
+                  </div>
+                ) : (
+                  <div style={{ display: 'grid', gap: '10px', maxHeight: '400px', overflowY: 'auto' }}>
+                    {selectedUser.complaints.map((complaint) => (
+                      <div key={complaint.id} style={{ padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '4px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '8px' }}>
+                          <h5 style={{ margin: '0', fontSize: '14px' }}>{complaint.title || complaint.issue}</h5>
+                          <span style={{
+                            padding: '2px 6px',
+                            borderRadius: '8px',
+                            backgroundColor: complaint.status === 'Resolved' ? '#10b981' :
+                                           complaint.status === 'In Progress' ? '#f59e0b' : '#ef4444',
+                            color: '#fff',
+                            fontSize: '10px',
+                            fontWeight: 'bold'
+                          }}>
+                            {complaint.status}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '4px' }}>
+                          📋 {complaint.regNumber} | 🏢 {complaint.department}
+                        </div>
+                        <div style={{ fontSize: '12px', color: 'var(--muted)' }}>
+                          📅 {new Date(complaint.dateSubmitted).toLocaleDateString()}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )
               )}
             </div>
           </div>

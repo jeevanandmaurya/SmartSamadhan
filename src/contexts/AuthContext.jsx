@@ -45,23 +45,27 @@ export function AuthProvider({ children }) {
 
     console.log(`[AuthContext] refreshProfile: Refreshing for user ID: ${sessionUser.id}`);
 
-    // We need to probe both tables since we don't know if the session belongs to a user or admin yet.
     let refreshedProfile = null;
     let error = null;
+    const userType = localStorage.getItem('userType'); // Get hint from storage
 
-    // 1. Check users table
-    ({ data: refreshedProfile, error } = await supabase.from('users').select('*').eq('id', sessionUser.id).single());
-    if (error && error.code !== 'PGRST116') {
-      console.error('[AuthContext] refreshProfile: Error checking users table', error);
-      // Don't return, fallback to checking admins
-    }
-
-    // 2. If not in users, check admins table
-    if (!refreshedProfile) {
+    if (userType === 'admin') {
+      // If hint is 'admin', check admins table first
       ({ data: refreshedProfile, error } = await supabase.from('admins').select('*').eq('id', sessionUser.id).single());
-      if (error && error.code !== 'PGRST116') {
-        console.error('[AuthContext] refreshProfile: Error checking admins table', error);
+    } else if (userType === 'user') {
+      // If hint is 'user', check users table first
+      ({ data: refreshedProfile, error } = await supabase.from('users').select('*').eq('id', sessionUser.id).single());
+    } else {
+      // Fallback if no hint is available
+      console.warn('[AuthContext] refreshProfile: No userType hint, probing tables.');
+      ({ data: refreshedProfile, error } = await supabase.from('users').select('*').eq('id', sessionUser.id).single());
+      if (!refreshedProfile) {
+        ({ data: refreshedProfile, error } = await supabase.from('admins').select('*').eq('id', sessionUser.id).single());
       }
+    }
+    
+    if (error && error.code !== 'PGRST116') { // PGRST116 means no rows found, which is expected when probing
+        console.error(`[AuthContext] refreshProfile: Error checking table for user ${sessionUser.id}`, error);
     }
 
     if (refreshedProfile) {
@@ -69,6 +73,11 @@ export function AuthProvider({ children }) {
       console.log('[AuthContext] refreshProfile: Successfully refreshed profile.', enriched);
       setUser(enriched);
       localStorage.setItem('user', JSON.stringify(enriched));
+      // If the hint was missing, set it now for future refreshes
+      if (!userType) {
+        const type = enriched.permissionLevel.startsWith('admin') ? 'admin' : 'user';
+        localStorage.setItem('userType', type);
+      }
     } else {
       console.warn(`[AuthContext] refreshProfile: Could not find a profile for user ${sessionUser.id}. Forcing logout.`);
       await logout();
@@ -80,18 +89,19 @@ export function AuthProvider({ children }) {
     setLoading(true);
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log(`[AuthContext] Auth event: ${event}`);
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+      
+      // The loginUser/loginAdmin functions handle the user state on SIGNED_IN.
+      // This listener's main job is to restore the session on page load.
+      if (event === 'INITIAL_SESSION') {
         if (session?.user) {
-          // When a sign-in happens, the login function has already set the user.
-          // We only need to refresh if the user context is missing.
-          if (!user) {
-            await refreshProfile();
-          }
+          await refreshProfile();
         }
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
         localStorage.removeItem('user');
+        localStorage.removeItem('userType');
       }
+      
       setLoading(false);
     });
 
@@ -121,6 +131,7 @@ export function AuthProvider({ children }) {
     const enriched = normalizeProfile({ ...authData.user, ...userProfile });
     setUser(enriched);
     localStorage.setItem('user', JSON.stringify(enriched));
+    localStorage.setItem('userType', 'user'); // Set the hint
     return { data: enriched };
   }, []);
 
@@ -143,6 +154,7 @@ export function AuthProvider({ children }) {
     const enriched = normalizeProfile({ ...authData.user, ...adminProfile });
     setUser(enriched);
     localStorage.setItem('user', JSON.stringify(enriched));
+    localStorage.setItem('userType', 'admin'); // Set the hint
     return { data: enriched };
   }, []);
 
@@ -164,6 +176,7 @@ export function AuthProvider({ children }) {
     await supabase.auth.signOut();
     setUser(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('userType'); // Remove the hint
   }, []);
 
   const value = {

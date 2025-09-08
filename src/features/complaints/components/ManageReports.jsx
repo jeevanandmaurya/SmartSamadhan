@@ -279,6 +279,18 @@ function ManageReports() {
                     <p>{complaint.description}</p>
                     <small>{complaint.mainCategory} → {complaint.subCategory1} → {complaint.specificIssue}</small>
                     <small>{complaint.city}, {complaint.location}</small>
+                    {complaint.attachmentsMeta && complaint.attachmentsMeta.length > 0 && (
+                      <div className="attachments-preview">
+                        <small><strong>Attachments:</strong></small>
+                        <ul>
+                          {complaint.attachmentsMeta.map((att, index) => (
+                            <li key={index}>
+                              <a href={att.url} target="_blank" rel="noopener noreferrer">{att.name}</a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </td>
                 <td>{complaint.department}</td>
