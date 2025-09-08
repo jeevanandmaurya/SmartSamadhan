@@ -11,6 +11,7 @@ function ManageReports() {
   const [updatingId, setUpdatingId] = useState(null);
   const [allComplaints, setAllComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [imagePreview, setImagePreview] = useState({ show: false, src: '', name: '' });
 
   // Table UI state (mirror of user dashboard)
   const [sortConfig, setSortConfig] = useState({ key: 'dateSubmitted', direction: 'desc' });
@@ -279,16 +280,72 @@ function ManageReports() {
                     <p style={{ fontSize: '12px', lineHeight: 1.3 }}>{complaint.description}</p>
                     <small style={{ fontSize: '11px' }}>{complaint.mainCategory} → {complaint.subCategory1} → {complaint.specificIssue}</small>
                     <small style={{ fontSize: '11px' }}>{complaint.city}, {complaint.location}</small>
-                    {complaint.attachmentsMeta && complaint.attachmentsMeta.length > 0 && (
-                      <div className="attachments-preview">
+                    {complaint.attachments && complaint.attachments.length > 0 && (
+                      <div className="attachments-preview" style={{ marginTop: '6px' }}>
                         <small style={{ fontSize: '11px' }}><strong>Files:</strong></small>
-                        <ul>
-                          {complaint.attachmentsMeta.map((att, index) => (
-                            <li key={index}>
-                              <a href={att.url} target="_blank" rel="noopener noreferrer">{att.name}</a>
-                            </li>
-                          ))}
-                        </ul>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '4px' }}>
+                          {complaint.attachments.map((att, index) => {
+                            const isImage = att.type && att.type.startsWith('image/');
+                            return (
+                              <div key={index} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                                {isImage ? (
+                                  <div
+                                    onClick={() => setImagePreview({ show: true, src: att.url, name: att.name })}
+                                    style={{
+                                      width: '32px',
+                                      height: '32px',
+                                      borderRadius: '3px',
+                                      border: '1px solid var(--border)',
+                                      cursor: 'pointer',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      backgroundColor: 'var(--card-bg)',
+                                      flexShrink: 0
+                                    }}
+                                  >
+                                    <img
+                                      src={att.url}
+                                      alt={att.name}
+                                      style={{
+                                        width: '28px',
+                                        height: '28px',
+                                        objectFit: 'cover',
+                                        borderRadius: '2px',
+                                        display: 'block'
+                                      }}
+                                    />
+                                  </div>
+                                ) : (
+                                  <div style={{
+                                    width: '32px',
+                                    height: '32px',
+                                    borderRadius: '3px',
+                                    border: '1px solid var(--border)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: 'var(--card-bg)',
+                                    flexShrink: 0
+                                  }}>
+                                    <i className="fas fa-file" style={{ fontSize: '12px', color: 'var(--muted)' }}></i>
+                                  </div>
+                                )}
+                                <div style={{
+                                  fontSize: '9px',
+                                  color: 'var(--muted)',
+                                  textAlign: 'center',
+                                  maxWidth: '32px',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap'
+                                }}>
+                                  {att.name.split('.').slice(0, -1).join('.')}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -386,6 +443,78 @@ function ManageReports() {
           </div>
         </div>
       </div>
+
+      {/* Image Preview Modal */}
+      {imagePreview.show && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+            zIndex: 2000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px'
+          }}
+          onClick={() => setImagePreview({ show: false, src: '', name: '' })}
+        >
+          <div
+            style={{
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              maxWidth: '400px',
+              maxHeight: '400px'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setImagePreview({ show: false, src: '', name: '' })}
+              style={{
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                color: 'white',
+                border: '2px solid white',
+                borderRadius: '50%',
+                width: '40px',
+                height: '40px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '18px',
+                zIndex: 1,
+                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.3)'
+              }}
+            >
+              <i className="fas fa-times"></i>
+            </button>
+
+            {/* Image */}
+            <img
+              src={imagePreview.src}
+              alt={imagePreview.name}
+              style={{
+                width: 'auto',
+                height: 'auto',
+                maxWidth: '100%',
+                maxHeight: '100%',
+                display: 'block',
+                objectFit: 'contain',
+                imageRendering: 'auto'
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

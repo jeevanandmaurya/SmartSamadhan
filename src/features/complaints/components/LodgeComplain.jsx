@@ -18,6 +18,7 @@ function LodgeComplain() {
   const [uploadError, setUploadError] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [imagePreview, setImagePreview] = useState({ show: false, src: '', name: '' });
 
   // Form data with auto-filled user details
   const [formData, setFormData] = useState({
@@ -1053,6 +1054,7 @@ function LodgeComplain() {
                     <h5>Attached Files:</h5>
                     {formData.attachments.map((file, index) => {
                       const prog = uploadProgress[index]?.percent ?? 0;
+                      const isImage = file.type.startsWith('image/');
                       return (
                         <div key={index} style={{
                           display: 'flex',
@@ -1064,13 +1066,44 @@ function LodgeComplain() {
                           marginBottom: '5px',
                           gap: 8
                         }}>
-                          <div style={{ flex: 1, overflow: 'hidden' }}>
-                            <div style={{ fontSize: 12, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: isMobile ? 140 : 220 }}>{file.name}</div>
-                            {uploading && (
-                              <div style={{ marginTop: 4, background: 'var(--border)', height: 6, borderRadius: 4, position: 'relative' }}>
-                                <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: prog + '%', background: '#3b82f6', borderRadius: 4, transition: 'width .3s' }} />
+                          <div style={{ flex: 1, overflow: 'hidden', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {isImage && (
+                              <div
+                                onClick={() => setImagePreview({ show: true, src: URL.createObjectURL(file), name: file.name })}
+                                style={{
+                                  width: '44px',
+                                  height: '44px',
+                                  borderRadius: '4px',
+                                  border: '1px solid var(--border)',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  backgroundColor: 'var(--card-bg)',
+                                  flexShrink: 0
+                                }}
+                              >
+                                <img
+                                  src={URL.createObjectURL(file)}
+                                  alt={file.name}
+                                  style={{
+                                    width: '40px',
+                                    height: '40px',
+                                    objectFit: 'cover',
+                                    borderRadius: '3px',
+                                    display: 'block'
+                                  }}
+                                />
                               </div>
                             )}
+                            <div style={{ flex: 1, overflow: 'hidden' }}>
+                              <div style={{ fontSize: 12, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: isMobile ? (isImage ? 100 : 140) : (isImage ? 180 : 220) }}>{file.name}</div>
+                              {uploading && (
+                                <div style={{ marginTop: 4, background: 'var(--border)', height: 6, borderRadius: 4, position: 'relative' }}>
+                                  <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: prog + '%', background: '#3b82f6', borderRadius: 4, transition: 'width .3s' }} />
+                                </div>
+                              )}
+                            </div>
                           </div>
                           {!uploading && (
                             <button type="button" onClick={() => removeAttachment(index)} className="btn btn--ghost" style={{ color: '#ef4444', padding: '4px 6px', fontSize: 14, lineHeight: 1 }}>
@@ -1095,6 +1128,78 @@ function LodgeComplain() {
           </div>
         </form>
       </div>
+
+      {/* Image Preview Modal */}
+      {imagePreview.show && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+            zIndex: 2000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px'
+          }}
+          onClick={() => setImagePreview({ show: false, src: '', name: '' })}
+        >
+          <div
+            style={{
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              maxWidth: '400px',
+              maxHeight: '400px'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setImagePreview({ show: false, src: '', name: '' })}
+              style={{
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                color: 'white',
+                border: '2px solid white',
+                borderRadius: '50%',
+                width: '40px',
+                height: '40px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '18px',
+                zIndex: 1,
+                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.3)'
+              }}
+            >
+              <i className="fas fa-times"></i>
+            </button>
+
+            {/* Image */}
+            <img
+              src={imagePreview.src}
+              alt={imagePreview.name}
+              style={{
+                width: 'auto',
+                height: 'auto',
+                maxWidth: '100%',
+                maxHeight: '100%',
+                display: 'block',
+                objectFit: 'contain',
+                imageRendering: 'auto'
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

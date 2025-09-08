@@ -6,6 +6,7 @@ function ViewStatus() {
   const [status, setStatus] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [complaints, setComplaints] = useState([]);
+  const [imagePreview, setImagePreview] = useState({ show: false, src: '', name: '' });
 
   const { getComplaintByRegNumber, getAllComplaints } = useDatabase();
 
@@ -249,10 +250,72 @@ function ViewStatus() {
                 )}
 
                 {/* Attachments Information */}
-                {status.attachments && status.attachments > 0 && (
+                {status.attachments && status.attachments.length > 0 && (
                   <div style={{ padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
-                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '4px' }}>ATTACHMENTS</div>
-                    <div style={{ fontSize: '13px' }}>{status.attachments} file(s) attached</div>
+                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '8px' }}>ATTACHMENTS</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                      {status.attachments.map((attachment, index) => {
+                        const isImage = attachment.type && attachment.type.startsWith('image/');
+                        return (
+                          <div key={index} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                            {isImage ? (
+                              <div
+                                onClick={() => setImagePreview({ show: true, src: attachment.url, name: attachment.name })}
+                                style={{
+                                  width: '44px',
+                                  height: '44px',
+                                  borderRadius: '4px',
+                                  border: '1px solid var(--border)',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  backgroundColor: 'var(--card-bg)',
+                                  flexShrink: 0
+                                }}
+                              >
+                                <img
+                                  src={attachment.url}
+                                  alt={attachment.name}
+                                  style={{
+                                    width: '40px',
+                                    height: '40px',
+                                    objectFit: 'cover',
+                                    borderRadius: '3px',
+                                    display: 'block'
+                                  }}
+                                />
+                              </div>
+                            ) : (
+                              <div style={{
+                                width: '44px',
+                                height: '44px',
+                                borderRadius: '4px',
+                                border: '1px solid var(--border)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: 'var(--card-bg)',
+                                flexShrink: 0
+                              }}>
+                                <i className="fas fa-file" style={{ fontSize: '16px', color: 'var(--muted)' }}></i>
+                              </div>
+                            )}
+                            <div style={{
+                              fontSize: '10px',
+                              color: 'var(--muted)',
+                              textAlign: 'center',
+                              maxWidth: '44px',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap'
+                            }}>
+                              {attachment.name.split('.').slice(0, -1).join('.')}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
 
@@ -341,6 +404,78 @@ function ViewStatus() {
           Click to auto-fill.
         </div>
       </div>
+
+      {/* Image Preview Modal */}
+      {imagePreview.show && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+            zIndex: 2000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px'
+          }}
+          onClick={() => setImagePreview({ show: false, src: '', name: '' })}
+        >
+          <div
+            style={{
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              maxWidth: '400px',
+              maxHeight: '400px'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setImagePreview({ show: false, src: '', name: '' })}
+              style={{
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                color: 'white',
+                border: '2px solid white',
+                borderRadius: '50%',
+                width: '40px',
+                height: '40px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '18px',
+                zIndex: 1,
+                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.3)'
+              }}
+            >
+              <i className="fas fa-times"></i>
+            </button>
+
+            {/* Image */}
+            <img
+              src={imagePreview.src}
+              alt={imagePreview.name}
+              style={{
+                width: 'auto',
+                height: 'auto',
+                maxWidth: '100%',
+                maxHeight: '100%',
+                display: 'block',
+                objectFit: 'contain',
+                imageRendering: 'auto'
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
