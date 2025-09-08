@@ -2,39 +2,46 @@ import { useState, useMemo, useEffect } from 'react';
 import { useDatabase } from '../../contexts';
 
 function UserManagement() {
-  const { getAllUsers } = useDatabase();
+  const { getAllUsers, getAllAdmins } = useDatabase();
   const [users, setUsers] = useState([]);
+  const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
-    const loadUsers = async () => {
+    const loadData = async () => {
       try {
-        const allUsers = await getAllUsers();
+        const [allUsers, allAdmins] = await Promise.all([
+          getAllUsers(),
+          getAllAdmins()
+        ]);
         setUsers(allUsers);
+        setAdmins(allAdmins);
       } catch (error) {
-        console.error('Error loading users:', error);
+        console.error('Error loading data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    loadUsers();
-  }, [getAllUsers]);
+    loadData();
+  }, [getAllUsers, getAllAdmins]);
 
-  const filteredUsers = useMemo(() => {
-    if (!searchTerm) return users;
-    return users.filter(user =>
-      user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.id.toLowerCase().includes(searchTerm.toLowerCase())
+  const allAccounts = useMemo(() => [...users, ...admins], [users, admins]);
+
+  const filteredAccounts = useMemo(() => {
+    if (!searchTerm) return allAccounts;
+    return allAccounts.filter(account =>
+      account.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (account.username && account.username.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      account.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      account.id.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }, [users, searchTerm]);
+  }, [allAccounts, searchTerm]);
 
-  const totalComplaints = users.reduce((sum, user) => sum + user.complaints.length, 0);
-  const activeUsers = users.filter(user => user.complaints.length > 0).length;
+  const totalComplaints = users.reduce((sum, user) => (user.complaints?.length || 0) + sum, 0);
+  const activeUsers = users.filter(user => user.complaints?.length > 0).length;
 
   return (
     <div>
@@ -86,21 +93,21 @@ function UserManagement() {
         </div>
 
         <div style={{ fontSize: '14px', color: 'var(--muted)', marginBottom: '15px' }}>
-          Showing {filteredUsers.length} of {users.length} users
+          Showing {filteredAccounts.length} of {allAccounts.length} accounts
         </div>
 
         {/* Users Grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '15px' }}>
-          {filteredUsers.map((user) => (
+          {filteredAccounts.map((account) => (
             <div
-              key={user.id}
+              key={account.id}
               className="card"
               style={{
                 padding: '15px',
                 cursor: 'pointer',
-                border: selectedUser?.id === user.id ? '2px solid var(--primary)' : '1px solid var(--border)'
+                border: selectedUser?.id === account.id ? '2px solid var(--primary)' : '1px solid var(--border)'
               }}
-              onClick={() => setSelectedUser(selectedUser?.id === user.id ? null : user)}
+              onClick={() => setSelectedUser(selectedUser?.id === account.id ? null : account)}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
                 <div style={{
@@ -115,43 +122,43 @@ function UserManagement() {
                   fontWeight: 'bold',
                   fontSize: '16px'
                 }}>
-                  {user.fullName.charAt(0)}
+                  {account.fullName.charAt(0)}
                 </div>
                 <div>
-                  <h4 style={{ margin: '0 0 2px 0', fontSize: '16px' }}>{user.fullName}</h4>
-                  <p style={{ margin: '0', fontSize: '12px', color: 'var(--muted)' }}>@{user.username}</p>
+                  <h4 style={{ margin: '0 0 2px 0', fontSize: '16px' }}>{account.fullName}</h4>
+                  <p style={{ margin: '0', fontSize: '12px', color: 'var(--muted)' }}>@{account.username}</p>
                 </div>
               </div>
 
               <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '8px' }}>
-                📧 {user.email}<br/>
-                📱 {user.phone}<br/>
-                📍 {user.address}<br/>
-                📅 Joined {new Date(user.createdAt).toLocaleDateString()}
+                📧 {account.email}<br/>
+                {account.phone && <>📱 {account.phone}<br/></>}
+                {account.address && <>📍 {account.address}<br/></>}
+                📅 Joined {new Date(account.createdAt).toLocaleDateString()}
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ fontSize: '14px', fontWeight: 'bold' }}>
-                  📋 {user.complaints.length} complaints
+                  {account.permissionLevel?.startsWith('admin') ? 'Admin' : `📋 ${account.complaints?.length || 0} complaints`}
                 </div>
                 <div style={{
                   padding: '4px 8px',
                   borderRadius: '12px',
-                  backgroundColor: user.complaints.length > 0 ? '#10b981' : '#6b7280',
+                  backgroundColor: account.permissionLevel?.startsWith('admin') ? '#8b5cf6' : (account.complaints?.length > 0 ? '#10b981' : '#6b7280'),
                   color: '#fff',
                   fontSize: '11px',
                   fontWeight: 'bold'
                 }}>
-                  {user.complaints.length > 0 ? 'Active' : 'Inactive'}
+                  {account.permissionLevel?.startsWith('admin') ? account.permissionLevel.replace('_', ' ').toUpperCase() : (account.complaints?.length > 0 ? 'Active' : 'Inactive')}
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        {filteredUsers.length === 0 && (
+        {filteredAccounts.length === 0 && (
           <div style={{ textAlign: 'center', padding: '40px', color: 'var(--muted)' }}>
-            No users found matching your search.
+            No accounts found matching your search.
           </div>
         )}
       </div>
@@ -210,12 +217,12 @@ function UserManagement() {
 
             {/* Complaint History */}
             <div>
-              <h4 style={{ marginBottom: '15px' }}>Complaint History ({selectedUser.complaints.length})</h4>
-              {selectedUser.complaints.length === 0 ? (
+              <h4 style={{ marginBottom: '15px' }}>Complaint History ({selectedUser.complaints?.length || 0})</h4>
+              {!selectedUser.permissionLevel?.startsWith('admin') && selectedUser.complaints?.length === 0 ? (
                 <div style={{ padding: '20px', textAlign: 'center', color: 'var(--muted)', backgroundColor: 'var(--bg)', borderRadius: '4px' }}>
                   No complaints submitted yet
                 </div>
-              ) : (
+              ) : !selectedUser.permissionLevel?.startsWith('admin') && (
                 <div style={{ display: 'grid', gap: '10px', maxHeight: '400px', overflowY: 'auto' }}>
                   {selectedUser.complaints.map((complaint) => (
                     <div key={complaint.id} style={{ padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '4px' }}>
@@ -241,6 +248,11 @@ function UserManagement() {
                       </div>
                     </div>
                   ))}
+                </div>
+              )}
+               {selectedUser.permissionLevel?.startsWith('admin') && (
+                <div style={{ padding: '20px', textAlign: 'center', color: 'var(--muted)', backgroundColor: 'var(--bg)', borderRadius: '4px' }}>
+                  Admins do not submit complaints.
                 </div>
               )}
             </div>

@@ -41,21 +41,30 @@ function AdminSettings() {
     inProgressComplaints: complaints.filter(c => c.status === 'In Progress').length
   };
 
-  const getAccessLevelColor = (level) => {
-    switch (level) {
-      case 3: return '#ef4444';
-      case 2: return '#f59e0b';
-      case 1: return '#10b981';
+  const getAccessLevelColor = (permissionLevel) => {
+    switch (permissionLevel) {
+      case 'admin_level_3': return '#ef4444';
+      case 'admin_level_2': return '#f59e0b';
+      case 'admin_level_1': return '#10b981';
       default: return '#6b7280';
     }
   };
 
-  const getAccessLevelName = (level) => {
-    switch (level) {
-      case 3: return 'State Level (Full Access)';
-      case 2: return 'City Level (Limited Access)';
-      case 1: return 'Sector Level (Basic Access)';
+  const getAccessLevelName = (permissionLevel) => {
+    switch (permissionLevel) {
+      case 'admin_level_3': return 'State Level (Full Access)';
+      case 'admin_level_2': return 'City Level (Limited Access)';
+      case 'admin_level_1': return 'Sector Level (Basic Access)';
       default: return 'Unknown';
+    }
+  };
+
+  const getAccessLevelIcon = (permissionLevel) => {
+    switch (permissionLevel) {
+      case 'admin_level_3': return '👑';
+      case 'admin_level_2': return '🏛️';
+      case 'admin_level_1': return '🏘️';
+      default: return '❓';
     }
   };
 
@@ -124,7 +133,7 @@ function AdminSettings() {
                   </div>
                   <div>
                     <h4 style={{ margin: '0 0 5px 0' }}>{adminData?.fullName}</h4>
-                    <p style={{ margin: '0', color: 'var(--muted)' }}>{adminData?.role}</p>
+                    <p style={{ margin: '0', color: 'var(--muted)' }}>{adminData?.permissionLevel.replace('_', ' ').toUpperCase()}</p>
                   </div>
                 </div>
 
@@ -158,21 +167,21 @@ function AdminSettings() {
                   padding: '20px',
                   backgroundColor: 'var(--bg)',
                   borderRadius: '8px',
-                  border: `2px solid ${getAccessLevelColor(adminData?.accessLevel)}`
+                  border: `2px solid ${getAccessLevelColor(adminData?.permissionLevel)}`
                 }}>
                   <div style={{ textAlign: 'center', marginBottom: '15px' }}>
                     <div style={{
                       fontSize: '36px',
                       marginBottom: '10px',
-                      color: getAccessLevelColor(adminData?.accessLevel)
+                      color: getAccessLevelColor(adminData?.permissionLevel)
                     }}>
-                      {adminData?.accessLevel === 3 ? '👑' : adminData?.accessLevel === 2 ? '🏛️' : '🏘️'}
+                      {getAccessLevelIcon(adminData?.permissionLevel)}
                     </div>
                     <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '5px' }}>
-                      Level {adminData?.accessLevel}
+                      {adminData?.permissionLevel.replace('admin_level_', 'Level ')}
                     </div>
                     <div style={{ color: 'var(--muted)' }}>
-                      {getAccessLevelName(adminData?.accessLevel)}
+                      {getAccessLevelName(adminData?.permissionLevel)}
                     </div>
                   </div>
                 </div>
@@ -245,24 +254,6 @@ function AdminSettings() {
             <h3 style={{ marginBottom: '20px' }}>Access Permissions</h3>
             <div style={{ display: 'grid', gap: '15px' }}>
               <div style={{ padding: '20px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
-                <h4 style={{ margin: '0 0 15px 0' }}>Your Permissions</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
-                  {adminData?.permissions.map((permission, index) => (
-                    <div key={index} style={{
-                      padding: '10px',
-                      backgroundColor: 'var(--card-bg)',
-                      borderRadius: '4px',
-                      fontSize: '14px',
-                      fontWeight: 'bold',
-                      color: 'var(--primary)'
-                    }}>
-                      ✅ {permission.replace('_', ' ').toUpperCase()}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div style={{ padding: '20px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
                 <h4 style={{ margin: '0 0 15px 0' }}>Permission Levels</h4>
                 <div style={{ display: 'grid', gap: '10px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', backgroundColor: 'var(--card-bg)', borderRadius: '4px' }}>
@@ -273,12 +264,12 @@ function AdminSettings() {
                     <div style={{
                       padding: '4px 8px',
                       borderRadius: '12px',
-                      backgroundColor: adminData?.accessLevel === 3 ? '#ef4444' : '#e5e7eb',
-                      color: adminData?.accessLevel === 3 ? '#fff' : 'var(--muted)',
+                      backgroundColor: adminData?.permissionLevel === 'admin_level_3' ? '#ef4444' : '#e5e7eb',
+                      color: adminData?.permissionLevel === 'admin_level_3' ? '#fff' : 'var(--muted)',
                       fontSize: '12px',
                       fontWeight: 'bold'
                     }}>
-                      {adminData?.accessLevel === 3 ? 'Current' : 'Level 3'}
+                      {adminData?.permissionLevel === 'admin_level_3' ? 'Current' : 'Level 3'}
                     </div>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', backgroundColor: 'var(--card-bg)', borderRadius: '4px' }}>
@@ -289,12 +280,12 @@ function AdminSettings() {
                     <div style={{
                       padding: '4px 8px',
                       borderRadius: '12px',
-                      backgroundColor: adminData?.accessLevel === 2 ? '#f59e0b' : '#e5e7eb',
-                      color: adminData?.accessLevel === 2 ? '#fff' : 'var(--muted)',
+                      backgroundColor: adminData?.permissionLevel === 'admin_level_2' ? '#f59e0b' : '#e5e7eb',
+                      color: adminData?.permissionLevel === 'admin_level_2' ? '#fff' : 'var(--muted)',
                       fontSize: '12px',
                       fontWeight: 'bold'
                     }}>
-                      {adminData?.accessLevel === 2 ? 'Current' : 'Level 2'}
+                      {adminData?.permissionLevel === 'admin_level_2' ? 'Current' : 'Level 2'}
                     </div>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', backgroundColor: 'var(--card-bg)', borderRadius: '4px' }}>
@@ -305,12 +296,12 @@ function AdminSettings() {
                     <div style={{
                       padding: '4px 8px',
                       borderRadius: '12px',
-                      backgroundColor: adminData?.accessLevel === 1 ? '#10b981' : '#e5e7eb',
-                      color: adminData?.accessLevel === 1 ? '#fff' : 'var(--muted)',
+                      backgroundColor: adminData?.permissionLevel === 'admin_level_1' ? '#10b981' : '#e5e7eb',
+                      color: adminData?.permissionLevel === 'admin_level_1' ? '#fff' : 'var(--muted)',
                       fontSize: '12px',
                       fontWeight: 'bold'
                     }}>
-                      {adminData?.accessLevel === 1 ? 'Current' : 'Level 1'}
+                      {adminData?.permissionLevel === 'admin_level_1' ? 'Current' : 'Level 1'}
                     </div>
                   </div>
                 </div>

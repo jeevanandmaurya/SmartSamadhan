@@ -13,8 +13,8 @@ function DeleteAccount() {
     if (!user || confirmText !== 'DELETE') return;
     setIsDeleting(true);
     try {
-      const wasAdmin = user.role === 'admin';
-      const ok = wasAdmin ? await deleteAdmin(user.id) : await deleteUser(user.id);
+      const isAdmin = user.permissionLevel?.startsWith('admin');
+      const ok = isAdmin ? await deleteAdmin(user.id) : await deleteUser(user.id);
       if (!ok) {
         // Basic inline failure notice
         alert('Failed to delete account record.');

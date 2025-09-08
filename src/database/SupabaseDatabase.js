@@ -62,22 +62,11 @@ export class SupabaseDatabase extends BaseDatabase {
   }
 
   async addUser(userData) {
-    await this.initialize();
-    const newUser = {
-      ...userData,
-      id: `user${Date.now()}`,
-      created_at: new Date().toISOString().split('T')[0],
-      complaints: []
-    };
-
-    const { data, error } = await this.supabase
-      .from('users')
-      .insert([newUser])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+  // With current schema users.id references auth.users(id).
+  // Creation must happen via auth.signUp (trigger inserts row).
+  // This method is intentionally disabled to prevent FK violations.
+  await this.initialize();
+  throw new Error('addUser: Disabled. Use auth.signUp to create users (trigger will insert profile).');
   }
 
   async updateUser(userId, changes) {
@@ -95,6 +84,7 @@ export class SupabaseDatabase extends BaseDatabase {
 
   async deleteUser(userId) {
     await this.initialize();
+    // This will cascade and delete the auth.users entry as well.
     const { error } = await this.supabase
       .from('users')
       .delete()
@@ -116,6 +106,18 @@ export class SupabaseDatabase extends BaseDatabase {
     return data;
   }
 
+  async getAdminById(adminId) {
+    await this.initialize();
+    const { data, error } = await this.supabase
+      .from('admins')
+      .select('*')
+      .eq('id', adminId)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error;
+    return data;
+  }
+
   async getAllAdmins() {
     await this.initialize();
     const { data, error } = await this.supabase
@@ -131,28 +133,19 @@ export class SupabaseDatabase extends BaseDatabase {
     const { data, error } = await this.supabase
       .from('admins')
       .select('*')
-      .eq('level', level);
+      .eq('permission_level', level);
 
-    if (error) throw error;
+    if (error) {
+      console.error(`Error fetching admins for level ${level}:`, error);
+      throw error;
+    }
     return data || [];
   }
 
   async addAdmin(adminData) {
-    await this.initialize();
-    const newAdmin = {
-      ...adminData,
-      id: `admin${Date.now()}`,
-      created_at: new Date().toISOString().split('T')[0]
-    };
-
-    const { data, error } = await this.supabase
-      .from('admins')
-      .insert([newAdmin])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+  // Admin creation is restricted; admins must be inserted manually after creating an auth user.
+  await this.initialize();
+  throw new Error('addAdmin: Disabled. Manually create admin auth user then insert into admins table.');
   }
 
   async updateAdmin(adminId, changes) {
@@ -170,6 +163,7 @@ export class SupabaseDatabase extends BaseDatabase {
 
   async deleteAdmin(adminId) {
     await this.initialize();
+    // This will cascade and delete the auth.users entry as well.
     const { error } = await this.supabase
       .from('admins')
       .delete()
@@ -248,7 +242,7 @@ export class SupabaseDatabase extends BaseDatabase {
       location: complaintData.location,
       latitude: complaintData.latitude,
       longitude: complaintData.longitude,
-      assigned_to: complaintData.assignedTo || complaintData.assigned_to || 'Unassigned',
+      assigned_to: complaintData.assignedTo || complaintData.assigned_to || null,
       submitted_at: complaintData.submittedAt || nowISO,
       date_submitted: today,
       last_updated: today,

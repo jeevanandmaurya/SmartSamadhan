@@ -3,7 +3,7 @@ import { useAuth, useDatabase } from '../../../contexts';
 
 function EditProfile() {
   const { user, refreshProfile } = useAuth();
-  const { getUserById, updateUser, getUserComplaints } = useDatabase();
+  const { getUserById, updateUser, getAdminById, updateAdmin, getUserComplaints } = useDatabase();
   const [isLoading, setIsLoading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -13,26 +13,33 @@ function EditProfile() {
     phone: '',
     address: ''
   });
+  const [isUser, setIsUser] = useState(true);
 
   // Load user data on component mount
   useEffect(() => {
     const loadUserData = async () => {
       if (!user) return;
       try {
-        const userDetails = await getUserById(user.id);
+        const isUserAccount = !user.permissionLevel?.startsWith('admin');
+        setIsUser(isUserAccount);
+
+        const userDetails = isUserAccount
+          ? await getUserById(user.id)
+          : await getAdminById(user.id);
+
         setUserData(userDetails);
         setFormData({
           fullName: userDetails?.fullName || user.fullName || '',
           email: userDetails?.email || user.email || '',
           phone: userDetails?.phone || user.phone || '',
-          address: userDetails?.address || user.address || ''
+          address: userDetails?.address || ''
         });
       } catch (error) {
         console.error('Error loading user data:', error);
       }
     };
     loadUserData();
-  }, [user, getUserById]);
+  }, [user, getUserById, getAdminById]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -44,15 +51,21 @@ function EditProfile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isUser) return; // Admins should not use this form to update
     setIsLoading(true);
 
     try {
-      const updated = await updateUser(user.id, {
+      const changes = {
         full_name: formData.fullName,
         email: formData.email,
         phone: formData.phone,
         address: formData.address,
-      });
+      };
+
+      const updated = isUser
+        ? await updateUser(user.id, changes)
+        : await updateAdmin(user.id, changes);
+
       if (updated) {
         await refreshProfile();
       }
@@ -68,12 +81,12 @@ function EditProfile() {
   };
 
   const handleReset = () => {
-    if (user) {
+    if (userData) {
       setFormData({
-        fullName: user.fullName || '',
-        email: user.email || '',
-        phone: user.phone || '',
-        address: user.address || ''
+        fullName: userData.fullName || '',
+        email: userData.email || '',
+        phone: userData.phone || '',
+        address: userData.address || ''
       });
     }
   };
@@ -81,7 +94,7 @@ function EditProfile() {
   // Simplified stats (fetch fresh each render for now; could cache with state)
   const [complaints, setComplaints] = useState([]);
   useEffect(() => {
-    if (!user) return;
+    if (!user || !isUser) return;
     (async () => {
       try {
         const list = await getUserComplaints(user.id);
@@ -90,7 +103,7 @@ function EditProfile() {
         console.warn('Failed loading user complaints for stats', e);
       }
     })();
-  }, [user, getUserComplaints]);
+  }, [user, isUser, getUserComplaints]);
   const userDataComplaintsLength = complaints.length;
   const userDataStatusCount = (status) => complaints.filter(c => c.status === status).length;
 
@@ -284,7 +297,7 @@ function EditProfile() {
                 </div>
                 <div>
                   <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>ACCOUNT TYPE</div>
-                  <div style={{ fontWeight: 'bold' }}>{user.role === 'user' ? 'Citizen Account' : 'Administrator'}</div>
+                  <div style={{ fontWeight: 'bold' }}>{user.permissionLevel?.startsWith('admin') ? 'Administrator' : 'Citizen Account'}</div>
                 </div>
                 <div>
                   <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>MEMBER SINCE</div>

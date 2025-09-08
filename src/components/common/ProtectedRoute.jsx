@@ -12,11 +12,20 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (requiredRole && user.role !== requiredRole) {
-    // If a user is logged in but tries to access a page for a different role,
-    // redirect them to their own dashboard.
-    const homePath = user.role === 'admin' ? '/admin-dashboard' : '/user-dashboard';
-    return <Navigate to={homePath} replace />;
+  if (requiredRole) {
+    const hasPermission =
+      requiredRole === 'admin'
+        ? user.permissionLevel?.startsWith('admin')
+        : user.permissionLevel === requiredRole;
+
+    if (!hasPermission) {
+      // If a user is logged in but tries to access a page for a different role,
+      // redirect them to their own dashboard.
+      const homePath = user.permissionLevel?.startsWith('admin')
+        ? '/admin-dashboard'
+        : '/user-dashboard';
+      return <Navigate to={homePath} replace />;
+    }
   }
 
   return children;

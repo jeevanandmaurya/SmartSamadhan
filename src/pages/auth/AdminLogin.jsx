@@ -5,12 +5,11 @@ import { useAuth } from '../../contexts';
 function AdminLogin() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const role = 'admin'; // Fixed to admin
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { login, user, usingSupabase } = useAuth();
+  const { loginAdmin, user, usingSupabase } = useAuth();
 
   // Debug: Log user changes for troubleshooting
   useEffect(() => {
@@ -18,18 +17,18 @@ function AdminLogin() {
       console.log('🔍 AdminLogin: User state changed:', {
         id: user.id,
         email: user.email,
-        role: user.role,
-        hasAdminRole: user.role === 'admin',
+        permissionLevel: user.permissionLevel,
+        hasAdminPermissions: user.permissionLevel?.startsWith('admin'),
         fullName: user.fullName,
-        user_metadata: user.user_metadata
+        meta: user.meta
       });
 
-      // Navigate based on role
-      if (user.role === 'admin') {
+      // Navigate based on permission level
+      if (user.permissionLevel?.startsWith('admin')) {
         console.log('🔍 AdminLogin: Redirecting to ADMIN DASHBOARD');
         navigate('/admin-dashboard', { replace: true });
       } else {
-        console.log('🔍 AdminLogin: Would redirect to USER DASHBOARD (role mismatch)', user.role);
+        console.log('🔍 AdminLogin: Would redirect to USER DASHBOARD (permission mismatch)', user.permissionLevel);
         // Don't navigate to user dashboard from admin login - this causes the glimpse
       }
     } else {
@@ -37,28 +36,35 @@ function AdminLogin() {
     }
   }, [user, navigate]);
 
-  const [loginSuccess, setLoginSuccess] = useState(false);
+  const [loginStep, setLoginStep] = useState('idle'); // 'idle' | 'authenticating' | 'verifying' | 'complete'
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
-    console.log('🔍 AdminLogin: Starting login process for:', username);
+    setLoginStep('authenticating');
+    console.log('🔍 AdminLogin: Starting admin login process for:', username);
 
     if (!username || !password) {
       setError(`Please enter your ${usingSupabase ? 'admin email' : 'username/email'} and password.`);
+      setLoginStep('idle');
       return;
     }
 
-    // Use auth context for authentication
-    const success = await login(username, password);
-    console.log('🔍 AdminLogin: Login result:', success);
+    try {
+      const { data, error } = await loginAdmin(username, password);
 
-    if (success) {
-      console.log('🔍 AdminLogin: Login successful, waiting for user role determination...');
-      setLoginSuccess(true);
-      // Don't navigate immediately - let the useEffect handle navigation when user is updated
-    } else {
-      setError('Invalid credentials. Make sure you are using a registered admin email.');
+      if (error) {
+        setError(error.message || 'Invalid credentials');
+        setLoginStep('idle');
+      } else if (data) {
+        setLoginStep('complete');
+        console.log('🔍 AdminLogin: Admin authentication successful, navigating...');
+        navigate('/admin-dashboard', { replace: true });
+      }
+    } catch (error) {
+      console.error('🔍 AdminLogin: Login error:', error);
+      setError('Login failed: ' + error.message);
+      setLoginStep('idle');
     }
   };
 
@@ -85,30 +91,31 @@ function AdminLogin() {
             </div>
           )}
 
-          {loginSuccess && !user && (
+          {loginStep === 'authenticating' && (
             <div className="card" style={{ borderColor: '#3b82f6', background: '#eff6ff', color: '#1d4ed8', marginBottom: 12 }}>
-              🔍 Authenticating... Checking your admin status and loading dashboard...
-              <br/>
-              <small>
-                How we check admin status:
-                <br/>• Step 1: Check if you exist in admins table
-                <br/>• Step 2: Check if your metadata has is_admin=true
-                <br/>• Step 3: Default to user role if neither found
-              </small>
+              🔐 Authenticating your credentials...
             </div>
           )}
 
-          {user && user.role !== 'admin' && (
-            <div className="card" style={{ borderColor: '#f97316', background: '#fff7ed', color: '#9a3412', marginBottom: 12 }}>
-              ⚠️ Admin verification in progress... Current role: {user.role}
+          {loginStep === 'verifying' && (
+            <div className="card" style={{ borderColor: '#f59e0b', background: '#fffbeb', color: '#92400e', marginBottom: 12 }}>
+              🛡️ Verifying admin privileges...
               <br/>
-              <small>Checking admin privileges...</small>
+              <small>Checking your admin status in the system...</small>
             </div>
           )}
 
-          {user && user.role === 'admin' && (
+          {loginStep === 'complete' && user?.permissionLevel?.startsWith('admin') && (
             <div className="card" style={{ borderColor: '#10b981', background: '#ecfdf5', color: '#064e3b', marginBottom: 12 }}>
-              ✅ Admin verified! Redirecting to admin dashboard...
+              ✅ Admin access verified! Redirecting to dashboard...
+            </div>
+          )}
+
+          {loginStep === 'complete' && !user?.permissionLevel?.startsWith('admin') && (
+            <div className="card" style={{ borderColor: '#ef4444', background: '#fef2f2', color: '#991b1b', marginBottom: 12 }}>
+              ❌ Admin access denied. This account doesn't have admin privileges.
+              <br/>
+              <small>Please use the regular user login or contact administrator.</small>
             </div>
           )}
 
@@ -187,7 +194,7 @@ function AdminLogin() {
 
             {/* Actions */}
             <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
-              <button type="submit" className="btn btn--primary" style={{ flex: '1 1 0' }} disabled={loginSuccess && !user}>Sign in</button>
+              <button type="submit" className="btn btn--primary" style={{ flex: '1 1 0' }} disabled={loginStep !== 'idle'}>Sign in</button>
               <button type="button" onClick={handleReset} className="btn" style={{ flex: '1 1 0' }}>Reset</button>
             </div>
           </form>
@@ -200,7 +207,7 @@ function AdminLogin() {
           {/* Tip */}
           {usingSupabase && (
             <div style={{ color: 'var(--muted)', fontSize: 12, marginTop: 12 }}>
-              Use your registered admin email & password. Admin role is determined by metadata (is_admin=true) or presence in admins table.
+              Use your registered admin email & password. Admin status is determined by your permission level.
             </div>
           )}
         </div>

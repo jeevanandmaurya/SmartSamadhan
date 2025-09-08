@@ -33,9 +33,9 @@ function Homepage() {
       try {
         const [allAdmins, state, city, sector] = await Promise.all([
           getAllAdmins(),
-          getAdminsByLevel('state'),
-          getAdminsByLevel('city'),
-          getAdminsByLevel('sector')
+          getAdminsByLevel('admin_level_1'),
+          getAdminsByLevel('admin_level_2'),
+          getAdminsByLevel('admin_level_3')
         ]);
         setAdmins(allAdmins);
         setStateAdmins(state);

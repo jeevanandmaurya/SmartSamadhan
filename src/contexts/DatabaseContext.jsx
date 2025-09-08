@@ -1,396 +1,133 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+// REWRITTEN DATABASE CONTEXT (Step 1)
+// Strategy: slim, promise-based, minimal state. We only expose functions; we don't mirror data arrays in context.
+// Keeps same exported hooks so existing components continue working unchanged.
+
+import { createContext, useContext, useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import supabase from '../supabaseClient.js';
 import { EnvironmentDatabaseFactory } from '../database/DatabaseFactory.js';
 
-// Database Context using modular abstraction layer
-const DatabaseContext = createContext();
+const DatabaseContext = createContext(null);
 
-export const useDatabase = () => {
-  const context = useContext(DatabaseContext);
-  if (!context) {
-    throw new Error('useDatabase must be used within a DatabaseProvider');
-  }
-  return context;
-};
+export function useDatabase() {
+  const ctx = useContext(DatabaseContext);
+  if (!ctx) throw new Error('useDatabase must be used within a DatabaseProvider');
+  return ctx;
+}
 
+// Normalization helpers (kept lightweight)
+function normalizeActor(row) {
+  if (!row) return null;
+  return {
+    ...row,
+    fullName: row.fullName || row.full_name,
+    createdAt: row.createdAt || row.created_at,
+    permissionLevel: row.permission_level || 'user',
+  };
+}
 
+function deriveCategoryParts(categoryString, mainCategory, subCategory1, specificIssue) {
+  if (mainCategory && subCategory1 && specificIssue) return { mainCategory, subCategory1, specificIssue };
+  if (!categoryString || typeof categoryString !== 'string') return { mainCategory, subCategory1, specificIssue };
+  const parts = categoryString.split('>').map(p => p.trim()).filter(Boolean);
+  return {
+    mainCategory: mainCategory || parts[0],
+    subCategory1: subCategory1 || parts[1],
+    specificIssue: specificIssue || parts[2]
+  };
+}
 
-export const DatabaseProvider = ({ children }) => {
-  const [database, setDatabase] = useState(null);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [configError, setConfigError] = useState(null);
+async function normalizeComplaints(raw = []) {
+  if (!Array.isArray(raw) || raw.length === 0) return [];
+  return raw.map(c => ({
+    ...c,
+    regNumber: c.regNumber ?? c.reg_number,
+    dateSubmitted: c.dateSubmitted ?? c.date_submitted ?? c.submitted_at?.split('T')[0],
+    lastUpdated: c.lastUpdated ?? c.last_updated,
+    submittedAt: c.submittedAt ?? c.submitted_at,
+    userId: c.userId ?? c.user_id,
+    attachments: c.attachments || [],
+    attachmentsCount: c.attachments_count ?? (Array.isArray(c.attachments) ? c.attachments.length : c.attachmentsCount),
+    ...deriveCategoryParts(c.category, c.mainCategory ?? c.main_category, c.subCategory1 ?? c.sub_category1, c.specificIssue ?? c.specific_issue),
+    updates: c.updates || []
+  }));
+}
 
-  // Initialize database on mount
+export function DatabaseProvider({ children }) {
+  const [ready, setReady] = useState(false);
+  const [error, setError] = useState(null);
+  const dbRef = useRef(null);
+
   useEffect(() => {
-    const initDatabase = async () => {
+    (async () => {
       try {
         const db = EnvironmentDatabaseFactory.getDatabase();
         if (!db) {
-          setConfigError('Supabase environment variables missing. Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY to your .env file and restart dev server.');
-          setIsInitialized(true);
+          setError('Missing Supabase configuration (VITE_SUPABASE_URL & VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY).');
+          setReady(true);
           return;
         }
         await db.initialize();
-        setDatabase(db);
-        setIsInitialized(true);
-      } catch (error) {
-        console.error('Failed to initialize Supabase database:', error);
-        setConfigError(error.message || 'Unknown initialization error');
-        setIsInitialized(true);
+        dbRef.current = db;
+      } catch (e) {
+        console.error('[Database] initialization failed', e);
+        setError(e.message);
+      } finally {
+        setReady(true);
       }
-    };
-
-    initDatabase();
+    })();
   }, []);
 
-  // Loading state
-  if (!isInitialized) {
-    return (
-      <DatabaseContext.Provider value={{ loading: true }}>
-        {children}
-      </DatabaseContext.Provider>
-    );
-  }
-
-  if (configError && !supabase) {
-    return (
-      <DatabaseContext.Provider value={{ loading: false, error: configError }}>
-        <div style={{ padding: 24, fontFamily: 'monospace', color: 'var(--fg)' }}>
-          <h3 style={{ marginTop: 0 }}>Configuration Error</h3>
-          <p>{configError}</p>
-          <code style={{ display: 'block', background: 'var(--card)', padding: 12, borderRadius: 6, border: '1px solid var(--border)' }}>
-            VITE_SUPABASE_URL=your_project_url<br/>
-            VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your_anon_key
-          </code>
-        </div>
-        {children}
-      </DatabaseContext.Provider>
-  );
-  }
-
-  // Wrapper functions that use the database abstraction
-  const getUser = async (username) => {
+  const safeCall = useCallback(async (fn, fallback) => {
     try {
-  const u = await database.getUser(username);
-  if (!u) return null;
-  return normalizeActor(u, 'user');
-    } catch (error) {
-      console.error('Error getting user:', error);
-      return null;
-    }
-  };
-
-  const getUserComplaints = async (userId) => {
-    try {
-  const raw = await database.getUserComplaints(userId);
-  return await normalizeComplaints(raw);
-    } catch (error) {
-      console.error('Error getting user complaints:', error);
-      return [];
-    }
-  };
-
-  const addUser = async (userData) => {
-    try {
-      return await database.addUser(userData);
-    } catch (error) {
-      console.error('Error adding user:', error);
-      return null;
-    }
-  };
-
-  const updateUser = async (userId, changes) => {
-    try {
-      const row = await database.updateUser(userId, changes);
-      return normalizeActor(row, 'user');
-    } catch (error) {
-      console.error('Error updating user:', error);
-      return null;
-    }
-  };
-
-  const deleteUser = async (userId) => {
-    try {
-      await database.deleteUser(userId);
-      return true;
-    } catch (error) {
-      console.error('Error deleting user:', error);
-      return false;
-    }
-  };
-
-  const deleteAdmin = async (adminId) => {
-    try {
-      await database.deleteAdmin(adminId);
-      return true;
-    } catch (error) {
-      console.error('Error deleting admin:', error);
-      return false;
-    }
-  };
-
-  const addComplaint = async (userId, complaintData) => {
-    try {
-      return await database.addComplaint(userId, complaintData);
-    } catch (error) {
-      console.error('Error adding complaint:', error);
-      return null;
-    }
-  };
-
-  const getAdmin = async (username) => {
-    try {
-  const a = await database.getAdmin(username);
-  if (!a) return null;
-  return normalizeActor(a, 'admin');
-    } catch (error) {
-      console.error('Error getting admin:', error);
-      return null;
-    }
-  };
-
-  // Fetch admin by id (safer than username for email-based auth)
-  const getAdminById = async (adminId) => {
-    try {
-      if (!adminId || !database?.supabase) return null;
-      const { data, error } = await database.supabase
-        .from('admins')
-        .select('*')
-        .eq('id', adminId)
-        .maybeSingle();
-      if (error) throw error;
-      return data ? normalizeActor(data, 'admin') : null;
+      if (!dbRef.current) return fallback;
+      return await fn(dbRef.current);
     } catch (e) {
-      console.error('Error getting admin by id:', e);
-      return null;
+      console.warn('[Database] operation failed:', e.message);
+      return fallback;
     }
-  };
+  }, []);
 
-  const getAllAdmins = async () => {
-    try {
-  const list = await database.getAllAdmins();
-  return (list || []).map(a => normalizeActor(a, 'admin'));
-    } catch (error) {
-      console.error('Error getting all admins:', error);
-      return [];
-    }
-  };
+  // Public API (mirrors previous context surface)
+  const api = useMemo(() => ({
+    loading: !ready,
+    error,
+    database: dbRef.current,
+    databaseType: 'supabase',
 
-  const getAllUsers = async () => {
-    try {
-      const list = await database.getAllUsers();
-      return (list || []).map(u => normalizeActor(u, 'user'));
-    } catch (error) {
-      console.error('Error getting all users:', error);
-      return [];
-    }
-  };
+    // Users
+    getUser: (username) => safeCall(db => db.getUser(username).then(normalizeActor), null),
+    getUserById: (id) => safeCall(db => db.getUserById(id).then(normalizeActor), null),
+    getAllUsers: () => safeCall(db => db.getAllUsers().then(list => list.map(normalizeActor)), []),
+    addUser: (data) => safeCall(db => db.addUser(data), null),
+    updateUser: (id, changes) => safeCall(db => db.updateUser(id, changes).then(normalizeActor), null),
+    deleteUser: (id) => safeCall(db => db.deleteUser(id).then(() => true), false),
 
-  const getAdminsByLevel = async (level) => {
-    try {
-  const list = await database.getAdminsByLevel(level);
-  return (list || []).map(a => normalizeActor(a, 'admin'));
-    } catch (error) {
-      console.error('Error getting admins by level:', error);
-      return [];
-    }
-  };
+    // Admins
+    getAdmin: (username) => safeCall(db => db.getAdmin(username).then(normalizeActor), null),
+    getAllAdmins: () => safeCall(db => db.getAllAdmins().then(list => list.map(normalizeActor)), []),
+    getAdminsByLevel: (lvl) => safeCall(db => db.getAdminsByLevel(lvl).then(list => list.map(normalizeActor)), []),
+    deleteAdmin: (id) => safeCall(db => db.deleteAdmin(id).then(() => true), false),
+    getAdminById: (id) => safeCall(async db => {
+      if (!id || !db.supabase) return null;
+      const { data, error: qErr } = await db.supabase.from('admins').select('*').eq('id', id).maybeSingle();
+      if (qErr) throw qErr;
+      return data ? normalizeActor(data) : null;
+    }, null),
 
-  const getAllComplaints = async () => {
-    try {
-  const raw = await database.getAllComplaints();
-  return await normalizeComplaints(raw);
-    } catch (error) {
-      console.error('Error getting all complaints:', error);
-      return [];
-    }
-  };
+    // Complaints
+    getAllComplaints: () => safeCall(db => db.getAllComplaints().then(normalizeComplaints), []),
+    getComplaintByRegNumber: (reg) => safeCall(db => db.getComplaintByRegNumber(reg).then(r => r ? normalizeComplaints([r]).then(a => a[0]) : null), null),
+    getUserComplaints: (userId) => safeCall(db => db.getUserComplaints(userId).then(normalizeComplaints), []),
+    addComplaint: (userId, data) => safeCall(db => db.addComplaint(userId, data), null),
+    updateComplaintStatus: (id, status, note) => safeCall(db => db.updateComplaintStatus(id, status, note).then(r => r ? normalizeComplaints([r]).then(a => a[0]) : null), null),
 
-  const updateComplaintStatus = async (complaintId, newStatus, note = '') => {
-    try {
-  const updated = await database.updateComplaintStatus(complaintId, newStatus, note);
-  if (!updated) return null;
-  const [normalized] = await normalizeComplaints([updated]);
-  return normalized;
-    } catch (error) {
-      console.error('Error updating complaint status:', error);
-      return null;
-    }
-  };
+    // Analytics
+    getComplaintStats: (filters = {}) => safeCall(db => db.getComplaintStats(filters), { total: 0, byStatus: {}, byPriority: {}, byDepartment: {} }),
+    getDepartmentStats: () => safeCall(db => db.getDepartmentStats(), {}),
+    getPriorityStats: () => safeCall(db => db.getPriorityStats(), {}),
+  }), [ready, error, safeCall]);
 
-  const getComplaintByRegNumber = async (regNumber) => {
-    try {
-  const row = await database.getComplaintByRegNumber(regNumber);
-  if (!row) return null;
-  const [normalized] = await normalizeComplaints([row]);
-  return normalized;
-    } catch (error) {
-      console.error('Error getting complaint by reg number:', error);
-      return null;
-    }
-  };
+  return <DatabaseContext.Provider value={api}>{children}</DatabaseContext.Provider>;
+}
 
-  const getUserById = async (userId) => {
-    try {
-      const row = await database.getUserById(userId);
-      return normalizeActor(row, 'user');
-    } catch (error) {
-      console.error('Error getting user by ID:', error);
-      return null;
-    }
-  };
-
-  // Analytics functions
-  const getComplaintStats = async (filters = {}) => {
-    try {
-      return await database.getComplaintStats(filters);
-    } catch (error) {
-      console.error('Error getting complaint stats:', error);
-      return { total: 0, byStatus: {}, byPriority: {}, byDepartment: {} };
-    }
-  };
-
-  const getDepartmentStats = async () => {
-    try {
-      return await database.getDepartmentStats();
-    } catch (error) {
-      console.error('Error getting department stats:', error);
-      return {};
-    }
-  };
-
-  const getPriorityStats = async () => {
-    try {
-      return await database.getPriorityStats();
-    } catch (error) {
-      console.error('Error getting priority stats:', error);
-      return {};
-    }
-  };
-
-  const value = {
-    // Loading state
-    loading: false,
-
-    // Data access (for backward compatibility)
-    users: [],
-    admins: [],
-    complaints: [],
-
-    // User functions
-    getUser,
-    getUserComplaints,
-    addUser,
-    updateUser,
-    deleteUser,
-    addComplaint,
-
-    // Admin functions
-    getAdmin,
-    getAllAdmins,
-    getAllUsers,
-    getAdminsByLevel,
-  deleteAdmin,
-  getAdminById,
-
-    // Complaint functions
-    getAllComplaints,
-    updateComplaintStatus,
-    getComplaintByRegNumber,
-
-    // Helper functions
-    getUserById,
-
-    // Analytics functions
-    getComplaintStats,
-    getDepartmentStats,
-    getPriorityStats,
-
-    // Database info
-    databaseType: EnvironmentDatabaseFactory.getDatabaseType(),
-    database: database
-  };
-
-  // -----------------
-  // Normalization Layer (Supabase -> legacy camelCase expected by UI)
-  // -----------------
-  async function normalizeComplaints(complaints = []) {
-    if (!Array.isArray(complaints) || complaints.length === 0) return [];
-
-    const mapped = complaints.map(c => ({
-      ...c,
-      // ID mapping
-      id: c.id,
-      // Registration number
-      regNumber: c.regNumber ?? c.reg_number,
-      // Date fields
-      dateSubmitted: c.dateSubmitted ?? c.date_submitted ?? c.submitted_at?.split('T')[0],
-      lastUpdated: c.lastUpdated ?? c.last_updated,
-      submittedAt: c.submittedAt ?? c.submitted_at,
-      // User linkage
-      userId: c.userId ?? c.user_id,
-  // Attachments
-  attachments: c.attachments || [],
-  attachmentsCount: c.attachments_count ?? (Array.isArray(c.attachments) ? c.attachments.length : c.attachmentsCount),
-      // Category breakdown (attempt to split if only category string present)
-      ...(deriveCategoryParts(
-        c.category,
-        c.mainCategory ?? c.main_category,
-        c.subCategory1 ?? c.sub_category1,
-        c.specificIssue ?? c.specific_issue
-      )),
-      // Preserve updates array
-      updates: c.updates || []
-    }));
-
-    // Enrich user names if missing and supabase available
-    const needUserNames = mapped.some(m => !m.userName && m.userId);
-    if (needUserNames && supabase) {
-      try {
-        const uniqueIds = [...new Set(mapped.filter(m => m.userId).map(m => m.userId))];
-        if (uniqueIds.length > 0) {
-          const { data: userRows } = await supabase
-            .from('users')
-            .select('id, full_name');
-          const userMap = (userRows || []).reduce((acc, u) => {
-            acc[u.id] = u.full_name;
-            return acc;
-          }, {});
-          mapped.forEach(m => {
-            if (!m.userName && m.userId) m.userName = userMap[m.userId] || 'User';
-          });
-        }
-      } catch (e) {
-        console.warn('Failed enriching user names:', e);
-      }
-    }
-    return mapped;
-  }
-
-  function normalizeActor(row, fallbackRole) {
-    if (!row) return null;
-    return {
-      ...row,
-      fullName: row.fullName || row.full_name,
-      createdAt: row.createdAt || row.created_at,
-      role: row.role || fallbackRole
-    };
-  }
-
-  function deriveCategoryParts(categoryString, mainCategory, subCategory1, specificIssue) {
-    if (mainCategory && subCategory1 && specificIssue) return { mainCategory, subCategory1, specificIssue };
-    if (!categoryString || typeof categoryString !== 'string') return { mainCategory, subCategory1, specificIssue };
-    const parts = categoryString.split('>').map(p => p.trim()).filter(Boolean);
-    return {
-      mainCategory: mainCategory || parts[0],
-      subCategory1: subCategory1 || parts[1],
-      specificIssue: specificIssue || parts[2]
-    };
-  }
-
-  return (
-    <DatabaseContext.Provider value={value}>
-      {children}
-    </DatabaseContext.Provider>
-  );
-};
+export default DatabaseContext;

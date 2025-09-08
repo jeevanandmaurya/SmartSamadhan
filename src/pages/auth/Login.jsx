@@ -5,38 +5,42 @@ import { useAuth } from '../../contexts';
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const role = 'user'; // Fixed to user
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { login, user, usingSupabase } = useAuth();
+  const { loginUser, user, usingSupabase } = useAuth();
 
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      navigate(user.role === 'admin' ? '/admin-dashboard' : '/user-dashboard');
+      navigate(user.permissionLevel?.startsWith('admin') ? '/admin-dashboard' : '/user-dashboard');
     }
   }, [user, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+
     if (!username || !password) {
       setError(`Please enter your ${usingSupabase ? 'email' : 'username'} and password.`);
       return;
     }
-    // Use auth context for authentication
-    const success = await login(username, password);
-    if (success) {
-      console.log('[Login] Login success, current user (may still be provisional):', user);
-      // Allow small delay for auth state listener to enrich profile then navigate
-      setTimeout(() => {
-        const target = user?.role === 'admin' ? '/admin-dashboard' : '/user-dashboard';
-        navigate(target);
-      }, 50);
-    } else {
-      setError(usingSupabase ? 'Invalid email or password. Please check your credentials.' : 'Invalid credentials');
+
+    try {
+      console.log('[Login] Starting user authentication...');
+      const { data, error } = await loginUser(username, password);
+
+      if (error) {
+        setError(error.message || 'Invalid credentials');
+      } else if (data) {
+        console.log('[Login] User authentication successful, navigating...');
+        const target = data.permissionLevel?.startsWith('admin') ? '/admin-dashboard' : '/user-dashboard';
+        navigate(target, { replace: true });
+      }
+    } catch (error) {
+      console.error('[Login] Login error:', error);
+      setError(error.message || 'Login failed. Please try again.');
     }
   };
 

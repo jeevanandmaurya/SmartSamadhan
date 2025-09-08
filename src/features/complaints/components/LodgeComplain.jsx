@@ -50,6 +50,19 @@ function LodgeComplain() {
     attachments: []
   });
 
+  // Sync form with user data when it becomes available
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        fullName: user.fullName || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        address: user.address || ''
+      }));
+    }
+  }, [user]);
+
   // Civic Issues Categories - Focused on everyday municipal problems
   const civicCategories = {
     'Roads & Infrastructure': {
@@ -486,7 +499,7 @@ function LodgeComplain() {
         priority: formData.priority,
         attachments: formData.attachments.length, // legacy count
         attachmentsMeta,
-        assignedTo: 'Unassigned',
+        assignedTo: null, // Set to null instead of 'Unassigned'
         status: 'Pending',
         submittedAt: new Date().toISOString()
       };

@@ -13,32 +13,71 @@
     <h1>Civic Issue Reporting System Architecture and Flow</h1>
     <div class="mermaid">
         flowchart TD
-            A[Admin Logs into Web Portal] --> B[Dashboard Loads: Interactive Map with Issue Pins]
-            B --> C[Filter Reports: By Category, Location, Priority, Status]
-            C --> D[View Report Details: Photo, Description, Location]
-            D --> E{Action Required?}
-            E -->|Yes| F[Assign to Department/Auto-Route]
-            E -->|No| G[Update Status: Acknowledged/In Progress/Resolved]
-            F --> H[Send Notification to Citizen]
-            G --> H
-            H --> I[Generate Analytics Report]
-            I --> J[Export Data/Insights]
-            J --> K[Logout or Continue Monitoring]
+            A[User/Citizen Registers/Login] --> B[Supabase Auth]
+            B --> C{User Role?}
+            C -->|User| D[User Dashboard]
+            C -->|Admin| E[Admin Dashboard]
 
-            subgraph "User Flow (Mobile App)"
-                L[Citizen Submits Report via Mobile] --> M[Report Sent to Backend]
-                M --> N[Confirmation Notification Received]
-                N --> O[Track Status via App]
+            D --> F[Lodge Complaint Form]
+            F --> G[Select Category: Roads/Sanitation/Water/etc]
+            G --> H[Add Location via GPS/Map]
+            H --> I[Upload Attachments to Supabase Storage]
+            I --> J[Submit to complaints table]
+            J --> K[Confirmation with Reference Number]
+
+            E --> L[View Interactive Map with Complaint Pins]
+            L --> M[Filter by Status/Priority/Department]
+            M --> N[View Complaint Details]
+            N --> O{Action?}
+            O -->|Assign| P[Assign to Department]
+            O -->|Update| Q[Update Status & Add Notes]
+            P --> R[Send Updates to updates JSONB]
+            Q --> R
+            R --> S[Generate Analytics Reports]
+            S --> T[Export Data]
+
+            subgraph "Frontend (React)"
+                U[App.jsx - Routing]
+                V[AuthContext - Supabase Auth]
+                W[DatabaseContext - CRUD Operations]
+                X[LodgeComplain Component]
+                Y[InteractiveMap Component]
+                Z[ManageReports Component]
             end
 
-            subgraph "Admin Portal Features"
-                B
-                C
-                D
-                F
-                G
-                I
+            subgraph "Backend (Supabase)"
+                AA[auth.users - Authentication]
+                BB[public.users - User Profiles]
+                CC[public.admins - Admin Profiles]
+                DD[public.complaints - Issue Reports]
+                EE[Storage Bucket - Attachments]
             end
+
+            subgraph "Database Schema"
+                FF[users: id, full_name, email, phone, address]
+                GG[admins: id, full_name, email, department, access_level]
+                HH[complaints: id, user_id, title, description, status, priority, category, location, latitude, longitude, attachments, updates]
+            end
+
+            U --> V
+            V --> W
+            W --> X
+            W --> Y
+            W --> Z
+
+            X --> J
+            Y --> L
+            Z --> N
+
+            B --> AA
+            F --> BB
+            E --> CC
+            J --> DD
+            I --> EE
+
+            BB --> FF
+            CC --> GG
+            DD --> HH
     </div>
 </body>
 </html>

@@ -29,13 +29,22 @@ export class DatabaseFactory {
 
     switch (type) {
       case this.DATABASE_TYPES.SUPABASE: {
-        if (!config.supabaseUrl || !config.supabaseKey) {
-          throw new Error('Supabase configuration requires supabaseUrl and supabaseKey');
+        // ALWAYS reuse existing shared client if present to prevent multiple GoTrueClient instances.
+        if (existingSupabase) {
+          database = new SupabaseDatabase({
+            supabaseUrl: config.supabaseUrl || 'injected',
+            supabaseKey: config.supabaseKey || 'injected',
+            client: existingSupabase
+          });
+        } else {
+          if (!config.supabaseUrl || !config.supabaseKey) {
+            throw new Error('Supabase configuration requires supabaseUrl and supabaseKey');
+          }
+          database = new SupabaseDatabase({
+            supabaseUrl: config.supabaseUrl,
+            supabaseKey: config.supabaseKey
+          });
         }
-        database = new SupabaseDatabase({
-          supabaseUrl: config.supabaseUrl,
-          supabaseKey: config.supabaseKey
-        });
         break;
       }
       default: {
