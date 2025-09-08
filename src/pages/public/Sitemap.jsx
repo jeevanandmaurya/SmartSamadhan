@@ -1,95 +1,201 @@
+import { useState, useEffect } from 'react';
+
 function Sitemap() {
+  const [theme, setTheme] = useState(() => {
+    // Load theme from localStorage or default to light
+    const savedTheme = localStorage.getItem('theme');
+    return savedTheme || 'light';
+  });
+
+  useEffect(() => {
+    // Apply the theme to the document on mount
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  // Listen for theme changes from other components
+  useEffect(() => {
+    const handleThemeChange = () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      setTheme(currentTheme);
+    };
+
+    // Check for theme changes periodically
+    const interval = setInterval(handleThemeChange, 100);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="section section--narrow">
-      <div className="card" style={{ padding: '16px' }}>
-        <h2 style={{ margin: '0 0 8px 0', fontSize: 18, color: 'var(--primary)' }}>System Design Overview</h2>
-        <p style={{ margin: '0 0 10px 0', fontSize: 12, lineHeight: 1.45, color: 'var(--muted)' }}>
-          High-level architecture & data flow of SmartSamadhan grievance platform.
-        </p>
-
-        <h3 style={{ fontSize: 14, margin: '16px 0 6px', color: 'var(--primary)' }}>1. Core Modules</h3>
-        <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12, lineHeight: 1.5 }}>
-          <li><strong>Auth & Identity:</strong> Supabase Auth for user + admin accounts.</li>
-          <li><strong>Complaints Service:</strong> CRUD + status workflow (Pending → In Progress → Resolved).</li>
-          <li><strong>Realtime Layer:</strong> Supabase channels push complaint updates to dashboards.</li>
-          <li><strong>Attachment Storage:</strong> Supabase Storage bucket (complaints-media).</li>
-          <li><strong>Geolocation & Maps:</strong> Leaflet + OSM tiles for coordinate capture.</li>
-          <li><strong>Admin Hierarchy:</strong> Level 1 (State), Level 2 (City), Level 3 (Sector).</li>
-        </ul>
-
-        <h3 style={{ fontSize: 14, margin: '16px 0 6px', color: 'var(--primary)' }}>2. Data Entities</h3>
-        <pre style={{ background: 'var(--bg-alt,#111827)', color: 'var(--fg,#fff)', padding: 10, fontSize: 11, overflowX: 'auto', borderRadius: 4, lineHeight: 1.35 }}>{`User {
-  id, username, fullName, email, phone, address, createdAt
-}
-Admin {
-  id, fullName, role, level, location, permissionLevel
-}
-Complaint {
-  id, regNumber, userId, title, description,
-  mainCategory, subCategory1, specificIssue,
-  department, city, location, latitude, longitude,
-  priority, status, attachmentsMeta(list), submittedAt,
-  lastUpdated, assignedTo
-}
-AttachmentMeta { name, path, size, type, url, uploadedAt }`}</pre>
-
-        <h3 style={{ fontSize: 14, margin: '16px 0 6px', color: 'var(--primary)' }}>3. Request Flow (Submit Complaint)</h3>
-        <ol style={{ margin: 0, paddingLeft: 18, fontSize: 12, lineHeight: 1.45 }}>
-          <li>User fills form (title, category, map location, priority, attachments optional).</li>
-          <li>Client uploads each file to storage (namespaced by temporary complaint id).</li>
-          <li>Complaint record persisted with attachment metadata + geocoordinates.</li>
-          <li>Realtime broadcast triggers subscriber dashboards to refresh list.</li>
-          <li>Admins filter/sort; update status with audit note.</li>
-        </ol>
-
-        <h3 style={{ fontSize: 14, margin: '16px 0 6px', color: 'var(--primary)' }}>4. Status Lifecycle</h3>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', fontSize: 11 }}>
-          <span style={{ padding: '4px 8px', background: '#ef4444', color: '#fff', borderRadius: 4 }}>Pending</span>
-          <span style={{ padding: '4px 8px', background: '#f59e0b', color: '#fff', borderRadius: 4 }}>In Progress</span>
-          <span style={{ padding: '4px 8px', background: '#10b981', color: '#fff', borderRadius: 4 }}>Resolved</span>
+    <div className="section" style={{ color: 'var(--fg)', fontFamily: 'system-ui', width: '100%', maxWidth: 'none', padding: '20px 12px', backgroundColor: 'var(--bg)' }}>
+      <div className="card" style={{ padding: '20px', backgroundColor: 'var(--card)', color: 'var(--fg)', border: '1px solid var(--border)', width: '100%' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+          <div style={{ textAlign: 'center' }}>
+            <h1 style={{ fontSize: 24, margin: '0 0 8px 0', color: 'var(--primary)' }}>SmartSamadhan - Simple Flow</h1>
+            <p style={{ fontSize: 12, margin: 0, color: 'var(--muted)', maxWidth: 'none' }}>
+              Minimal view of how a complaint moves through the system. Left to right: user submits, data stored, admin updates, user sees status.
+            </p>
+          </div>
         </div>
 
-        <h3 style={{ fontSize: 14, margin: '16px 0 6px', color: 'var(--primary)' }}>5. Frontend Layer</h3>
-        <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12, lineHeight: 1.45 }}>
-          <li><strong>React Components:</strong> Feature-driven (complaints, users, dashboards).</li>
-          <li><strong>Context:</strong> AuthContext & DatabaseContext abstract data operations.</li>
-          <li><strong>Tables:</strong> Client-side sort/filter/paginate (optimize later with server queries).</li>
-          <li><strong>Responsive:</strong> Mobile sidebar toggle + compact forms.</li>
-        </ul>
+        <div style={{ textAlign: 'left', width: '100%', margin: '0 auto', fontSize: '14px', lineHeight: '1.5', color: 'var(--fg)' }}>
+          <h2 style={{ color: 'var(--primary)', marginBottom: '20px', textAlign: 'center', fontSize: '20px' }}>System Flow Architecture</h2>
 
-        <h3 style={{ fontSize: 14, margin: '16px 0 6px', color: 'var(--primary)' }}>6. Security & Constraints</h3>
-        <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12, lineHeight: 1.45 }}>
-          <li>RLS (Row Level Security) recommended for production (not shown here).</li>
-          <li>File size & type validation to be hardened (basic filtering now).</li>
-          <li>Rate limiting & abuse detection future enhancement.</li>
-        </ul>
+          {/* User Journey Section */}
+          <section style={{ marginBottom: '24px' }}>
+            <h3 style={{ color: 'var(--primary)', marginBottom: '12px', borderBottom: '2px solid var(--primary)', paddingBottom: '6px', fontSize: '18px' }}>👤 User Journey</h3>
+            <ol style={{ paddingLeft: '20px' }}>
+              <li style={{ marginBottom: '12px', fontSize: '14px' }}>
+                <strong>Access App</strong>
+                <ul style={{ marginTop: '6px', paddingLeft: '20px' }}>
+                  <li style={{ marginBottom: '4px' }}>Open Website/Mobile App</li>
+                  <li>Check Login Status</li>
+                </ul>
+              </li>
+              <li style={{ marginBottom: '12px', fontSize: '14px' }}>
+                <strong>Authentication</strong>
+                <ul style={{ marginTop: '6px', paddingLeft: '20px' }}>
+                  <li style={{ marginBottom: '4px' }}>If not logged in → Login/Signup</li>
+                  <li>If logged in → Go to Dashboard</li>
+                </ul>
+              </li>
+              <li style={{ marginBottom: '12px', fontSize: '14px' }}>
+                <strong>Lodge Complaint</strong>
+                <ul style={{ marginTop: '6px', paddingLeft: '20px' }}>
+                  <li style={{ marginBottom: '4px' }}>Fill Form (Title, Description, Category)</li>
+                  <li style={{ marginBottom: '4px' }}>Select Location on Interactive Map</li>
+                  <li>Optional: Upload Photos/Documents</li>
+                </ul>
+              </li>
+              <li style={{ marginBottom: '12px', fontSize: '14px' }}>
+                <strong>Submit & Process</strong>
+                <ul style={{ marginTop: '6px', paddingLeft: '20px' }}>
+                  <li style={{ marginBottom: '4px' }}>Save to Supabase Database</li>
+                  <li style={{ marginBottom: '4px' }}>Generate Registration Number</li>
+                  <li>Send Realtime Notification</li>
+                </ul>
+              </li>
+              <li style={{ fontSize: '14px' }}>
+                <strong>Track Status</strong>
+                <ul style={{ marginTop: '6px', paddingLeft: '20px' }}>
+                  <li style={{ marginBottom: '4px' }}>View Complaint History</li>
+                  <li style={{ marginBottom: '4px' }}>See Real-time Updates</li>
+                  <li>Add More Details if Needed</li>
+                </ul>
+              </li>
+            </ol>
+          </section>
 
-        <h3 style={{ fontSize: 14, margin: '16px 0 6px', color: 'var(--primary)' }}>7. Improvement Backlog</h3>
-        <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12, lineHeight: 1.45 }}>
-          <li>Email / push notifications on status change.</li>
-          <li>Escalation timer & SLA tracking.</li>
-          <li>Geo heatmaps & cluster analytics.</li>
-          <li>Role-driven moderation queue.</li>
-          <li>Server-side pagination & full-text search.</li>
-        </ul>
+          {/* Admin Workflow Section */}
+          <section style={{ marginBottom: '24px' }}>
+            <h3 style={{ color: 'var(--primary)', marginBottom: '12px', borderBottom: '2px solid var(--primary)', paddingBottom: '6px', fontSize: '18px' }}>⚙️ Admin Workflow</h3>
+            <ol style={{ paddingLeft: '20px' }}>
+              <li style={{ marginBottom: '12px', fontSize: '14px' }}>
+                <strong>Login to Admin Panel</strong>
+              </li>
+              <li style={{ marginBottom: '12px', fontSize: '14px' }}>
+                <strong>View Dashboard</strong>
+                <ul style={{ marginTop: '6px', paddingLeft: '20px' }}>
+                  <li style={{ marginBottom: '4px' }}>See All Complaints</li>
+                  <li style={{ marginBottom: '4px' }}>Filter by Status/Category</li>
+                  <li>Sort by Priority/Date</li>
+                </ul>
+              </li>
+              <li style={{ marginBottom: '12px', fontSize: '14px' }}>
+                <strong>Review Complaints</strong>
+                <ul style={{ marginTop: '6px', paddingLeft: '20px' }}>
+                  <li style={{ marginBottom: '4px' }}>Open Complaint Details</li>
+                  <li style={{ marginBottom: '4px' }}>View Attachments & Location</li>
+                  <li>Check User Information</li>
+                </ul>
+              </li>
+              <li style={{ marginBottom: '12px', fontSize: '14px' }}>
+                <strong>Take Action</strong>
+                <ul style={{ marginTop: '6px', paddingLeft: '20px' }}>
+                  <li style={{ marginBottom: '4px' }}>Update Status (Pending → In Progress → Resolved)</li>
+                  <li style={{ marginBottom: '4px' }}>Add Notes/Comments</li>
+                  <li>Assign to Department (if needed)</li>
+                </ul>
+              </li>
+              <li style={{ fontSize: '14px' }}>
+                <strong>Real-time Updates</strong>
+                <ul style={{ marginTop: '6px', paddingLeft: '20px' }}>
+                  <li>Changes Push Instantly to User</li>
+                </ul>
+              </li>
+            </ol>
+          </section>
 
-        <h3 style={{ fontSize: 14, margin: '16px 0 6px', color: 'var(--primary)' }}>8. ASCII Architecture</h3>
-        <pre style={{ background: 'var(--bg-alt,#111827)', color: 'var(--fg,#fff)', padding: 10, fontSize: 11, overflowX: 'auto', borderRadius: 4, lineHeight: 1.3 }}>
-Browser (React)
-  |  fetch / realtime
-  v
-Supabase JS Client
-  |-- Auth (JWT)
-  |-- Realtime Channels
-  |-- Storage (attachments)
-  |-- DB (complaints, users, admins)
-        |  (RLS / policies)
-        v
- Postgres
-        </pre>
+          {/* Technical Architecture Section */}
+          <section style={{ marginBottom: '24px' }}>
+            <h3 style={{ color: 'var(--primary)', marginBottom: '12px', borderBottom: '2px solid var(--primary)', paddingBottom: '6px', fontSize: '18px' }}>🔧 Technical Architecture</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+              <div>
+                <h4 style={{ color: 'var(--fg)', marginBottom: '10px', fontSize: '16px' }}>Frontend (React)</h4>
+                <ul style={{ paddingLeft: '16px' }}>
+                  <li style={{ marginBottom: '4px', fontSize: '12px' }}>Components: Forms, Maps, Tables</li>
+                  <li style={{ marginBottom: '4px', fontSize: '12px' }}>State Management: Context API</li>
+                  <li style={{ fontSize: '12px' }}>Routing: React Router</li>
+                </ul>
+              </div>
+              <div>
+                <h4 style={{ color: 'var(--fg)', marginBottom: '10px', fontSize: '16px' }}>Backend (Supabase)</h4>
+                <ul style={{ paddingLeft: '16px' }}>
+                  <li style={{ marginBottom: '4px', fontSize: '12px' }}>Authentication: User/Admin Login</li>
+                  <li style={{ marginBottom: '4px', fontSize: '12px' }}>Database: PostgreSQL Tables</li>
+                  <li style={{ marginBottom: '4px', fontSize: '12px' }}>Storage: File Uploads</li>
+                  <li style={{ fontSize: '12px' }}>Realtime: Live Updates</li>
+                </ul>
+              </div>
+            </div>
+            <div style={{ marginTop: '12px' }}>
+              <h4 style={{ color: 'var(--fg)', marginBottom: '10px', fontSize: '16px' }}>Additional Technologies</h4>
+              <ul style={{ paddingLeft: '16px', display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                <li style={{ fontSize: '12px' }}>Maps: Leaflet + OpenStreetMap</li>
+                <li style={{ fontSize: '12px' }}>Hosting: Vercel/Netlify</li>
+              </ul>
+            </div>
+          </section>
 
-        <div style={{ marginTop: 14, fontSize: 11, color: 'var(--muted)' }}>
-          This document replaces the plain sitemap; navigation links live in the header/footer.
+          {/* Data Flow Section */}
+          <section>
+            <h3 style={{ color: 'var(--primary)', marginBottom: '12px', borderBottom: '2px solid var(--primary)', paddingBottom: '6px', fontSize: '18px' }}>📊 Data Flow</h3>
+            <div style={{ backgroundColor: 'var(--card)', padding: '12px', borderRadius: '6px', border: '1px solid var(--border)', overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+                <thead>
+                  <tr style={{ backgroundColor: 'var(--bg)' }}>
+                    <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid var(--border)', color: 'var(--fg)', fontSize: '14px', fontWeight: 'bold' }}>Input/Action</th>
+                    <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid var(--border)', color: 'var(--fg)', fontSize: '14px', fontWeight: 'bold' }}>Process</th>
+                    <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid var(--border)', color: 'var(--fg)', fontSize: '14px', fontWeight: 'bold' }}>Output/Storage</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>User Input</td>
+                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>Form Validation</td>
+                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>Database</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>File Upload</td>
+                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>Storage Processing</td>
+                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>Metadata in DB</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>Status Change</td>
+                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>Realtime Channel</td>
+                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>UI Update</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>Location</td>
+                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>Geocoding</td>
+                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>Map Display</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <div style={{ marginTop: 16, fontSize: 10, color: 'var(--muted)', borderTop: '1px solid var(--border)', paddingTop: 8 }}>
+          This is a simplified overview. For full details, check the code or docs.
         </div>
       </div>
     </div>

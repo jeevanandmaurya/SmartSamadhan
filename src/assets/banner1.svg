@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1400" height="360" viewBox="0 0 1400 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Redress Process Flow Banner">
+  <defs>
+    <!-- Background gradient: soft cream → peach → warm gold -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFFDF6"/>
+      <stop offset="50%" stop-color="#FFE3B8"/>
+      <stop offset="100%" stop-color="#FFD27F"/>
+    </linearGradient>
+
+    <!-- Drop shadow -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(0,0,0,0.12)"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="url(#bgGrad)"/>
+
+  <!-- Left Section -->
+  <g transform="translate(60,70)">
+    <text x="0" y="0" font-family="Playfair Display, Georgia, serif" font-size="38" fill="#E94E1B" font-weight="700">
+      Redress Process Flow
+    </text>
+    <text x="0" y="50" font-family="Inter, Arial, sans-serif" font-size="26" fill="#222" font-weight="600">
+      Citizen Lodges Complaint
+    </text>
+
+    <text x="0" y="110" font-family="Inter, Arial, sans-serif" font-size="16" fill="#B02A2A" font-weight="600" letter-spacing="0.5">
+      ARE YOU AGGRIEVED WITH
+    </text>
+    <text x="0" y="134" font-family="Inter, Arial, sans-serif" font-size="16" fill="#B02A2A" font-weight="600" letter-spacing="0.5">
+      THE SERVICES OF GOVERNMENT AGENCY?
+    </text>
+
+    <text x="0" y="190" font-family="Inter, Arial, sans-serif" font-size="22" fill="#0D2A7A" font-weight="700" letter-spacing="0.7">
+      LODGE YOUR GRIEVANCE HERE
+    </text>
+  </g>
+
+  <!-- Step 01 -->
+  <g transform="translate(540,80)" filter="url(#shadow)">
+    <path d="M60,10 Q65,5 70,10 L130,40 Q135,43 135,50 L135,90 Q135,97 130,100 L70,130 Q65,135 60,130 L0,100 Q-5,97 -5,90 L-5,50 Q-5,43 0,40 Z" 
+          fill="#fff" stroke="#0BBACF" stroke-width="3"/>
+    <text x="28" y="60" font-family="Inter, sans-serif" font-size="34" fill="#0BBACF" font-weight="700">01</text>
+    <text x="20" y="90" font-family="Inter, sans-serif" font-size="14" fill="#333" font-weight="600">COMPLAINT</text>
+    <text x="34" y="108" font-family="Inter, sans-serif" font-size="14" fill="#333" font-weight="600">LODGE</text>
+  </g>
+
+  <!-- Step 02 -->
+  <g transform="translate(740,80)" filter="url(#shadow)">
+    <path d="M60,10 Q65,5 70,10 L130,40 Q135,43 135,50 L135,90 Q135,97 130,100 L70,130 Q65,135 60,130 L0,100 Q-5,97 -5,90 L-5,50 Q-5,43 0,40 Z" 
+          fill="#fff" stroke="#6047D6" stroke-width="3"/>
+    <text x="28" y="60" font-family="Inter, sans-serif" font-size="34" fill="#6047D6" font-weight="700">02</text>
+    <text x="14" y="90" font-family="Inter, sans-serif" font-size="14" fill="#333" font-weight="600">ASSESSMENT</text>
+  </g>
+
+  <!-- Step 03 -->
+  <g transform="translate(940,80)" filter="url(#shadow)">
+    <path d="M60,10 Q65,5 70,10 L130,40 Q135,43 135,50 L135,90 Q135,97 130,100 L70,130 Q65,135 60,130 L0,100 Q-5,97 -5,90 L-5,50 Q-5,43 0,40 Z" 
+          fill="#fff" stroke="#E94E1B" stroke-width="3"/>
+    <text x="28" y="60" font-family="Inter, sans-serif" font-size="34" fill="#E94E1B" font-weight="700">03</text>
+    <text x="20" y="90" font-family="Inter, sans-serif" font-size="14" fill="#333" font-weight="600">REDRESSAL</text>
+  </g>
+
+  <!-- Right caption (shifted left + smaller font) -->
+  <text x="1120" y="220" font-family="Playfair Display, serif" font-size="18" fill="#1C2C6A" font-weight="600">
+    Redirection to Concerned Authority
+  </text>
+</svg>

@@ -10,74 +10,38 @@
     </script>
 </head>
 <body>
-    <h1>Civic Issue Reporting System Architecture and Flow</h1>
+    <h1 style="font-family: system-ui; font-size: 20px; margin:8px 0;">SmartSamadhan - Simple Flow</h1>
+    <p style="font:12px system-ui; margin:4px 0 14px; color:#555;max-width:760px;">Minimal view of how a complaint moves through the system. Left to right: user submits, data stored, admin updates, user sees status.</p>
     <div class="mermaid">
-        flowchart TD
-            A[User/Citizen Registers/Login] --> B[Supabase Auth]
-            B --> C{User Role?}
-            C -->|User| D[User Dashboard]
-            C -->|Admin| E[Admin Dashboard]
+        flowchart LR
+            U[User] --> A[Login / Signup]
+            A --> B[Auth]
+            B --> C[User Dashboard]
+            C --> D[Lodge Complaint]
+            D --> E{Add Attachments?}
+            E -->|Yes| F[Upload Files]
+            E -->|No| G[Skip]
+            F --> H[Save Complaint]
+            G --> H[Save Complaint]
+            H --> I[(Supabase DB)]
+            I --> J[[Realtime Notify]]
+            J --> K[Admin Dashboard]
+            K --> L{Action}
+            L -->|Update Status| M[Set Pending/In Progress/Resolved]
+            L -->|Add Notes| N[Store Notes]
+            M --> O[(DB Update)]
+            N --> O
+            O --> P[[Realtime Push]]
+            P --> Q[User Views Status]
+            Q --> C
 
-            D --> F[Lodge Complaint Form]
-            F --> G[Select Category: Roads/Sanitation/Water/etc]
-            G --> H[Add Location via GPS/Map]
-            H --> I[Upload Attachments to Supabase Storage]
-            I --> J[Submit to complaints table]
-            J --> K[Confirmation with Reference Number]
-
-            E --> L[View Interactive Map with Complaint Pins]
-            L --> M[Filter by Status/Priority/Department]
-            M --> N[View Complaint Details]
-            N --> O{Action?}
-            O -->|Assign| P[Assign to Department]
-            O -->|Update| Q[Update Status & Add Notes]
-            P --> R[Send Updates to updates JSONB]
-            Q --> R
-            R --> S[Generate Analytics Reports]
-            S --> T[Export Data]
-
-            subgraph "Frontend (React)"
-                U[App.jsx - Routing]
-                V[AuthContext - Supabase Auth]
-                W[DatabaseContext - CRUD Operations]
-                X[LodgeComplain Component]
-                Y[InteractiveMap Component]
-                Z[ManageReports Component]
-            end
-
-            subgraph "Backend (Supabase)"
-                AA[auth.users - Authentication]
-                BB[public.users - User Profiles]
-                CC[public.admins - Admin Profiles]
-                DD[public.complaints - Issue Reports]
-                EE[Storage Bucket - Attachments]
-            end
-
-            subgraph "Database Schema"
-                FF[users: id, full_name, email, phone, address]
-                GG[admins: id, full_name, email, department, access_level]
-                HH[complaints: id, user_id, title, description, status, priority, category, location, latitude, longitude, attachments, updates]
-            end
-
-            U --> V
-            V --> W
-            W --> X
-            W --> Y
-            W --> Z
-
-            X --> J
-            Y --> L
-            Z --> N
-
-            B --> AA
-            F --> BB
-            E --> CC
-            J --> DD
-            I --> EE
-
-            BB --> FF
-            CC --> GG
-            DD --> HH
+        %% Legend
+        classDef db fill:#f1f5f9,stroke:#94a3b8,color:#111,font-size:11px;
+        classDef action fill:#eef2ff,stroke:#6366f1,color:#111,font-size:11px;
+        classDef rt fill:#ecfdf5,stroke:#10b981,color:#064e3b,font-size:11px;
+        class I,O db;
+        class D,M,N,E,L action;
+        class J,P rt;
     </div>
 </body>
 </html>
