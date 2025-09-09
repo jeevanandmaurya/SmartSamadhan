@@ -5,8 +5,8 @@ function About() {
   const { t } = useTranslation();
   return (
     <div className="section section--narrow">
-      <div className="card" style={{ padding: '24px' }}>
-        <h1>{t('aboutTitle')}</h1>
+      <div className="card p-6">
+        <h1 className="text-2xl mb-4">{t('aboutTitle')}</h1>
 
         <p>
           <strong>{t('aboutDirector')}</strong> {t('aboutDirectorDesc')}
@@ -39,7 +39,7 @@ function About() {
           {t('aboutContactDesc')}
         </p>
 
-        <div style={{ marginTop: '15px', padding: '15px', backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '5px' }}>
+        <div className="card p-4 mb-4">
           <strong>{t('aboutContactName')}</strong><br />
           {t('aboutContactTitle')}<br />
           {t('aboutContactDept')}<br />
@@ -48,8 +48,8 @@ function About() {
         </div>
 
         <div className="divider" />
-        <p style={{ textAlign: 'center', margin: 0 }}>
-          <Link to="/" style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: 'bold' }}>{t('backToHome')}</Link>
+        <p className="text-center mb-0">
+          <Link to="/" className="text-primary font-bold">{t('backToHome')}</Link>
         </p>
       </div>
     </div>

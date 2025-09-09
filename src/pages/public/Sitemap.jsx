@@ -27,19 +27,17 @@ function Sitemap() {
   }, []);
 
   return (
-    <div className="section" style={{ color: 'var(--fg)', fontFamily: 'system-ui', width: '100%', maxWidth: 'none', padding: '20px 12px', backgroundColor: 'var(--bg)' }}>
-      <div className="card" style={{ padding: '20px', backgroundColor: 'var(--card)', color: 'var(--fg)', border: '1px solid var(--border)', width: '100%' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
-          <div style={{ textAlign: 'center' }}>
-            <h1 style={{ fontSize: 24, margin: '0 0 8px 0', color: 'var(--primary)' }}>{t('sitemapTitle')}</h1>
-            <p style={{ fontSize: 12, margin: 0, color: 'var(--muted)', maxWidth: 'none' }}>
-              {t('sitemapSubtitle')}
-            </p>
-          </div>
+    <div className="section section--narrow" style={{ color: 'var(--fg)', backgroundColor: 'var(--bg)' }}>
+      <div className="card p-5">
+        <div className="text-center mb-4">
+          <h1 className="text-2xl mb-2 text-primary">{t('sitemapTitle')}</h1>
+          <p className="text-xs text-muted">
+            {t('sitemapSubtitle')}
+          </p>
         </div>
 
-        <div style={{ textAlign: 'left', width: '100%', margin: '0 auto', fontSize: '13px', lineHeight: '1.4', color: 'var(--fg)' }}>
-          <h2 style={{ color: 'var(--primary)', marginBottom: '16px', textAlign: 'center', fontSize: '18px' }}>{t('systemFlowArchitecture')}</h2>
+        <div className="text-left text-fg text-sm" style={{ lineHeight: '1.4' }}>
+          <h2 className="text-lg text-primary text-center mb-4">{t('systemFlowArchitecture')}</h2>
 
           {/* User Journey Section */}
           <section style={{ marginBottom: '20px' }}>
@@ -196,7 +194,7 @@ function Sitemap() {
           </section>
         </div>
 
-        <div style={{ marginTop: 16, fontSize: 10, color: 'var(--muted)', borderTop: '1px solid var(--border)', paddingTop: 8 }}>
+        <div className="mt-4 text-xs text-muted" style={{ borderTop: '1px solid var(--border)', paddingTop: 8 }}>
           {t('simplifiedOverview')}
         </div>
       </div>

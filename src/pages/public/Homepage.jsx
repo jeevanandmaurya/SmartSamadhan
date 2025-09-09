@@ -15,10 +15,12 @@ function Homepage() {
   const { getAllAdmins, getAdminsByLevel, loading } = useDatabase();
 
   const slides = [
-    { color: 'red', text: t('slide1') },
-    { color: 'green', text: t('slide2') },
-    { color: 'blue', text: t('slide3') }
+    { src: '/images/slide1.svg', text: t('slide1'), alt: t('slide1Alt') || 'Citizen Services' },
+    { src: '/images/slide2.svg', text: t('slide2'), alt: t('slide2Alt') || 'Realtime Updates' },
+    { src: '/images/slide3.svg', text: t('slide3'), alt: t('slide3Alt') || 'Secure & Reliable' },
   ];
+
+  const [paused, setPaused] = useState(false);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
@@ -55,10 +57,34 @@ function Homepage() {
     }
   }, [getAllAdmins, getAdminsByLevel, loading]);
 
+  // Auto-slide (pauses on hover or when tab hidden)
+  useEffect(() => {
+    if (paused) return;
+    const id = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(id);
+  }, [paused, slides.length]);
+
+  // Pause when tab hidden / resume when visible
+  useEffect(() => {
+    const onVis = () => setPaused(document.hidden);
+    document.addEventListener('visibilitychange', onVis);
+    return () => document.removeEventListener('visibilitychange', onVis);
+  }, []);
+
+  // Preload images
+  useEffect(() => {
+    slides.forEach((s) => {
+      const img = new Image();
+      img.src = s.src;
+    });
+  }, []);
+
   return (
-    <div className="section section--narrow homepage" style={{ textAlign: 'center', paddingTop: 0 }}>
+    <div className="section section--narrow homepage text-center gradient-page" style={{ paddingTop: 0 }}>
       {/* Hero / Slider (condensed) */}
-      <div className="hero-slider" style={{ position: 'relative', height: 180, borderRadius: 8, overflow: 'hidden', marginBottom: 16 }}>
+      <div className="hero-slider neon-edge glow" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
         {slides.map((slide, index) => (
           <div
             key={index}
@@ -68,7 +94,7 @@ function Homepage() {
               left: `${(index - currentSlide) * 100}%`,
               width: '100%',
               height: '100%',
-              backgroundColor: slide.color,
+              backgroundColor: 'transparent',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -79,19 +105,41 @@ function Homepage() {
               transition: 'left .5s ease'
             }}
           >
-            {slide.text}
+            {/* Slide image */}
+            <img
+              src={slide.src}
+              alt={slide.alt}
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.72)' }}
+              loading={index === 0 ? 'eager' : 'lazy'}
+            />
+            {/* Overlay removed to prevent outside visibility */}
+            <div className="glass-card" style={{ padding: '14px 18px', borderRadius: 12, maxWidth: 720 }}>
+              <h1 className="gradient-text" style={{ margin: 0, fontSize: 'clamp(1.6rem, 3vw, 2.2rem)' }}>{slide.text}</h1>
+              <p style={{ margin: '6px 0 0', opacity: .9, fontSize: 14 }}>Smart, citizen-first grievance redressal platform.</p>
+            </div>
           </div>
         ))}
-        <button onClick={prevSlide} className="btn btn--ghost" style={{ position: 'absolute', top: '50%', left: 6, transform: 'translateY(-50%)', color: '#fff', background: 'rgba(17,24,39,0.45)', border: 'none', padding: '4px 8px', fontSize: 16 }} aria-label={t('previousSlide')}>&#10094;</button>
-        <button onClick={nextSlide} className="btn btn--ghost" style={{ position: 'absolute', top: '50%', right: 6, transform: 'translateY(-50%)', color: '#fff', background: 'rgba(17,24,39,0.45)', border: 'none', padding: '4px 8px', fontSize: 16 }} aria-label={t('nextSlide')}>&#10095;</button>
+        <button onClick={prevSlide} className="btn btn--ghost glass-card lift" style={{ position: 'absolute', top: '50%', left: 6, transform: 'translateY(-50%)', color: '#fff', border: 'none', padding: '4px 8px', fontSize: 16 }} aria-label={t('previousSlide')}>&#10094;</button>
+        <button onClick={nextSlide} className="btn btn--ghost glass-card lift" style={{ position: 'absolute', top: '50%', right: 6, transform: 'translateY(-50%)', color: '#fff', border: 'none', padding: '4px 8px', fontSize: 16 }} aria-label={t('nextSlide')}>&#10095;</button>
+        {/* Dots */}
+        <div style={{ position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 8 }}>
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentSlide(i)}
+              aria-label={`Go to slide ${i + 1}`}
+              style={{ width: 8, height: 8, borderRadius: 999, border: 'none', cursor: 'pointer', background: i === currentSlide ? '#fff' : 'rgba(255,255,255,0.6)' }}
+            />
+          ))}
+        </div>
       </div>
 
       {/* About Section (condensed) */}
-      <div className="card" style={{ textAlign: 'left', marginTop: 16, marginBottom: 20, padding: '14px' }}>
+      <div className="card glass-card neon-edge lift" style={{ textAlign: 'left', marginTop: 16, marginBottom: 20, padding: '14px' }}>
               <div style={{ padding: '10px', backgroundColor: 'var(--warning-bg, #fff3cd)', border: '1px solid var(--warning-border, #ffeaa7)', borderRadius: 4, marginBottom: 10 }}>
                 <p style={{ color: 'var(--warning-text, #856404)', margin: 0, fontWeight: 600, fontSize: 12, lineHeight: 1.4 }}>{t('emailWarning')}</p>
               </div>
-              <h3 style={{ color: 'var(--primary)', margin: '0 0 8px 0', fontSize: 16 }}>{t('aboutSmartSamadhan')}</h3>
+              <h3 className="gradient-text" style={{ margin: '0 0 8px 0', fontSize: 16 }}>{t('aboutSmartSamadhan')}</h3>
               <p style={{ fontSize: 13, lineHeight: 1.45, margin: '0 0 6px 0' }}>
                 {t('platformDescription')}
               </p>
@@ -112,17 +160,17 @@ function Homepage() {
 
       {/* Primary Actions */}
       <div className="actions-grid homepage-actions" style={{ marginBottom: 16, gap: 10 }}>
-        <Link to="/login" className="action-card" style={{ textDecoration: 'none', background: 'var(--primary)', padding: '12px 10px' }}>
+        <Link to="/login" className="action-card gradient-blue lift" style={{ textDecoration: 'none', padding: '12px 10px' }}>
           <div style={{ fontSize: 32, marginBottom: 4 }} className="fas fa-lock"></div>
           <h3 style={{ margin: '0 0 2px 0', fontSize: 16 }}>{t('login')}</h3>
           <p style={{ margin: 0, fontSize: 12 }}>{t('accessAccount')}</p>
         </Link>
-        <Link to="/view-status" className="action-card alt" style={{ textDecoration: 'none', background: '#f59e0b', padding: '12px 10px' }}>
+        <Link to="/view-status" className="action-card gradient-amber lift" style={{ textDecoration: 'none', padding: '12px 10px' }}>
           <div style={{ fontSize: 32, marginBottom: 4 }} className="fas fa-chart-bar"></div>
           <h3 style={{ margin: '0 0 2px 0', fontSize: 16 }}>{t('status')}</h3>
           <p style={{ margin: 0, fontSize: 12 }}>{t('trackReports')}</p>
         </Link>
-        <Link to="/contact-us" className="action-card" style={{ textDecoration: 'none', background: '#10b981', padding: '12px 10px' }}>
+        <Link to="/contact-us" className="action-card gradient-green lift" style={{ textDecoration: 'none', padding: '12px 10px' }}>
           <div style={{ fontSize: 32, marginBottom: 4 }} className="fas fa-phone"></div>
           <h3 style={{ margin: '0 0 2px 0', fontSize: 16 }}>{t('contact')}</h3>
           <p style={{ margin: 0, fontSize: 12 }}>{t('getInTouch')}</p>
@@ -130,9 +178,9 @@ function Homepage() {
       </div>
 
       {/* Admin Information Section */}
-      <div className="card" style={{ marginTop: 24, textAlign: 'left', padding: '14px' }}>
+  <div className="card glass-card neon-edge lift" style={{ marginTop: 24, textAlign: 'left', padding: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-            <h2 style={{ margin: '0', color: 'var(--primary)', fontSize: 18 }}>{t('userManagement')}</h2>
+    <h2 className="gradient-text" style={{ margin: '0', fontSize: 18 }}>{t('userManagement')}</h2>
             <button
               onClick={() => setShowAdmins(!showAdmins)}
             className="btn btn--primary"

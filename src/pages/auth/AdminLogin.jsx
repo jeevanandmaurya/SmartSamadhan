@@ -78,12 +78,12 @@ function AdminLogin() {
   };
 
   return (
-    <div className="section" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', paddingTop: 16 }}>
-      <div className="card auth-layout" style={{ overflow: 'hidden', maxWidth: 800, width: '100%', margin: '0 16px' }}>
+    <div className="section gradient-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', paddingTop: 16 }}>
+      <div className="card auth-layout glass-card neon-edge lift" style={{ overflow: 'hidden', maxWidth: 800, width: '100%', margin: '0 16px' }}>
         {/* Left: Form */}
         <div style={{ padding: 32 }}>
           <div style={{ marginBottom: 8 }}>
-            <h2 style={{ margin: 0 }}>{t('adminLogin')}</h2>
+            <h2 className="gradient-text" style={{ margin: 0 }}>{t('adminLogin')}</h2>
             <div style={{ color: 'var(--muted)', fontSize: 14 }}>{t('welcomeBack')}</div>
           </div>
 
@@ -215,7 +215,7 @@ function AdminLogin() {
         </div>
 
         {/* Right: Banner */}
-        <div className="auth-banner" aria-hidden style={{ background: 'linear-gradient(135deg,var(--primary),var(--primary-hover))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, fontSize: 18 }}>
+  <div className="auth-banner gradient-primary" aria-hidden style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, fontSize: 18 }}>
           {t('adminPortal')}
         </div>
       </div>
