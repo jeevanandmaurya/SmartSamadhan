@@ -215,8 +215,12 @@ function AdminLogin() {
         </div>
 
         {/* Right: Banner */}
-  <div className="auth-banner gradient-primary" aria-hidden style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, fontSize: 18 }}>
-          {t('adminPortal')}
+        <div className="auth-banner" aria-hidden style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8fafc'}}>
+          <img
+            src="/images/admin.svg"
+            alt="Admin Login Illustration"
+            style={{ width: '100%', objectFit: 'contain' }}
+          />
         </div>
       </div>
     </div>

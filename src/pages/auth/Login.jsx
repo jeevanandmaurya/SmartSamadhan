@@ -20,6 +20,21 @@ function Login() {
     }
   }, [user, navigate]);
 
+  // Handle hash navigation to form
+  useEffect(() => {
+    if (window.location.hash === '#form') {
+      const formElement = document.getElementById('login-form');
+      if (formElement) {
+        formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Focus on the first input field
+        const firstInput = formElement.querySelector('input');
+        if (firstInput) {
+          firstInput.focus();
+        }
+      }
+    }
+  }, []);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
@@ -69,7 +84,7 @@ function Login() {
             </div>
           )}
 
-          <form onSubmit={handleLogin}>
+          <form id="login-form" onSubmit={handleLogin}>
 
 
             {/* Username */}
@@ -163,8 +178,12 @@ function Login() {
         </div>
 
         {/* Right: Banner */}
-  <div className="auth-banner gradient-primary" aria-hidden style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, fontSize: 18 }}>
-          {t('appName')}
+        <div className="auth-banner" aria-hidden style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8fafc'}}>
+          <img
+            src="/images/login.svg"
+            alt="Login Illustration"
+            style={{ width: '100%', objectFit: 'contain' }}
+          />
         </div>
       </div>
     </div>

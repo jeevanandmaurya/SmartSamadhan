@@ -18,6 +18,7 @@ function Homepage() {
     { src: '/images/slide1.svg', text: t('slide1'), alt: t('slide1Alt') || 'Citizen Services' },
     { src: '/images/slide2.svg', text: t('slide2'), alt: t('slide2Alt') || 'Realtime Updates' },
     { src: '/images/slide3.svg', text: t('slide3'), alt: t('slide3Alt') || 'Secure & Reliable' },
+    { src: '/images/slide4.svg', text: t('slide4'), alt: t('slide4Alt') || 'Community Support' },
   ];
 
   const [paused, setPaused] = useState(false);
@@ -84,7 +85,7 @@ function Homepage() {
   return (
     <div className="section section--narrow homepage text-center gradient-page" style={{ paddingTop: 0 }}>
       {/* Hero / Slider (condensed) */}
-      <div className="hero-slider neon-edge glow" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+      <div className="hero-slider" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
         {slides.map((slide, index) => (
           <div
             key={index}
@@ -109,14 +110,9 @@ function Homepage() {
             <img
               src={slide.src}
               alt={slide.alt}
-              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.72)' }}
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
               loading={index === 0 ? 'eager' : 'lazy'}
             />
-            {/* Overlay removed to prevent outside visibility */}
-            <div className="glass-card" style={{ padding: '14px 18px', borderRadius: 12, maxWidth: 720 }}>
-              <h1 className="gradient-text" style={{ margin: 0, fontSize: 'clamp(1.6rem, 3vw, 2.2rem)' }}>{slide.text}</h1>
-              <p style={{ margin: '6px 0 0', opacity: .9, fontSize: 14 }}>Smart, citizen-first grievance redressal platform.</p>
-            </div>
           </div>
         ))}
         <button onClick={prevSlide} className="btn btn--ghost glass-card lift" style={{ position: 'absolute', top: '50%', left: 6, transform: 'translateY(-50%)', color: '#fff', border: 'none', padding: '4px 8px', fontSize: 16 }} aria-label={t('previousSlide')}>&#10094;</button>
@@ -160,7 +156,7 @@ function Homepage() {
 
       {/* Primary Actions */}
       <div className="actions-grid homepage-actions" style={{ marginBottom: 16, gap: 10 }}>
-        <Link to="/login" className="action-card gradient-blue lift" style={{ textDecoration: 'none', padding: '12px 10px' }}>
+        <Link to="/login#form" className="action-card gradient-blue lift" style={{ textDecoration: 'none', padding: '12px 10px' }}>
           <div style={{ fontSize: 32, marginBottom: 4 }} className="fas fa-lock"></div>
           <h3 style={{ margin: '0 0 2px 0', fontSize: 16 }}>{t('login')}</h3>
           <p style={{ margin: 0, fontSize: 12 }}>{t('accessAccount')}</p>

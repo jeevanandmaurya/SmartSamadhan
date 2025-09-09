@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="400" height="600" viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="adminGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0" style="stop-color:#1a365d;stop-opacity:1"/>
+      <stop offset="0.5" style="stop-color:#2d3748;stop-opacity:1"/>
+      <stop offset="1" style="stop-color:#1a202c;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="screenGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0" style="stop-color:#63b3ed;stop-opacity:0.8"/>
+      <stop offset="1" style="stop-color:#3182ce;stop-opacity:0.6"/>
+    </linearGradient>
+    <filter id="strongGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="dataGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <pattern id="networkPattern" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+      <circle cx="10" cy="10" r="1" fill="#63b3ed" opacity="0.3"/>
+      <circle cx="50" cy="30" r="1" fill="#63b3ed" opacity="0.2"/>
+      <circle cx="70" cy="60" r="1" fill="#63b3ed" opacity="0.25"/>
+      <line x1="10" y1="10" x2="50" y2="30" stroke="#63b3ed" stroke-width="0.5" opacity="0.2"/>
+      <line x1="50" y1="30" x2="70" y2="60" stroke="#63b3ed" stroke-width="0.5" opacity="0.2"/>
+    </pattern>
+  </defs>
+  <rect width="400" height="600" fill="url(#adminGradient)"/>
+  <rect width="400" height="600" fill="url(#networkPattern)"/>
+  <g transform="translate(30, 40)">
+    <text x="170" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" fill="#63b3ed" font-weight="bold" filter="url(#dataGlow)" style="white-space: pre;">COMMAND CENTER</text>
+    <text x="170" y="55" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#a0aec0" opacity="0.9" style="white-space: pre;">Municipal Operations Control</text>
+    <g transform="translate(60, 80)">
+      <rect x="0" y="0" width="220" height="140" rx="8" fill="#1a202c" stroke="#4a5568" stroke-width="2" filter="url(#strongGlow)"/>
+      <rect x="8" y="8" width="204" height="124" rx="4" fill="#000000"/>
+      <rect x="12" y="12" width="196" height="116" rx="2" fill="url(#screenGlow)" opacity="0.1"/>
+      <g stroke="#63b3ed" stroke-width="1.5" fill="none" opacity="0.8">
+        <rect x="20" y="20" width="40" height="30" rx="2"/>
+        <rect x="70" y="20" width="40" height="30" rx="2"/>
+        <rect x="120" y="20" width="40" height="30" rx="2"/>
+        <rect x="170" y="20" width="30" height="30" rx="2"/>
+        <rect x="20" y="60" width="50" height="35" rx="2"/>
+        <rect x="80" y="60" width="45" height="35" rx="2"/>
+        <rect x="135" y="60" width="65" height="35" rx="2"/>
+        <rect x="20" y="105" width="180" height="15" rx="2"/>
+      </g>
+      <circle cx="40" cy="35" r="3" fill="#ef4444" opacity="0.9">
+        <animate attributeName="opacity" values="0.9;0.4;0.9" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="90" cy="40" r="2" fill="#f59e0b" opacity="0.8">
+        <animate attributeName="opacity" values="0.8;0.3;0.8" dur="1.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="140" cy="30" r="2" fill="#ef4444" opacity="0.9">
+        <animate attributeName="opacity" values="0.9;0.4;0.9" dur="2.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="45" cy="75" r="2" fill="#f59e0b" opacity="0.7"/>
+      <circle cx="100" cy="80" r="2" fill="#10b981" opacity="0.8"/>
+      <circle cx="160" cy="85" r="3" fill="#ef4444" opacity="0.9">
+        <animate attributeName="opacity" values="0.9;0.4;0.9" dur="1.8s" repeatCount="indefinite"/>
+      </circle>
+      <g stroke="#63b3ed" stroke-width="1" opacity="0.4" stroke-dasharray="2,2">
+        <line x1="40" y1="35" x2="90" y2="40">
+          <animate attributeName="stroke-dashoffset" values="0;4" dur="1s" repeatCount="indefinite"/>
+        </line>
+        <line x1="90" y1="40" x2="140" y2="30">
+          <animate attributeName="stroke-dashoffset" values="0;4" dur="1s" repeatCount="indefinite"/>
+        </line>
+        <line x1="45" y1="75" x2="100" y2="80">
+          <animate attributeName="stroke-dashoffset" values="0;4" dur="1s" repeatCount="indefinite"/>
+        </line>
+      </g>
+      <rect x="12" y="115" width="196" height="15" rx="2" fill="#1a365d"/>
+      <text x="20" y="125" font-family="Arial, sans-serif" font-size="8" fill="#63b3ed" style="white-space: pre;">SYSTEM ACTIVE</text>
+      <text x="93.416" y="125.458" font-family="Arial, sans-serif" font-size="8" fill="#48bb78" style="white-space: pre; font-size: 8px;">ALL DEPARTMENTS ONLINE</text>
+    </g>
+    <g transform="translate(10, 100)">
+      <rect x="0" y="0" width="45" height="120" rx="4" fill="#2d3748" stroke="#4a5568" stroke-width="1" filter="url(#dataGlow)"/>
+      <rect x="5" y="5" width="35" height="15" rx="2" fill="#3182ce" opacity="0.8"/>
+      <text x="22" y="14" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" fill="white" style="white-space: pre;">ALERTS</text>
+      <rect x="8" y="25" width="29" height="8" rx="1" fill="#fed7d7"/>
+      <text x="10" y="31" font-family="Arial, sans-serif" font-size="5" fill="#c53030" style="white-space: pre;">Critical: 3</text>
+      <rect x="8" y="38" width="29" height="8" rx="1" fill="#fef5e7"/>
+      <text x="10" y="44" font-family="Arial, sans-serif" font-size="5" fill="#d69e2e" style="white-space: pre;">High: 12</text>
+      <rect x="8" y="51" width="29" height="8" rx="1" fill="#f0fff4"/>
+      <text x="10" y="57" font-family="Arial, sans-serif" font-size="5" fill="#38a169" style="white-space: pre;" transform="matrix(0.899173, 0, 0, 0.920001, 1.008274, 4.193856)">Normal: 156</text>
+      <rect x="5" y="70" width="35" height="12" rx="2" fill="#1a365d" opacity="0.8"/>
+      <text x="22" y="78" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" fill="#63b3ed" style="white-space: pre;">DEPTS</text>
+      <circle cx="12" cy="88" r="2" fill="#48bb78"/>
+      <text x="18" y="91" font-family="Arial, sans-serif" font-size="4" fill="#a0aec0" style="white-space: pre;">Public Works</text>
+      <circle cx="12" cy="98" r="2" fill="#48bb78"/>
+      <text x="18" y="101" font-family="Arial, sans-serif" font-size="4" fill="#a0aec0" style="white-space: pre;">Sanitation</text>
+      <circle cx="12" cy="108" r="2" fill="#ecc94b"/>
+      <text x="18" y="111" font-family="Arial, sans-serif" font-size="4" fill="#a0aec0" style="white-space: pre;">Utilities</text>
+    </g>
+    <g transform="translate(285, 100)">
+      <rect x="0" y="0" width="45" height="120" rx="4" fill="#2d3748" stroke="#4a5568" stroke-width="1" filter="url(#dataGlow)"/>
+      <rect x="5" y="5" width="35" height="15" rx="2" fill="#805ad5" opacity="0.8"/>
+      <text x="22" y="14" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" fill="white" style="white-space: pre;">STATS</text>
+      <text x="22" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#63b3ed" font-weight="bold" style="white-space: pre;">847</text>
+      <text x="22" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="4" fill="#a0aec0" style="white-space: pre;">Total Reports</text>
+      <text x="22" y="52" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#f6e05e" font-weight="bold" style="white-space: pre;">23</text>
+      <text x="22" y="60" text-anchor="middle" font-family="Arial, sans-serif" font-size="4" fill="#a0aec0" style="white-space: pre;">Active Teams</text>
+      <text x="22" y="74" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#68d391" font-weight="bold" style="white-space: pre;">94%</text>
+      <text x="22" y="82" text-anchor="middle" font-family="Arial, sans-serif" font-size="4" fill="#a0aec0" style="white-space: pre;">Resolution Rate</text>
+      <rect x="8" y="90" width="29" height="6" rx="3" fill="#1a365d"/>
+      <rect x="8" y="90" width="22" height="6" rx="3" fill="#48bb78"/>
+      <text x="22" y="105" text-anchor="middle" font-family="Arial, sans-serif" font-size="4" fill="#a0aec0" style="white-space: pre;">System Health</text>
+    </g>
+    <g transform="translate(0, 240)">
+      <rect x="0" y="0" width="340" height="200" rx="6" fill="#2d3748" stroke="#4a5568" stroke-width="1" filter="url(#strongGlow)"/>
+      <rect x="8" y="8" width="324" height="20" rx="2" fill="#1a365d"/>
+      <text x="16" y="21" font-family="Arial, sans-serif" font-size="10" fill="#63b3ed" font-weight="bold" style="white-space: pre;">REAL-TIME ANALYTICS &amp; RESOURCE ALLOCATION</text>
+      <rect x="15" y="35" width="310" height="150" rx="3" fill="#1a202c"/>
+      <g transform="translate(25, 50)">
+        <text x="0" y="10" font-family="Arial, sans-serif" font-size="8" fill="#a0aec0" style="white-space: pre;">Response Time (hrs)</text>
+        <g stroke="#63b3ed" stroke-width="2" fill="none">
+          <path d="M0,60 Q30,40 60,45 Q90,35 120,50 Q150,30 180,40"/>
+        </g>
+        <g fill="#63b3ed" opacity="0.7">
+          <circle cx="30" cy="40" r="2"/>
+          <circle cx="60" cy="45" r="2"/>
+          <circle cx="90" cy="35" r="2"/>
+          <circle cx="120" cy="50" r="2"/>
+          <circle cx="150" cy="30" r="2"/>
+          <circle cx="180" cy="40" r="2"/>
+        </g>
+        <text x="200" y="10" font-family="Arial, sans-serif" font-size="8" fill="#a0aec0" style="white-space: pre;">Dept. Workload</text>
+        <rect x="200" y="20" width="8" height="40" fill="#ef4444" opacity="0.8"/>
+        <rect x="212" y="25" width="8" height="35" fill="#f59e0b" opacity="0.8"/>
+        <rect x="224" y="30" width="8" height="30" fill="#48bb78" opacity="0.8"/>
+        <rect x="236" y="35" width="8" height="25" fill="#63b3ed" opacity="0.8"/>
+        <text x="200" y="75" font-family="Arial, sans-serif" font-size="5" fill="#a0aec0" style="white-space: pre;">PW</text>
+        <text x="212" y="75" font-family="Arial, sans-serif" font-size="5" fill="#a0aec0" style="white-space: pre;">SAN</text>
+        <text x="224" y="75" font-family="Arial, sans-serif" font-size="5" fill="#a0aec0" style="white-space: pre;">UTL</text>
+        <text x="236" y="75" font-family="Arial, sans-serif" font-size="5" fill="#a0aec0" style="white-space: pre;">TRF</text>
+      </g>
+      <g transform="translate(25, 130)">
+        <text x="0" y="10" font-family="Arial, sans-serif" font-size="8" fill="#a0aec0" style="white-space: pre;">Resource Allocation Matrix</text>
+        <g fill="#63b3ed" opacity="0.6">
+          <rect x="0" y="15" width="20" height="8" rx="1"/>
+          <rect x="25" y="15" width="35" height="8" rx="1"/>
+          <rect x="65" y="15" width="15" height="8" rx="1"/>
+          <rect x="85" y="15" width="25" height="8" rx="1"/>
+          <rect x="115" y="15" width="40" height="8" rx="1"/>
+        </g>
+        <text x="5" y="21" font-family="Arial, sans-serif" font-size="5" fill="white" style="white-space: pre;">Zone A</text>
+        <text x="35" y="21" font-family="Arial, sans-serif" font-size="5" fill="white" style="white-space: pre;">Zone B (Priority)</text>
+        <text x="68" y="21" font-family="Arial, sans-serif" font-size="5" fill="white" style="white-space: pre;">Zone C</text>
+        <text x="90" y="21" font-family="Arial, sans-serif" font-size="5" fill="white" style="white-space: pre;">Zone D</text>
+        <text x="125" y="21" font-family="Arial, sans-serif" font-size="5" fill="white" style="white-space: pre;">Emergency Pool</text>
+      </g>
+    </g>
+    <g opacity="0.6">
+      <g transform="translate(320, 70)">
+        <circle cx="0" cy="0" r="8" fill="#63b3ed" opacity="0.3" filter="url(#dataGlow)">
+          <animate attributeName="r" values="8;12;8" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <text x="0" y="2" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" style="white-space: pre;">📊</text>
+      </g>
+      <g transform="translate(15, 300)">
+        <circle cx="0" cy="0" r="6" fill="#805ad5" opacity="0.3" filter="url(#dataGlow)">
+          <animate attributeName="r" values="6;10;6" dur="2.5s" repeatCount="indefinite"/>
+        </circle>
+        <text x="0" y="2" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" style="white-space: pre;">⚙️</text>
+      </g>
+      <g transform="translate(315, 350)">
+        <circle cx="0" cy="0" r="7" fill="#48bb78" opacity="0.3" filter="url(#dataGlow)">
+          <animate attributeName="r" values="7;11;7" dur="3.5s" repeatCount="indefinite"/>
+        </circle>
+        <text x="0" y="2" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" style="white-space: pre;">📍</text>
+      </g>
+    </g>
+  </g>
+  <g opacity="0.15">
+    <circle cx="50" cy="500" r="20" fill="#63b3ed">
+      <animate attributeName="opacity" values="0.15;0.05;0.15" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="350" cy="150" r="15" fill="#805ad5">
+      <animate attributeName="opacity" values="0.15;0.05;0.15" dur="3s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>

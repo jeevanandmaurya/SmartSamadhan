@@ -341,8 +341,12 @@ function Signup() {
         </div>
 
         {/* Right: Banner */}
-        <div className="auth-banner" aria-hidden style={{ background: 'linear-gradient(135deg,var(--primary),var(--primary-hover))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, fontSize: 18 }}>
-          SmartSamadhan
+        <div className="auth-banner" aria-hidden style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8fafc'}}>
+          <img
+            src="/images/signuplong.svg"
+            alt="Signup Illustration"
+            style={{ width: '100%'}}
+          />
         </div>
       </div>
     </div>

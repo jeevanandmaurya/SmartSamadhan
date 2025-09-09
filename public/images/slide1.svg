@@ -1,15 +1,139 @@
-<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='600' viewBox='0 0 1600 600' preserveAspectRatio='xMidYMid slice'>
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400">
   <defs>
-    <linearGradient id='g1' x1='0' y1='0' x2='1' y2='1'>
-      <stop offset='0%' stop-color='#1d4ed8'/>
-      <stop offset='50%' stop-color='#7c3aed'/>
-      <stop offset='100%' stop-color='#06b6d4'/>
+    <!-- Enhanced multi-stop gradient with beautiful colors -->
+    <radialGradient id="bgGradient" cx="40%" cy="30%" r="80%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1"/>
+      <stop offset="25%" style="stop-color:#764ba2;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#8b5fbf;stop-opacity:1"/>
+      <stop offset="75%" style="stop-color:#2d1b69;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#1a0933;stop-opacity:1"/>
+    </radialGradient>
+    
+    <!-- Overlay gradient for depth -->
+    <linearGradient id="overlayGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4c63d2;stop-opacity:0.1"/>
+      <stop offset="50%" style="stop-color:#ff6b9d;stop-opacity:0.05"/>
+      <stop offset="100%" style="stop-color:#c471ed;stop-opacity:0.1"/>
     </linearGradient>
+    
+    <!-- Subtle pattern overlay -->
+    <pattern id="noisePattern" patternUnits="userSpaceOnUse" width="4" height="4">
+      <rect width="4" height="4" fill="transparent"/>
+      <circle cx="2" cy="2" r="0.5" fill="rgba(255,255,255,0.02)"/>
+    </pattern>
+    
+    <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+    
+    <!-- Glow effect for cards -->
+    <filter id="cardGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
   </defs>
-  <rect width='1600' height='600' fill='url(#g1)'/>
-  <g fill='rgba(255,255,255,0.12)'>
-    <circle cx='200' cy='120' r='80'/>
-    <circle cx='600' cy='500' r='120'/>
-    <circle cx='1300' cy='200' r='150'/>
+  
+  <!-- Beautiful layered background -->
+  <rect width="1200" height="400" fill="url(#bgGradient)"/>
+  <rect width="1200" height="400" fill="url(#overlayGradient)"/>
+  <rect width="1200" height="400" fill="url(#noisePattern)"/>
+  
+  <!-- Decorative elements -->
+  <circle cx="100" cy="80" r="40" fill="rgba(255,255,255,0.03)"/>
+  <circle cx="1100" cy="320" r="60" fill="rgba(255,255,255,0.02)"/>
+  <circle cx="200" cy="350" r="25" fill="rgba(103,126,234,0.1)"/>
+  <circle cx="1000" cy="50" r="35" fill="rgba(196,113,237,0.08)"/>
+  
+  <!-- Header Text with enhanced styling -->
+  <g transform="translate(50, 30)">
+    <text x="0" y="25" fill="#ffffff" font-family="Arial, sans-serif" font-size="28" font-weight="bold" filter="url(#dropShadow)">
+      BOTTOM-UP REDRESS MECHANISM
+    </text>
+    <text x="0" y="55" fill="#ffd700" font-family="Arial, sans-serif" font-size="28" font-weight="bold" filter="url(#dropShadow)">
+      COMPLAINT AGAINST A SERVICE
+    </text>
+    <text x="0" y="85" fill="#e8e8e8" font-family="Arial, sans-serif" font-size="20" font-weight="300" letter-spacing="2px">
+      Automated Routing
+    </text>
+    <text x="0" y="105" fill="#b8b8b8" font-family="Arial, sans-serif" font-size="16" font-weight="300">
+      Direct Redress by Concerned Department
+    </text>
+  </g>
+  
+  <!-- Service Cards Grid with enhanced styling -->
+  <g transform="matrix(1.100981, 0, 0, 1.216221, 692.575084, 26.859566)" style="">
+    <g transform="translate(0, 0)">
+      <rect width="120" height="80" rx="8" fill="#f5f5f5" stroke="#ddd" stroke-width="1" filter="url(#dropShadow)"/>
+      <circle cx="60" cy="28" r="20" fill="#1e90ff"/>
+      <rect x="52" y="22" width="16" height="5" rx="2" fill="white"/>
+      <rect x="48" y="27" width="6" height="3" rx="1" fill="white"/>
+      <path d="M56 32 Q58 36 60 32" stroke="white" stroke-width="1.5" fill="none"/>
+      <path d="M54 34 Q56 38 58 34" stroke="white" stroke-width="1.5" fill="none"/>
+      <path d="M58 34 Q60 38 62 34" stroke="white" stroke-width="1.5" fill="none"/>
+      <text x="60" y="68" text-anchor="middle" fill="#333" font-family="Arial, sans-serif" font-size="10" font-weight="bold" style="white-space: pre;">
+        WATER SUPPLY
+      </text>
+    </g>
+    <g transform="translate(140, 0)">
+      <rect width="120" height="80" rx="8" fill="#f5f5f5" stroke="#ddd" stroke-width="1" filter="url(#dropShadow)"/>
+      <rect x="42" y="16" width="10" height="20" fill="#333"/>
+      <rect x="55" y="12" width="8" height="24" fill="#333"/>
+      <rect x="66" y="20" width="6" height="16" fill="#333"/>
+      <rect x="75" y="14" width="8" height="22" fill="#333"/>
+      <ellipse cx="60" cy="40" rx="25" ry="5" fill="#333"/>
+      <text x="60" y="65" text-anchor="middle" fill="#333" font-family="Arial, sans-serif" font-size="9" font-weight="bold" style="white-space: pre;" transform="matrix(0.967367, 0, 0, 1.136258, 0.011827, -25.36648)"><tspan x="60" dy="1em">​</tspan>        ROADS &amp; <tspan x="60" dy="1em">​</tspan>INFRASTRUCTURE<tspan x="60" dy="1em">​</tspan>      </text>
+    </g>
+    <g transform="matrix(1, 0, 0, 1, -2.097871, 202.193332)">
+      <rect width="120" height="80" rx="8" fill="#f5f5f5" stroke="#ddd" stroke-width="1" filter="url(#dropShadow)"/>
+      <rect x="46" y="16" width="6" height="12" rx="1" fill="#4CAF50"/>
+      <rect x="64" y="16" width="6" height="12" rx="1" fill="#4CAF50"/>
+      <rect x="49" y="28" width="20" height="3" rx="1" fill="#4CAF50"/>
+      <path d="M62 12 L58 20 L62 20 L58 28" fill="#FF9800" stroke="#FF9800" stroke-width="1"/>
+      <text x="60" y="65" text-anchor="middle" fill="#333" font-family="Arial, sans-serif" font-size="9" font-weight="bold" style="white-space: pre;">
+        ELECTRICITY &amp; POWER
+      </text>
+    </g>
+    <g transform="translate(0, 100)">
+      <rect width="120" height="80" rx="8" fill="#f5f5f5" stroke="#ddd" stroke-width="1" filter="url(#dropShadow)"/>
+      <circle cx="50" cy="22" r="5" fill="#333"/>
+      <circle cx="60" cy="22" r="5" fill="#333"/>
+      <circle cx="70" cy="22" r="5" fill="#333"/>
+      <rect x="47" y="28" width="6" height="10" rx="1" fill="#333"/>
+      <rect x="57" y="28" width="6" height="10" rx="1" fill="#333"/>
+      <rect x="67" y="28" width="6" height="10" rx="1" fill="#333"/>
+      <path d="M60 16 L56 13 L60 11 L64 13 Z" fill="#2196F3"/>
+      <circle cx="60" cy="14" r="1.5" fill="white"/>
+      <text x="60" y="65" text-anchor="middle" fill="#333" font-family="Arial, sans-serif" font-size="10" font-weight="bold" style="white-space: pre;">
+        PUBLIC SAFETY
+      </text>
+    </g>
+    <g transform="translate(140, 100)">
+      <rect width="120" height="80" rx="8" fill="#f5f5f5" stroke="#ddd" stroke-width="1" filter="url(#dropShadow)"/>
+      <rect x="46" y="20" width="25" height="20" rx="2" fill="#333"/>
+      <rect x="48" y="16" width="20" height="4" rx="1" fill="#333"/>
+      <rect x="54" y="14" width="8" height="3" rx="1" fill="#333"/>
+      <path d="M54 28 L58 24 L54 20 M58 24 L62 28 L58 32 M62 28 L58 32 L54 28" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="60" y="65" text-anchor="middle" fill="#333" font-family="Arial, sans-serif" font-size="9" font-weight="bold" style="white-space: pre;">
+        SANITATION &amp; WASTE
+      </text>
+    </g>
+    <g transform="matrix(1, 0, 0, 1, 140.572298, 200.330768)">
+      <rect width="120" height="80" rx="8" fill="#f5f5f5" stroke="#ddd" stroke-width="1" filter="url(#dropShadow)"/>
+      <rect x="46" y="16" width="16" height="20" rx="1" fill="#ddd" stroke="#bbb"/>
+      <rect x="48" y="18" width="12" height="1.5" fill="#999"/>
+      <rect x="48" y="21" width="12" height="1.5" fill="#999"/>
+      <rect x="48" y="24" width="8" height="1.5" fill="#999"/>
+      <circle cx="66" cy="24" r="6" fill="none" stroke="#666" stroke-width="1.5"/>
+      <path d="M70 28 L74 32" stroke="#666" stroke-width="1.5" stroke-linecap="round"/>
+      <polygon points="75,12 79,20 71,20" fill="#FF5722"/>
+      <text x="75" y="17" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="6" font-weight="bold" style="white-space: pre;">!</text>
+      <text x="60" y="65" text-anchor="middle" fill="#333" font-family="Arial, sans-serif" font-size="10" font-weight="bold" style="white-space: pre;">
+        OTHER ISSUES
+      </text>
+    </g>
   </g>
 </svg>

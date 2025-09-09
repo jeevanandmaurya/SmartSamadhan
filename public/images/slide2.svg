@@ -1,15 +1,186 @@
-<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='600' viewBox='0 0 1600 600' preserveAspectRatio='xMidYMid slice'>
+<svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id='g2' x1='1' y1='0' x2='0' y2='1'>
-      <stop offset='0%' stop-color='#ec4899'/>
-      <stop offset='50%' stop-color='#2563eb'/>
-      <stop offset='100%' stop-color='#10b981'/>
+    <!-- Enhanced Background with multiple aesthetic gradients -->
+    <radialGradient id="primaryGradient" cx="50%" cy="30%" r="80%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="25%" style="stop-color:#764ba2;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#f093fb;stop-opacity:0.8" />
+      <stop offset="75%" style="stop-color:#4facfe;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:1" />
+    </radialGradient>
+    
+    <!-- Secondary overlay gradient -->
+    <linearGradient id="overlayGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff9a9e;stop-opacity:0.3" />
+      <stop offset="30%" style="stop-color:#fecfef;stop-opacity:0.2" />
+      <stop offset="60%" style="stop-color:#fecfef;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#ffecd2;stop-opacity:0.25" />
     </linearGradient>
+    
+    <!-- Mesh gradient effect -->
+    <radialGradient id="meshGradient1" cx="20%" cy="20%" r="40%">
+      <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#4ecdc4;stop-opacity:0.1" />
+    </radialGradient>
+    
+    <radialGradient id="meshGradient2" cx="80%" cy="80%" r="50%">
+      <stop offset="0%" style="stop-color:#45b7d1;stop-opacity:0.12" />
+      <stop offset="100%" style="stop-color:#f093fb;stop-opacity:0.08" />
+    </radialGradient>
+    
+    <radialGradient id="meshGradient3" cx="70%" cy="30%" r="35%">
+      <stop offset="0%" style="stop-color:#96ceb4;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#ffeaa7;stop-opacity:0.12" />
+    </radialGradient>
+    
+    <!-- Enhanced pattern overlay -->
+    <pattern id="dotPattern" patternUnits="userSpaceOnUse" width="30" height="30">
+      <circle cx="15" cy="15" r="1.5" fill="white" opacity="0.08"/>
+      <circle cx="5" cy="5" r="0.8" fill="white" opacity="0.05"/>
+      <circle cx="25" cy="25" r="0.8" fill="white" opacity="0.05"/>
+    </pattern>
+    
+    <!-- Noise texture -->
+    <filter id="noiseFilter">
+      <feTurbulence baseFrequency="0.9" numOctaves="3" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0"/>
+      <feComponentTransfer result="monoNoise">
+        <feFuncA type="discrete" tableValues="0.05 0.1 0.08 0.12"/>
+      </feComponentTransfer>
+      <feBlend in="SourceGraphic" in2="monoNoise" mode="overlay"/>
+    </filter>
+    
+    <!-- Dark card gradients for better font visibility -->
+    <radialGradient id="c" cx="50%" cy="30%" r="90%">
+      <stop offset="0%" style="stop-color:#4338ca;stop-opacity:0.95"/>
+      <stop offset="50%" style="stop-color:#5b21b6;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#6b46c1;stop-opacity:0.95"/>
+    </radialGradient>
+    <radialGradient id="f" cx="50%" cy="30%" r="90%">
+      <stop offset="0%" style="stop-color:#0284c7;stop-opacity:0.95"/>
+      <stop offset="50%" style="stop-color:#0369a1;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#0891b2;stop-opacity:0.95"/>
+    </radialGradient>
+    <radialGradient id="h" cx="50%" cy="30%" r="90%">
+      <stop offset="0%" style="stop-color:#db2777;stop-opacity:0.95"/>
+      <stop offset="50%" style="stop-color:#be185d;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#c2410c;stop-opacity:0.95"/>
+    </radialGradient>
+    <g id="e">
+      <rect width="20" height="30" rx="3" fill="#fff"/>
+      <path fill="#1f2937" d="M2 4h16v18H2z"/>
+      <circle cx="10" cy="7" r="2" fill="#667eea"/>
+      <path fill="#6b7280" d="M4 11h12v1H4zm0 3h10v1H4z"/>
+    </g>
+    <g id="g">
+      <rect width="26" height="18" rx="2" fill="#fff"/>
+      <path fill="#1f2937" d="M2 2h22v14H2z"/>
+      <path fill="#4facfe" d="M4 4h6v3H4z"/>
+      <path fill="#00f2fe" d="M12 4h6v3h-6z"/>
+    </g>
+    <g id="i">
+      <rect width="22" height="18" rx="1" fill="#fff"/>
+      <path fill="#1f2937" d="M2 2h18v14H2z"/>
+      <path fill="#ff9a9e" d="M4 12h2v2H4zm4-2h2v4H8zm4-2h2v6h-2z"/>
+    </g>
+    <filter id="d" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity=".2"/>
+    </filter>
   </defs>
-  <rect width='1600' height='600' fill='url(#g2)'/>
-  <g fill='rgba(255,255,255,0.12)'>
-    <rect x='200' y='80' width='160' height='160' rx='24'/>
-    <rect x='900' y='300' width='260' height='200' rx='36'/>
-    <rect x='1300' y='120' width='120' height='120' rx='18'/>
+  
+  <!-- Multi-layered background -->
+  <rect width="100%" height="100%" fill="url(#primaryGradient)"/>
+  <rect width="100%" height="100%" fill="url(#overlayGradient)"/>
+  <rect width="100%" height="100%" fill="url(#meshGradient1)"/>
+  <rect width="100%" height="100%" fill="url(#meshGradient2)"/>
+  <rect width="100%" height="100%" fill="url(#meshGradient3)"/>
+  <rect width="100%" height="100%" fill="url(#dotPattern)"/>
+  <rect width="100%" height="100%" filter="url(#noiseFilter)" opacity="0.6"/>
+  
+  <!-- Enhanced decorative elements -->
+  <circle cx="120" cy="90" r="80" fill="white" opacity="0.06"/>
+  <circle cx="1080" cy="140" r="100" fill="white" opacity="0.05"/>
+  <circle cx="580" cy="320" r="70" fill="white" opacity="0.04"/>
+  <circle cx="220" cy="340" r="55" fill="white" opacity="0.07"/>
+  <circle cx="980" cy="60" r="45" fill="white" opacity="0.08"/>
+  <circle cx="400" cy="50" r="35" fill="white" opacity="0.06"/>
+  <circle cx="800" cy="380" r="40" fill="white" opacity="0.05"/>
+  
+  <!-- Floating geometric shapes -->
+  <polygon points="50,200 70,180 90,200 70,220" fill="white" opacity="0.04"/>
+  <polygon points="1150,250 1165,230 1180,250 1165,270" fill="white" opacity="0.05"/>
+  <rect x="300" y="380" width="20" height="20" rx="3" fill="white" opacity="0.03" transform="rotate(45 310 390)"/>
+  <rect x="900" y="30" width="15" height="15" rx="2" fill="white" opacity="0.04" transform="rotate(30 907.5 37.5)"/>
+  
+  <!-- Original content -->
+  <text x="600" y="50" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="32" font-weight="bold">
+    Civic Reporting Platform
+  </text>
+  <text x="600" y="75" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="18" opacity=".8">
+    Streamlined Issue Reporting
+  </text>
+  <g transform="translate(100 100)">
+    <rect width="300" height="220" rx="10" fill="url(#c)" filter="url(#d)"/>
+    <circle cx="150" cy="50" r="20" fill="#fff" opacity=".15"/>
+    <use href="#e" x="140" y="35"/>
+    <text x="150" y="90" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="22" font-weight="bold">
+      Mobile Reporting
+    </text>
+    <text x="150" y="115" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="14" opacity=".9">
+      • Photo and GPS Capture
+    </text>
+    <text x="150" y="135" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="14" opacity=".9">
+      • Voice-to-Text
+    </text>
+    <text x="150" y="155" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="14" opacity=".9">
+      • Offline Submission
+    </text>
+    <text x="150" y="175" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="14" opacity=".9">
+      • Real-time Tracking
+    </text>
   </g>
+  <g transform="translate(450 100)">
+    <rect width="300" height="220" rx="10" fill="url(#f)" filter="url(#d)"/>
+    <circle cx="150" cy="50" r="20" fill="#fff" opacity=".15"/>
+    <use href="#g" x="137" y="37"/>
+    <text x="150" y="90" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="22" font-weight="bold">
+      Admin Dashboard
+    </text>
+    <text x="150" y="115" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="14" opacity=".9">
+      • Interactive Map
+    </text>
+    <text x="150" y="135" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="14" opacity=".9">
+      • Priority Filtering
+    </text>
+    <text x="150" y="155" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="14" opacity=".9">
+      • Auto-Routing
+    </text>
+    <text x="150" y="175" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="14" opacity=".9">
+      • Task Management
+    </text>
+  </g>
+  <g transform="translate(800 100)">
+    <rect width="300" height="220" rx="10" fill="url(#h)" filter="url(#d)"/>
+    <circle cx="150" cy="50" r="20" fill="#fff" opacity=".15"/>
+    <use href="#i" x="139" y="37"/>
+    <text x="150" y="90" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="22" font-weight="bold">
+      Analytics
+    </text>
+    <text x="150" y="115" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="14" opacity=".9">
+      • Response Time
+    </text>
+    <text x="150" y="135" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="14" opacity=".9">
+      • Engagement Metrics
+    </text>
+    <text x="150" y="155" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14" opacity=".9">
+      • Efficiency Reports
+    </text>
+    <text x="150" y="175" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="14" opacity=".9">
+      • Trend Analysis
+    </text>
+  </g>
+  <rect x="100" y="340" width="1000" height="40" rx="6" fill="#fff" opacity=".1"/>
+  <text x="600" y="365" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="16" opacity=".9">
+    Cloud-Based • Real-Time Sync • GIS Ready • Third-Party Integration
+  </text>
 </svg>
