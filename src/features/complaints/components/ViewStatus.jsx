@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDatabase } from '../../../contexts';
 
 function ViewStatus() {
+  const { t } = useTranslation();
   const [registrationId, setRegistrationId] = useState('');
   const [status, setStatus] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -71,8 +73,8 @@ function ViewStatus() {
     <div>
       {/* Header Section */}
       <div className="card" style={{ padding: '14px', marginBottom: '14px' }}>
-        <h2 style={{ margin: '0 0 4px 0', color: 'var(--primary)', fontSize: '18px' }}>Check Status</h2>
-        <p style={{ margin: 0, color: 'var(--muted)', fontSize: '12px', lineHeight: 1.4 }}>Enter your registration number to view current status.</p>
+        <h2 style={{ margin: '0 0 4px 0', color: 'var(--primary)', fontSize: '18px' }}>{t('user:checkStatus')}</h2>
+        <p style={{ margin: 0, color: 'var(--muted)', fontSize: '12px', lineHeight: 1.4 }}>{t('user:enterRegistrationNumber')}</p>
       </div>
 
       {/* Search Form */}
@@ -86,13 +88,13 @@ function ViewStatus() {
               color: 'var(--fg)',
               fontSize: '12px'
             }}>
-              Reg #
+              {t('user:registrationNumber')}
             </label>
             <input
               type="text"
               value={registrationId}
               onChange={(e) => setRegistrationId(e.target.value)}
-              placeholder="e.g., REG001"
+              placeholder={t('user:registrationExample')}
               required
               style={{
                 width: '100%',
@@ -106,7 +108,7 @@ function ViewStatus() {
               }}
             />
             <div style={{ marginTop: '4px', fontSize: '11px', color: 'var(--muted)' }}>
-              Use your complaint reference (e.g., REG001)
+              {t('user:useComplaintReference')}
             </div>
           </div>
 
@@ -125,7 +127,7 @@ function ViewStatus() {
                 fontWeight: 'bold'
               }}
             >
-              {isLoading ? 'Checking...' : 'Check Status'}
+              {isLoading ? t('user:checking') : t('user:checkStatus')}
             </button>
             <button
               type="button"
@@ -140,7 +142,7 @@ function ViewStatus() {
                 fontSize: '14px'
               }}
             >
-              Clear
+              {t('user:clear')}
             </button>
           </div>
         </form>
@@ -149,8 +151,8 @@ function ViewStatus() {
       {/* Loading State */}
       {isLoading && (
         <div className="card" style={{ padding: '28px', textAlign: 'center' }}>
-          <div style={{ fontSize: '14px', color: 'var(--primary)' }}>🔍 Searching...</div>
-          <div style={{ marginTop: '6px', color: 'var(--muted)', fontSize: '12px' }}>Fetching details.</div>
+          <div style={{ fontSize: '14px', color: 'var(--primary)' }}>🔍 {t('user:searching')}</div>
+          <div style={{ marginTop: '6px', color: 'var(--muted)', fontSize: '12px' }}>{t('user:fetchingDetails')}</div>
         </div>
       )}
 
@@ -165,10 +167,10 @@ function ViewStatus() {
             }}>
               <div style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: '48px', marginBottom: '10px' }}>❌</div>
-                <h3 style={{ color: '#ef4444', margin: '0 0 10px 0' }}>Report Not Found</h3>
+                <h3 style={{ color: '#ef4444', margin: '0 0 10px 0' }}>{t('user:reportNotFound')}</h3>
                 <p style={{ color: '#ef4444', margin: '0' }}>{status.error}</p>
                 <div style={{ marginTop: '15px', fontSize: '14px', color: 'var(--muted)' }}>
-                  Make sure you're entering the correct registration number from your complaint.
+                  {t('user:ensureCorrectRegistration')}
                 </div>
               </div>
             </div>
@@ -182,7 +184,7 @@ function ViewStatus() {
                 flexWrap: 'wrap',
                 gap: '10px'
               }}>
-                <h3 style={{ margin: '0', color: 'var(--primary)', fontSize: '16px' }}>Report Details</h3>
+                <h3 style={{ margin: '0', color: 'var(--primary)', fontSize: '16px' }}>{t('user:reportDetails')}</h3>
                 <span
                   style={{
                     padding: '4px 10px',
@@ -200,19 +202,19 @@ function ViewStatus() {
               <div style={{ display: 'grid', gap: '10px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '10px' }}>
                   <div style={{ padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
-                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>REGISTRATION NUMBER</div>
+                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('user:registrationNumber')}</div>
                     <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{status.regNumber}</div>
                   </div>
                   <div style={{ padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
-                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>REPORT ID</div>
+                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('user:reportId')}</div>
                     <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{status.id}</div>
                   </div>
                   <div style={{ padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
-                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>DEPARTMENT</div>
+                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('user:department')}</div>
                     <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{status.department}</div>
                   </div>
                   <div style={{ padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
-                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>PRIORITY</div>
+                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('user:priority')}</div>
                     <span
                       style={{
                         padding: '3px 6px',
@@ -230,7 +232,7 @@ function ViewStatus() {
 
                 {/* Category */}
                 <div style={{ padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
-                  <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>ISSUE CATEGORY</div>
+                  <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('user:issueCategory')}</div>
                   <div style={{ fontSize: '13px', lineHeight: '1.3' }}>
                     {status.category || `${status.mainCategory || 'N/A'} > ${status.subCategory1 || 'N/A'} > ${status.specificIssue || 'N/A'}`}
                   </div>
@@ -239,7 +241,7 @@ function ViewStatus() {
                 {/* Location Information */}
                 {status.location && (
                   <div style={{ padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
-                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>LOCATION</div>
+                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('user:location')}</div>
                     <div style={{ fontSize: '13px' }}>{status.location}</div>
                     {status.latitude && status.longitude && (
                       <div style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '4px' }}>
@@ -252,7 +254,7 @@ function ViewStatus() {
                 {/* Attachments Information */}
                 {status.attachments && status.attachments.length > 0 && (
                   <div style={{ padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
-                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '8px' }}>ATTACHMENTS</div>
+                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '8px' }}>{t('user:attachments')}</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                       {status.attachments.map((attachment, index) => {
                         const isImage = attachment.type && attachment.type.startsWith('image/');
@@ -320,21 +322,21 @@ function ViewStatus() {
                 )}
 
                 <div style={{ padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
-                  <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '4px' }}>DESCRIPTION</div>
+                  <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '4px' }}>{t('user:description')}</div>
                   <div style={{ fontSize: '14px', lineHeight: '1.4' }}>{status.description || status.title}</div>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
                   <div style={{ padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
-                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>DATE SUBMITTED</div>
+                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('user:dateSubmitted')}</div>
                       <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{new Date(status.dateSubmitted || status.date).toLocaleDateString()}</div>
                   </div>
                   <div style={{ padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
-                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>LAST UPDATED</div>
+                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('user:lastUpdated')}</div>
                     <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{new Date(status.lastUpdated).toLocaleDateString()}</div>
                   </div>
                   <div style={{ padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
-                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>ASSIGNED TO</div>
+                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('user:assignedTo')}</div>
                     <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{status.assignedTo}</div>
                   </div>
                 </div>
@@ -342,7 +344,7 @@ function ViewStatus() {
 
               {/* Timeline */}
               <div style={{ marginTop: '12px', padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
-                <h4 style={{ margin: '0 0 8px 0', color: 'var(--primary)', fontSize: '13px' }}>Timeline</h4>
+                <h4 style={{ margin: '0 0 8px 0', color: 'var(--primary)', fontSize: '13px' }}>{t('user:timeline')}</h4>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <div style={{
@@ -351,7 +353,7 @@ function ViewStatus() {
                       borderRadius: '50%',
                       backgroundColor: '#10b981'
                     }}></div>
-                    <span style={{ fontSize: '12px' }}>Submitted</span>
+                    <span style={{ fontSize: '12px' }}>{t('user:submitted')}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <div style={{
@@ -360,7 +362,7 @@ function ViewStatus() {
                       borderRadius: '50%',
                       backgroundColor: status.status === 'In Progress' || status.status === 'Resolved' ? '#f59e0b' : '#e5e7eb'
                     }}></div>
-                    <span style={{ fontSize: '12px' }}>In Progress</span>
+                    <span style={{ fontSize: '12px' }}>{t('user:inProgress')}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <div style={{
@@ -369,7 +371,7 @@ function ViewStatus() {
                       borderRadius: '50%',
                       backgroundColor: status.status === 'Resolved' ? '#10b981' : '#e5e7eb'
                     }}></div>
-                    <span style={{ fontSize: '12px' }}>Resolved</span>
+                    <span style={{ fontSize: '12px' }}>{t('user:resolved')}</span>
                   </div>
                 </div>
               </div>
@@ -380,7 +382,7 @@ function ViewStatus() {
 
       {/* Sample Registration Numbers */}
       <div className="card" style={{ padding: '14px', marginTop: '14px' }}>
-        <h4 style={{ margin: '0 0 8px 0', color: 'var(--primary)', fontSize: '14px' }}>Sample Reg #</h4>
+        <h4 style={{ margin: '0 0 8px 0', color: 'var(--primary)', fontSize: '14px' }}>{t('user:sampleRegNumbers')}</h4>
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
           {complaints.slice(0, 5).map(complaint => (
             <button
@@ -401,7 +403,7 @@ function ViewStatus() {
           ))}
         </div>
         <div style={{ marginTop: '6px', fontSize: '11px', color: 'var(--muted)' }}>
-          Click to auto-fill.
+          {t('user:clickToAutoFill')}
         </div>
       </div>
 

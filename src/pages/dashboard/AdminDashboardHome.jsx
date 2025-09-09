@@ -1,8 +1,10 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth, useDatabase } from '../../contexts';
 import { InteractiveMap } from '../../components/common';
 
 function AdminDashboardHome() {
+  const { t } = useTranslation('admin');
   const { user } = useAuth();
   const { getAllComplaints, updateComplaintStatus, database } = useDatabase();
   const [updatingId, setUpdatingId] = useState(null);
@@ -223,19 +225,19 @@ function AdminDashboardHome() {
         {/* Analytics Cards - Compact */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '15px', marginBottom: '20px' }}>
           <div className="card" style={{ padding: '15px', textAlign: 'center' }}>
-            <h3 style={{ margin: '0 0 8px 0', color: 'var(--primary)', fontSize: '14px' }}>Total Reports</h3>
+            <h3 style={{ margin: '0 0 8px 0', color: 'var(--primary)', fontSize: '14px' }}>{t('totalReports')}</h3>
             <p style={{ fontSize: '1.8rem', fontWeight: 'bold', margin: '0' }}>{analytics.total}</p>
           </div>
           <div className="card" style={{ padding: '15px', textAlign: 'center' }}>
-            <h3 style={{ margin: '0 0 8px 0', color: '#10b981', fontSize: '14px' }}>Resolved</h3>
+            <h3 style={{ margin: '0 0 8px 0', color: '#10b981', fontSize: '14px' }}>{t('resolved')}</h3>
             <p style={{ fontSize: '1.8rem', fontWeight: 'bold', margin: '0' }}>{analytics.resolved}</p>
           </div>
           <div className="card" style={{ padding: '15px', textAlign: 'center' }}>
-            <h3 style={{ margin: '0 0 8px 0', color: '#f59e0b', fontSize: '14px' }}>In Progress</h3>
+            <h3 style={{ margin: '0 0 8px 0', color: '#f59e0b', fontSize: '14px' }}>{t('inProgress')}</h3>
             <p style={{ fontSize: '1.8rem', fontWeight: 'bold', margin: '0' }}>{analytics.inProgress}</p>
           </div>
           <div className="card" style={{ padding: '15px', textAlign: 'center' }}>
-            <h3 style={{ margin: '0 0 8px 0', color: '#ef4444', fontSize: '14px' }}>Pending</h3>
+            <h3 style={{ margin: '0 0 8px 0', color: '#ef4444', fontSize: '14px' }}>{t('pending')}</h3>
             <p style={{ fontSize: '1.8rem', fontWeight: 'bold', margin: '0' }}>{analytics.pending}</p>
           </div>
         </div>
@@ -243,7 +245,7 @@ function AdminDashboardHome() {
   {/* Map Full Width with Collapsible Info */}
   <div className="card" style={{ padding: '20px', marginBottom: '25px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <h3 style={{ margin: 0 }}>Complaints Map</h3>
+            <h3 style={{ margin: 0 }}>{t('complaintsMap')}</h3>
             <button
               onClick={() => setShowMapInfo(v => !v)}
               style={{
@@ -254,38 +256,38 @@ function AdminDashboardHome() {
                 cursor: 'pointer',
                 fontSize: 12
               }}
-            >{showMapInfo ? 'Hide Info' : 'Show Info'}</button>
+            >{showMapInfo ? t('hideInfo') : t('showInfo')}</button>
           </div>
           <InteractiveMap height="560px" />
           {showMapInfo && (
             <div style={{ marginTop: 16, display: 'grid', gap: 20, gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))' }}>
               <div>
-                <h4 style={{ margin: '0 0 10px 0', color: 'var(--primary)', fontSize: 14 }}>📊 Stats</h4>
+                <h4 style={{ margin: '0 0 10px 0', color: 'var(--primary)', fontSize: 14 }}>📊 {t('stats')}</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 12 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Total</span><strong>{analytics.total}</strong></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Pending</span><strong style={{ color: '#ef4444' }}>{analytics.pending}</strong></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>In Progress</span><strong style={{ color: '#f59e0b' }}>{analytics.inProgress}</strong></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Resolved</span><strong style={{ color: '#10b981' }}>{analytics.resolved}</strong></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>{t('total')}</span><strong>{analytics.total}</strong></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>{t('pending')}</span><strong style={{ color: '#ef4444' }}>{analytics.pending}</strong></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>{t('inProgress')}</span><strong style={{ color: '#f59e0b' }}>{analytics.inProgress}</strong></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>{t('resolved')}</span><strong style={{ color: '#10b981' }}>{analytics.resolved}</strong></div>
                 </div>
               </div>
               <div>
-                <h4 style={{ margin: '0 0 10px 0', color: 'var(--primary)', fontSize: 14 }}>🎯 Legend</h4>
+                <h4 style={{ margin: '0 0 10px 0', color: 'var(--primary)', fontSize: 14 }}>🎯 {t('legend')}</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 12 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><div style={{ width: 14, height: 14, borderRadius: '50%', background: '#ef4444' }}></div>Pending</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><div style={{ width: 14, height: 14, borderRadius: '50%', background: '#f59e0b' }}></div>In Progress</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><div style={{ width: 14, height: 14, borderRadius: '50%', background: '#10b981' }}></div>Resolved</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><div style={{ width: 14, height: 14, borderRadius: '50%', background: '#ef4444' }}></div>{t('pending')}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><div style={{ width: 14, height: 14, borderRadius: '50%', background: '#f59e0b' }}></div>{t('inProgress')}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><div style={{ width: 14, height: 14, borderRadius: '50%', background: '#10b981' }}></div>{t('resolved')}</div>
                 </div>
               </div>
               <div>
-                <h4 style={{ margin: '0 0 10px 0', color: 'var(--primary)', fontSize: 14 }}>⚡ Priority</h4>
+                <h4 style={{ margin: '0 0 10px 0', color: 'var(--primary)', fontSize: 14 }}>⚡ {t('priority')}</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 12 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>High</span><strong style={{ color: '#ef4444' }}>{allComplaints.filter(c => c.priority === 'High' || c.priority === 'Urgent').length}</strong></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Medium</span><strong style={{ color: '#f59e0b' }}>{allComplaints.filter(c => c.priority === 'Medium').length}</strong></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Low</span><strong style={{ color: '#10b981' }}>{allComplaints.filter(c => c.priority === 'Low').length}</strong></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>{t('high')}</span><strong style={{ color: '#ef4444' }}>{allComplaints.filter(c => c.priority === 'High' || c.priority === 'Urgent').length}</strong></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>{t('medium')}</span><strong style={{ color: '#f59e0b' }}>{allComplaints.filter(c => c.priority === 'Medium').length}</strong></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>{t('low')}</span><strong style={{ color: '#10b981' }}>{allComplaints.filter(c => c.priority === 'Low').length}</strong></div>
                 </div>
               </div>
               <div>
-                <h4 style={{ margin: '0 0 10px 0', color: 'var(--primary)', fontSize: 14 }}>🏢 Departments</h4>
+                <h4 style={{ margin: '0 0 10px 0', color: 'var(--primary)', fontSize: 14 }}>🏢 {t('departments')}</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 12 }}>
                   {Object.entries(
                     allComplaints.reduce((acc, c) => { acc[c.department] = (acc[c.department] || 0) + 1; return acc; }, {})
@@ -303,38 +305,38 @@ function AdminDashboardHome() {
   {/* Reports Management - Table UI like user dashboard */}
   <div className="card" style={{ padding: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: 12, flexWrap: 'wrap' }}>
-            <h3 style={{ fontSize: '18px', margin: 0 }}>All Reports ({filteredReports.length})</h3>
+            <h3 style={{ fontSize: '18px', margin: 0 }}>{t('allReports')} ({filteredReports.length})</h3>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <label style={{ fontWeight: 'bold' }}>Show</label>
+              <label style={{ fontWeight: 'bold' }}>{t('show')}</label>
               <select value={entriesPerPage} onChange={(e)=>{ setEntriesPerPage(Number(e.target.value)); setCurrentPage(1); }} style={{ padding: '6px 10px', border: '1px solid var(--border)', borderRadius: 6 }}>
                 <option value={10}>10</option>
                 <option value={50}>50</option>
                 <option value={100}>100</option>
               </select>
-              <span>entries</span>
+              <span>{t('entries')}</span>
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <label style={{ fontWeight: 'bold' }}>Sort by:</label>
+              <label style={{ fontWeight: 'bold' }}>{t('sortBy')}</label>
               <select value={selectedSortOption} onChange={handleSortChange} style={{ padding: '6px 10px', border: '1px solid var(--border)', borderRadius: 6, minWidth: 150 }}>
-                <optgroup label="Date">
-                  <option value="date-newest">Newest First</option>
-                  <option value="date-oldest">Oldest First</option>
+                <optgroup label={t('date')}>
+                  <option value="date-newest">{t('newestFirst')}</option>
+                  <option value="date-oldest">{t('oldestFirst')}</option>
                 </optgroup>
-                <optgroup label="Description">
-                  <option value="issue-asc">Description A-Z</option>
-                  <option value="issue-desc">Description Z-A</option>
+                <optgroup label={t('description')}>
+                  <option value="issue-asc">{t('descriptionAZ')}</option>
+                  <option value="issue-desc">{t('descriptionZA')}</option>
                 </optgroup>
-                <optgroup label="Status">
-                  <option value="status-pending">Pending First</option>
-                  <option value="status-progress">In Progress First</option>
-                  <option value="status-resolved">Resolved First</option>
+                <optgroup label={t('status')}>
+                  <option value="status-pending">{t('pendingFirst')}</option>
+                  <option value="status-progress">{t('inProgressFirst')}</option>
+                  <option value="status-resolved">{t('resolvedFirst')}</option>
                 </optgroup>
               </select>
             </div>
             <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
-              <label style={{ fontWeight: 'bold' }}>Search:</label>
-              <input type="text" value={searchTerm} onChange={(e)=>{ setSearchTerm(e.target.value); setCurrentPage(1); }} placeholder="Search" style={{ padding: '6px 10px', border: '1px solid var(--border)', borderRadius: 6, minWidth: 200 }}/>
-              <button style={{ padding: '8px 12px', background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}>📊 Export</button>
+              <label style={{ fontWeight: 'bold' }}>{t('search')}</label>
+              <input type="text" value={searchTerm} onChange={(e)=>{ setSearchTerm(e.target.value); setCurrentPage(1); }} placeholder={t('search')} style={{ padding: '6px 10px', border: '1px solid var(--border)', borderRadius: 6, minWidth: 200 }}/>
+              <button style={{ padding: '8px 12px', background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}>{t('export')}</button>
             </div>
           </div>
 
@@ -342,13 +344,13 @@ function AdminDashboardHome() {
             <table style={{ width: '100%', borderCollapse: 'collapse', borderRadius: 8, overflow: 'hidden' }}>
               <thead>
                 <tr style={{ background: 'var(--bg)', borderBottom: '2px solid var(--border)' }}>
-                  <th style={{ padding: 12, textAlign: 'left', cursor: 'pointer' }} onClick={()=>handleSort('id')}>S.No {getSortIcon('id')}</th>
-                  <th style={{ padding: 12, textAlign: 'left', cursor: 'pointer' }} onClick={()=>handleSort('regNumber')}>Reg. No {getSortIcon('regNumber')}</th>
-                  <th style={{ padding: 12, textAlign: 'left', cursor: 'pointer' }} onClick={()=>handleSort('dateSubmitted')}>Date {getSortIcon('dateSubmitted')}</th>
-                  <th style={{ padding: 12, textAlign: 'left', cursor: 'pointer' }} onClick={()=>handleSort('description')}>Description {getSortIcon('description')}</th>
-                  <th style={{ padding: 12, textAlign: 'left' }}>Priority</th>
-                  <th style={{ padding: 12, textAlign: 'left', cursor: 'pointer' }} onClick={()=>handleSort('status')}>Status {getSortIcon('status')}</th>
-                  <th style={{ padding: 12, textAlign: 'left' }}>Actions</th>
+                  <th style={{ padding: 12, textAlign: 'left', cursor: 'pointer' }} onClick={()=>handleSort('id')}>{t('sNo')} {getSortIcon('id')}</th>
+                  <th style={{ padding: 12, textAlign: 'left', cursor: 'pointer' }} onClick={()=>handleSort('regNumber')}>{t('regNo')} {getSortIcon('regNumber')}</th>
+                  <th style={{ padding: 12, textAlign: 'left', cursor: 'pointer' }} onClick={()=>handleSort('dateSubmitted')}>{t('date')} {getSortIcon('dateSubmitted')}</th>
+                  <th style={{ padding: 12, textAlign: 'left', cursor: 'pointer' }} onClick={()=>handleSort('description')}>{t('description')} {getSortIcon('description')}</th>
+                  <th style={{ padding: 12, textAlign: 'left' }}>{t('priority')}</th>
+                  <th style={{ padding: 12, textAlign: 'left', cursor: 'pointer' }} onClick={()=>handleSort('status')}>{t('status')} {getSortIcon('status')}</th>
+                  <th style={{ padding: 12, textAlign: 'left' }}>{t('actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -385,7 +387,7 @@ function AdminDashboardHome() {
                 {!loading && paginatedReports.length === 0 && (
                   <tr>
                     <td colSpan={7} style={{ padding: 40, textAlign: 'center', color: 'var(--muted)', fontSize: 14 }}>
-                      No complaints found.
+                      {t('noComplaintsFound')}
                     </td>
                   </tr>
                 )}
@@ -396,14 +398,18 @@ function AdminDashboardHome() {
           {/* Pagination and Info */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 20, gap: 12, flexWrap: 'wrap' }}>
             <div style={{ color: 'var(--muted)', fontSize: 14 }}>
-              Showing {filteredReports.length > 0 ? startIndex + 1 : 0} to {Math.min(startIndex + entriesPerPage, filteredReports.length)} of {filteredReports.length} entries
+              {t('showingEntries', {
+                start: filteredReports.length > 0 ? startIndex + 1 : 0,
+                end: Math.min(startIndex + entriesPerPage, filteredReports.length),
+                total: filteredReports.length
+              })}
             </div>
             <div style={{ display: 'flex', gap: 6 }}>
-              <button onClick={()=> setCurrentPage(p=>Math.max(1, p-1))} disabled={currentPage === 1} style={{ padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6, background: currentPage === 1 ? 'var(--muted)' : 'var(--bg)', color: currentPage === 1 ? '#fff' : 'var(--fg)' }}>Previous</button>
+              <button onClick={()=> setCurrentPage(p=>Math.max(1, p-1))} disabled={currentPage === 1} style={{ padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6, background: currentPage === 1 ? 'var(--muted)' : 'var(--bg)', color: currentPage === 1 ? '#fff' : 'var(--fg)' }}>{t('previous')}</button>
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => { const pageNum = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i; if (pageNum > totalPages) return null; return (
                 <button key={pageNum} onClick={()=> setCurrentPage(pageNum)} style={{ padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6, background: currentPage === pageNum ? 'var(--primary)' : 'var(--bg)', color: currentPage === pageNum ? '#fff' : 'var(--fg)' }}>{pageNum}</button>
               ); })}
-              <button onClick={()=> setCurrentPage(p=>Math.min(totalPages, p+1))} disabled={currentPage === totalPages} style={{ padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6, background: currentPage === totalPages ? 'var(--muted)' : 'var(--bg)', color: currentPage === totalPages ? '#fff' : 'var(--fg)' }}>Next</button>
+              <button onClick={()=> setCurrentPage(p=>Math.min(totalPages, p+1))} disabled={currentPage === totalPages} style={{ padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6, background: currentPage === totalPages ? 'var(--muted)' : 'var(--bg)', color: currentPage === totalPages ? '#fff' : 'var(--fg)' }}>{t('next')}</button>
             </div>
           </div>
     </div>

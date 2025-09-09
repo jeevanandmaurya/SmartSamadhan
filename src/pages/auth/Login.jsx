@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts';
 
 function Login() {
+  const { t } = useTranslation('common');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -23,7 +25,7 @@ function Login() {
     setError('');
 
     if (!username || !password) {
-      setError(`Please enter your ${usingSupabase ? 'email' : 'username'} and password.`);
+      setError(`${t('loginError')} ${usingSupabase ? t('email') : t('usernameOrEmail')} ${t('andPassword')}`);
       return;
     }
 
@@ -32,7 +34,7 @@ function Login() {
       const { data, error } = await loginUser(username, password);
 
       if (error) {
-        setError(error.message || 'Invalid credentials');
+        setError(error.message || t('invalidCredentials'));
       } else if (data) {
         console.log('[Login] User authentication successful, navigating...');
         const target = data.permissionLevel?.startsWith('admin') ? '/admin-dashboard' : '/user-dashboard';
@@ -40,7 +42,7 @@ function Login() {
       }
     } catch (error) {
       console.error('[Login] Login error:', error);
-      setError(error.message || 'Login failed. Please try again.');
+      setError(error.message || t('loginFailed'));
     }
   };
 
@@ -57,8 +59,8 @@ function Login() {
         {/* Left: Form */}
         <div style={{ padding: 32 }}>
           <div style={{ marginBottom: 8 }}>
-            <h2 style={{ margin: 0 }}>Welcome back</h2>
-            <div style={{ color: 'var(--muted)', fontSize: 14 }}>Sign in to SmartSamadhan {usingSupabase && '(Supabase)'}</div>
+            <h2 style={{ margin: 0 }}>{t('welcome')}</h2>
+            <div style={{ color: 'var(--muted)', fontSize: 14 }}>{t('login')} {t('loginToSmartSamadhan')} {usingSupabase && t('supabaseIndicator')}</div>
           </div>
 
           {error && (
@@ -72,12 +74,12 @@ function Login() {
 
             {/* Username */}
             <div className="field">
-              <label htmlFor="username">{usingSupabase ? 'Email' : 'Username or Email'}</label>
+              <label htmlFor="username">{usingSupabase ? t('email') : t('email')}</label>
               <input
                 id="username"
                 className="input"
                 type="text"
-                placeholder={usingSupabase ? 'email@example.com' : 'Username | Email | Mobile No'}
+                placeholder={usingSupabase ? t('emailPlaceholder') : t('usernamePlaceholder')}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -87,13 +89,13 @@ function Login() {
 
             {/* Password */}
             <div className="field">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">{t('password')}</label>
               <div style={{ position: 'relative' }}>
                 <input
                   id="password"
                   className="input"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Your password"
+                  placeholder={t('passwordPlaceholder')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -114,8 +116,8 @@ function Login() {
                     padding: '4px',
                     color: 'var(--muted)'
                   }}
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  title={showPassword ? 'Hide password' : 'Show password'}
+                  aria-label={showPassword ? t('hidePassword') : t('showPassword')}
+                  title={showPassword ? t('hidePassword') : t('showPassword')}
                 >
                   {showPassword ? (
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -136,33 +138,33 @@ function Login() {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
-                Remember me
+                {t('rememberMe')}
               </label>
-              <a href="#" onClick={(e)=>e.preventDefault()}>Forgot password?</a>
+              <a href="#" onClick={(e)=>e.preventDefault()}>{t('forgotPassword')}</a>
             </div>
 
             {/* Actions */}
             <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
-              <button type="submit" className="btn btn--primary" style={{ flex: '1 1 0' }}>Sign in</button>
-              <button type="button" onClick={handleReset} className="btn" style={{ flex: '1 1 0' }}>Reset</button>
+              <button type="submit" className="btn btn--primary" style={{ flex: '1 1 0' }}>{t('login')}</button>
+              <button type="button" onClick={handleReset} className="btn" style={{ flex: '1 1 0' }}>{t('cancel')}</button>
             </div>
           </form>
 
           {/* Links */}
           <div style={{ marginTop: 16, textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <a href="/signup" style={{ color: 'var(--primary)', textDecoration: 'none' }}>Don't have an account? Sign up</a>
-            <a href="/admin-login" style={{ color: 'var(--primary)', textDecoration: 'none' }}>Admin/Officer Login</a>
+            <a href="/signup" style={{ color: 'var(--primary)', textDecoration: 'none' }}>{t('signup')}</a>
+            <a href="/admin-login" style={{ color: 'var(--primary)', textDecoration: 'none' }}>{t('admin')} {t('login')}</a>
           </div>
 
           {/* Tip */}
           <div style={{ color: 'var(--muted)', fontSize: 12, marginTop: 12 }}>
-            {usingSupabase ? 'Use your registered email & password.' : 'Try user/pass.'}
+            {usingSupabase ? t('supabaseTip') : t('localTip')}
           </div>
         </div>
 
         {/* Right: Banner */}
         <div className="auth-banner" aria-hidden style={{ background: 'linear-gradient(135deg,var(--primary),var(--primary-hover))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, fontSize: 18 }}>
-          SmartSamadhan
+          {t('appName')}
         </div>
       </div>
     </div>

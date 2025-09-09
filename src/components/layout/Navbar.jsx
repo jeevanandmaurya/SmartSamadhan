@@ -1,11 +1,14 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import i18n from '../../i18n';
 // Updated to use central contexts barrel export
 import { useAuth } from '../../contexts';
 
 function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [theme, setTheme] = useState(() => {
     // Load theme from localStorage or default to light
     const savedTheme = localStorage.getItem('theme');
@@ -14,6 +17,8 @@ function Navbar() {
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showSignoutConfirm, setShowSignoutConfirm] = useState(false);
+  const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
+  const [mobileLanguageDropdownOpen, setMobileLanguageDropdownOpen] = useState(false);
 
   useEffect(() => {
     // Apply the theme to the document on mount
@@ -32,6 +37,18 @@ function Navbar() {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (languageDropdownOpen && !event.target.closest('.language-dropdown')) {
+        setLanguageDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [languageDropdownOpen]);
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
@@ -66,16 +83,16 @@ function Navbar() {
             </Link>
             <span style={{ color: 'var(--muted)', fontSize: 12 }}>|</span>
             <a href="https://www.india.gov.in/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--fg)' }}>
-              Government of India
+              {isMobile ? 'GOI' : 'Government of India'}
             </a>
           </div>
 
           {/* Desktop Navigation */}
           {!isMobile && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <Link to="/" style={{ color: 'var(--fg)' }}>Home</Link>
-              <Link to="/about" style={{ color: 'var(--fg)' }}>About</Link>
-              <Link to="/sitemap" style={{ color: 'var(--fg)' }}>Sitemap</Link>
+              <Link to="/" style={{ color: 'var(--fg)' }}>{t('home')}</Link>
+              <Link to="/about" style={{ color: 'var(--fg)' }}>{t('about')}</Link>
+              <Link to="/sitemap" style={{ color: 'var(--fg)' }}>{t('sitemap')}</Link>
 
               {user ? (
                 // Logged in user options
@@ -84,7 +101,7 @@ function Navbar() {
                     to={user.role === 'admin' ? '/admin-dashboard' : '/user-dashboard'}
                     style={{ color: 'var(--primary)', fontWeight: 'bold' }}
                   >
-                    Dashboard
+                    {t('dashboard')}
                   </Link>
                   <button
                     onClick={handleSignoutClick}
@@ -94,20 +111,96 @@ function Navbar() {
                       fontSize: 13
                     }}
                   >
-                    Logout
+                    {t('logout')}
                   </button>
                 </>
               ) : (
                 // Not logged in options
                 <>
-                  <Link to="/login" className="btn btn--outline" style={{ padding: '6px 14px', fontSize: 13 }}>Sign In</Link>
-                  <Link to="/admin-login" className="btn" style={{ padding: '6px 14px', fontSize: 13 }}>Admin</Link>
+                  <Link to="/login" className="btn btn--outline" style={{ padding: '6px 14px', fontSize: 13 }}>{t('login')}</Link>
+                  <Link to="/admin-login" className="btn" style={{ padding: '6px 14px', fontSize: 13 }}>{t('admin')}</Link>
                 </>
               )}
 
-                  <button onClick={toggleTheme} className="btn btn--ghost" style={{ padding: '6px 10px', fontSize: 16 }}>
+              <button onClick={toggleTheme} className="btn btn--ghost" style={{ padding: '6px 10px', fontSize: 16 }}>
                 {theme === 'dark' ? '☀' : '☾'}
               </button>
+
+              {/* Language Dropdown */}
+              <div className="language-dropdown" style={{ position: 'relative' }}>
+                <button
+                  onClick={() => setLanguageDropdownOpen(!languageDropdownOpen)}
+                  className="btn btn--ghost"
+                  style={{ padding: '6px 10px', fontSize: 16, display: 'flex', alignItems: 'center', gap: '4px' }}
+                >
+                  {i18n.language === 'en' ? 'EN' : i18n.language === 'hi' ? 'हिं' : 'EN'}
+                  <span style={{ fontSize: '12px' }}>▼</span>
+                </button>
+
+                {languageDropdownOpen && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '100%',
+                    right: 0,
+                    backgroundColor: 'var(--card)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                    zIndex: 100,
+                    minWidth: '80px',
+                    padding: '4px 0'
+                  }}>
+                    <button
+                      onClick={() => {
+                        i18n.changeLanguage('en');
+                        setLanguageDropdownOpen(false);
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '8px 16px',
+                        backgroundColor: i18n.language === 'en' ? 'var(--primary)' : 'transparent',
+                        color: i18n.language === 'en' ? '#fff' : 'var(--fg)',
+                        border: 'none',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        fontSize: '14px'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (i18n.language !== 'en') e.target.style.backgroundColor = 'var(--hover)';
+                      }}
+                      onMouseLeave={(e) => {
+                        if (i18n.language !== 'en') e.target.style.backgroundColor = 'transparent';
+                      }}
+                    >
+                      English
+                    </button>
+                    <button
+                      onClick={() => {
+                        i18n.changeLanguage('hi');
+                        setLanguageDropdownOpen(false);
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '8px 16px',
+                        backgroundColor: i18n.language === 'hi' ? 'var(--primary)' : 'transparent',
+                        color: i18n.language === 'hi' ? '#fff' : 'var(--fg)',
+                        border: 'none',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        fontSize: '14px'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (i18n.language !== 'hi') e.target.style.backgroundColor = 'var(--hover)';
+                      }}
+                      onMouseLeave={(e) => {
+                        if (i18n.language !== 'hi') e.target.style.backgroundColor = 'transparent';
+                      }}
+                    >
+                      हिंदी
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
@@ -164,7 +257,7 @@ function Navbar() {
                 onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--primary)'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--card)'}
               >
-                Home
+                {t('home')}
               </Link>
               <Link
                 to="/about"
@@ -181,7 +274,7 @@ function Navbar() {
                 onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--primary)'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--card)'}
               >
-                About
+                {t('about')}
               </Link>
               <Link
                 to="/sitemap"
@@ -198,7 +291,7 @@ function Navbar() {
                 onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--primary)'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--card)'}
               >
-                Sitemap
+                {t('sitemap')}
               </Link>
 
               {user ? (
@@ -220,7 +313,7 @@ function Navbar() {
                     onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--primary)'}
                     onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--card)'}
                   >
-                    Dashboard
+                    {t('dashboard')}
                   </Link>
                   <button
                     onClick={() => {
@@ -237,7 +330,7 @@ function Navbar() {
                       margin: '0 auto 8px auto'
                     }}
                   >
-                    Logout
+                    {t('logout')}
                   </button>
                 </>
               ) : (
@@ -258,7 +351,7 @@ function Navbar() {
                     onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--primary)'}
                     onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--card)'}
                   >
-                    Sign In
+                    {t('login')}
                   </Link>
                   <Link
                     to="/admin-login"
@@ -269,15 +362,103 @@ function Navbar() {
                       textDecoration: 'none',
                       display: 'block',
                       backgroundColor: 'var(--card)',
+                      borderBottom: '1px solid var(--border)',
                       transition: 'background-color 0.2s'
                     }}
                     onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--primary)'}
                     onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--card)'}
                   >
-                    Admin
+                    {t('admin')}
                   </Link>
                 </>
               )}
+
+              {/* Language Dropdown in Mobile Menu */}
+              <div style={{
+                borderTop: '1px solid var(--border)',
+                marginTop: '8px',
+                paddingTop: '8px',
+                position: 'relative'
+              }}>
+                <button
+                  onClick={() => setMobileLanguageDropdownOpen(!mobileLanguageDropdownOpen)}
+                  style={{
+                    width: '100%',
+                    padding: '12px 20px',
+                    backgroundColor: 'transparent',
+                    color: 'var(--fg)',
+                    border: 'none',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    fontWeight: '500'
+                  }}
+                >
+                  <span>{t('language')}: {i18n.language === 'en' ? 'English' : i18n.language === 'hi' ? 'हिंदी' : 'English'}</span>
+                  <span style={{ fontSize: '12px', transform: mobileLanguageDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>▼</span>
+                </button>
+
+                {mobileLanguageDropdownOpen && (
+                  <div style={{
+                    backgroundColor: 'var(--card)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '6px',
+                    marginTop: '4px',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                    overflow: 'hidden'
+                  }}>
+                    <button
+                      onClick={() => {
+                        i18n.changeLanguage('en');
+                        setMobileLanguageDropdownOpen(false);
+                        setMobileMenuOpen(false);
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '10px 20px',
+                        backgroundColor: i18n.language === 'en' ? 'var(--primary)' : 'transparent',
+                        color: i18n.language === 'en' ? '#fff' : 'var(--fg)',
+                        border: 'none',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                      }}
+                    >
+                      <span>English</span>
+                      {i18n.language === 'en' && <span style={{ fontSize: '12px' }}>✓</span>}
+                    </button>
+                    <button
+                      onClick={() => {
+                        i18n.changeLanguage('hi');
+                        setMobileLanguageDropdownOpen(false);
+                        setMobileMenuOpen(false);
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '10px 20px',
+                        backgroundColor: i18n.language === 'hi' ? 'var(--primary)' : 'transparent',
+                        color: i18n.language === 'hi' ? '#fff' : 'var(--fg)',
+                        border: 'none',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                      }}
+                    >
+                      <span>हिंदी</span>
+                      {i18n.language === 'hi' && <span style={{ fontSize: '12px' }}>✓</span>}
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -307,9 +488,9 @@ function Navbar() {
             borderRadius: '8px',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
           }}>
-            <h3 style={{ margin: '0 0 20px 0', color: 'var(--primary)' }}>Confirm Sign Out</h3>
+            <h3 style={{ margin: '0 0 20px 0', color: 'var(--primary)' }}>{t('confirmSignOut')}</h3>
             <p style={{ margin: '0 0 30px 0', color: 'var(--muted)' }}>
-              Are you sure you want to sign out? You will need to log in again to access your dashboard.
+              {t('signOutMessage')}
             </p>
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
               <button
@@ -323,7 +504,7 @@ function Navbar() {
                   cursor: 'pointer'
                 }}
               >
-                Sign Out
+                {t('signOut')}
               </button>
               <button
                 onClick={() => setShowSignoutConfirm(false)}
@@ -336,7 +517,7 @@ function Navbar() {
                   cursor: 'pointer'
                 }}
               >
-                Cancel
+                {t('cancel')}
               </button>
             </div>
           </div>

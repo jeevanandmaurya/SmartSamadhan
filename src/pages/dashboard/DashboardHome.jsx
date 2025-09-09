@@ -1,7 +1,9 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth, useDatabase } from '../../contexts';
 
 function DashboardHome() {
+  const { t } = useTranslation();
   const [sortConfig, setSortConfig] = useState({ key: 'dateSubmitted', direction: 'desc' });
   const [searchTerm, setSearchTerm] = useState('');
   const [entriesPerPage, setEntriesPerPage] = useState(10);
@@ -223,22 +225,22 @@ function DashboardHome() {
       {/* Statistics Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '14px', marginBottom: '20px' }}>
         <div className="card" style={{ padding: '14px', textAlign: 'center', border: '2px solid var(--primary)' }}>
-          <h3 style={{ margin: '0 0 10px 0', color: 'var(--primary)' }}>Total Registered</h3>
+          <h3 style={{ margin: '0 0 10px 0', color: 'var(--primary)' }}>{t('user:totalRegistered')}</h3>
           <p style={{ fontSize: '2rem', fontWeight: 'bold', margin: '0', color: 'var(--primary)' }}>{stats.total}</p>
         </div>
         <div className="card" style={{ padding: '14px', textAlign: 'center', border: '2px solid #f59e0b' }}>
-          <h3 style={{ margin: '0 0 10px 0', color: '#f59e0b' }}>Pending</h3>
+          <h3 style={{ margin: '0 0 10px 0', color: '#f59e0b' }}>{t('user:pending')}</h3>
           <p style={{ fontSize: '2rem', fontWeight: 'bold', margin: '0', color: '#f59e0b' }}>{stats.pending}</p>
         </div>
         <div className="card" style={{ padding: '14px', textAlign: 'center', border: '2px solid #10b981' }}>
-          <h3 style={{ margin: '0 0 10px 0', color: '#10b981' }}>Closed</h3>
+          <h3 style={{ margin: '0 0 10px 0', color: '#10b981' }}>{t('user:closed')}</h3>
           <p style={{ fontSize: '2rem', fontWeight: 'bold', margin: '0', color: '#10b981' }}>{stats.resolved}</p>
         </div>
       </div>
 
       {/* Reports Table */}
       <div className="card" style={{ padding: '16px' }}>
-        <h3 style={{ margin: '0 0 12px', fontSize: '16px', lineHeight: 1.2 }}>Your Complaints</h3>
+        <h3 style={{ margin: '0 0 12px', fontSize: '16px', lineHeight: 1.2 }}>{t('user:yourComplaints')}</h3>
 
         {/* Search, Sort and Entries Controls */}
         <div style={{
@@ -250,7 +252,7 @@ function DashboardHome() {
           gap: '12px'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
-            <label style={{ fontWeight: 600 }}>Show</label>
+            <label style={{ fontWeight: 600 }}>{t('user:show')}</label>
             <select
               value={entriesPerPage}
               onChange={handleEntriesChange}
@@ -267,10 +269,10 @@ function DashboardHome() {
               <option value={50}>50</option>
               <option value={100}>100</option>
             </select>
-            <span>entries</span>
+            <span>{t('user:entries')}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
-            <label style={{ fontWeight: 600 }}>Sort:</label>
+            <label style={{ fontWeight: 600 }}>{t('user:sort')}</label>
             <select
               value={selectedSortOption}
               onChange={handleSortChange}
@@ -284,27 +286,27 @@ function DashboardHome() {
                 minWidth: '130px'
               }}
             >
-              <optgroup label="Date">
-                <option value="date-newest">Newest First</option>
-                <option value="date-oldest">Oldest First</option>
+              <optgroup label={t('dateSubmitted')}>
+                <option value="date-newest">{t('user:newestFirst')}</option>
+                <option value="date-oldest">{t('user:oldestFirst')}</option>
               </optgroup>
-              <optgroup label="Description">
-                <option value="issue-asc">Description A-Z</option>
-                <option value="issue-desc">Description Z-A</option>
+              <optgroup label={t('description')}>
+                <option value="issue-asc">{t('user:descriptionAZ')}</option>
+                <option value="issue-desc">{t('user:descriptionZA')}</option>
               </optgroup>
-              <optgroup label="Status">
-                <option value="status-pending">Pending First</option>
-                <option value="status-progress">In Progress First</option>
-                <option value="status-resolved">Resolved First</option>
+              <optgroup label={t('status')}>
+                <option value="status-pending">{t('user:pendingFirst')}</option>
+                <option value="status-progress">{t('user:inProgressFirst')}</option>
+                <option value="status-resolved">{t('user:resolvedFirst')}</option>
               </optgroup>
             </select>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
-            <label style={{ fontWeight: 600 }}>Search:</label>
+            <label style={{ fontWeight: 600 }}>{t('user:search')}</label>
             <input
               type="text"
-              placeholder="Search"
+              placeholder={t('user:search')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
@@ -331,23 +333,23 @@ function DashboardHome() {
           }}>
             <thead>
               <tr style={{ backgroundColor: 'var(--bg)', borderBottom: '2px solid var(--border)' }}>
-                <th title="Serial Number" style={{ padding: '8px', textAlign: 'left', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                <th title={t('user:serialNumber')} style={{ padding: '8px', textAlign: 'left', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
                     onClick={() => handleSort('id')}>
                   # {getSortIcon('id')}
                 </th>
-                <th title="Registration Number" style={{ padding: '8px', textAlign: 'left', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                <th title={t('user:regNumber')} style={{ padding: '8px', textAlign: 'left', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
                     onClick={() => handleSort('regNumber')}>
                   Reg # {getSortIcon('regNumber')}
                 </th>
-                <th title="Receiving Date" style={{ padding: '8px', textAlign: 'left', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                <th title={t('user:receivingDate')} style={{ padding: '8px', textAlign: 'left', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
                     onClick={() => handleSort('dateSubmitted')}>
                   Date {getSortIcon('dateSubmitted')}
                 </th>
-                <th title="Complaint Description" style={{ padding: '8px', textAlign: 'left', fontWeight: 600, cursor: 'pointer' }}
+                <th title={t('user:complaintDescription')} style={{ padding: '8px', textAlign: 'left', fontWeight: 600, cursor: 'pointer' }}
                     onClick={() => handleSort('description')}>
                   Description {getSortIcon('description')}
                 </th>
-                <th title="Status" style={{ padding: '8px', textAlign: 'left', fontWeight: 600, cursor: 'pointer' }}
+                <th title={t('user:status')} style={{ padding: '8px', textAlign: 'left', fontWeight: 600, cursor: 'pointer' }}
                     onClick={() => handleSort('status')}>
                   Status {getSortIcon('status')}
                 </th>
@@ -416,8 +418,8 @@ function DashboardHome() {
           fontSize: '12px'
         }}>
           <div style={{ color: 'var(--muted)', fontSize: '14px' }}>
-            Showing {filteredReports.length > 0 ? startIndex + 1 : 0} to {Math.min(startIndex + entriesPerPage, filteredReports.length)} of {filteredReports.length} entries
-            {searchTerm && ` (filtered from ${reports.length} total entries)`}
+            {t('user:showing')} {filteredReports.length > 0 ? startIndex + 1 : 0} {t('user:to')} {Math.min(startIndex + entriesPerPage, filteredReports.length)} {t('user:of')} {filteredReports.length} {t('user:entries')}
+            {searchTerm && ` (${t('user:filteredFrom')} ${reports.length} ${t('user:totalEntries')})`}
           </div>
 
           <div style={{ display: 'flex', gap: '5px' }}>
@@ -434,7 +436,7 @@ function DashboardHome() {
                 fontSize: '12px'
               }}
             >
-              Previous
+              {t('user:previous')}
             </button>
 
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
@@ -472,7 +474,7 @@ function DashboardHome() {
                 fontSize: '12px'
               }}
             >
-              Next
+              {t('user:next')}
             </button>
           </div>
         </div>
@@ -484,7 +486,7 @@ function DashboardHome() {
             color: 'var(--muted)',
             fontSize: '16px'
           }}>
-            {searchTerm ? 'No complaints found matching your search.' : 'No complaints found.'}
+            {searchTerm ? t('user:noComplaintsMatching') : t('user:noComplaintsFound')}
           </div>
         )}
       </div>
@@ -525,7 +527,7 @@ function DashboardHome() {
               padding: '15px 20px',
               borderBottom: '1px solid var(--border)'
             }}>
-              <h3 style={{ margin: '0', color: 'var(--primary)', fontSize: '18px' }}>Complaint Details</h3>
+              <h3 style={{ margin: '0', color: 'var(--primary)', fontSize: '18px' }}>{t('user:complaintDetails')}</h3>
               <button
                 onClick={() => setSelectedComplaint(null)}
                 style={{
@@ -575,19 +577,19 @@ function DashboardHome() {
                 {/* Compact Info Grid */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
                   <div style={{ padding: '10px', backgroundColor: 'var(--card-bg)', borderRadius: '6px' }}>
-                    <div style={{ fontSize: '11px', color: 'var(--muted)', marginBottom: '3px', textTransform: 'uppercase', fontWeight: '600' }}>Registration</div>
+                    <div style={{ fontSize: '11px', color: 'var(--muted)', marginBottom: '3px', textTransform: 'uppercase', fontWeight: '600' }}>{t('user:registration')}</div>
                     <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{selectedComplaint.regNumber}</div>
                   </div>
                   <div style={{ padding: '10px', backgroundColor: 'var(--card-bg)', borderRadius: '6px' }}>
-                    <div style={{ fontSize: '11px', color: 'var(--muted)', marginBottom: '3px', textTransform: 'uppercase', fontWeight: '600' }}>Report ID</div>
+                    <div style={{ fontSize: '11px', color: 'var(--muted)', marginBottom: '3px', textTransform: 'uppercase', fontWeight: '600' }}>{t('user:reportId')}</div>
                     <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{selectedComplaint.id}</div>
                   </div>
                   <div style={{ padding: '10px', backgroundColor: 'var(--card-bg)', borderRadius: '6px' }}>
-                    <div style={{ fontSize: '11px', color: 'var(--muted)', marginBottom: '3px', textTransform: 'uppercase', fontWeight: '600' }}>Department</div>
+                    <div style={{ fontSize: '11px', color: 'var(--muted)', marginBottom: '3px', textTransform: 'uppercase', fontWeight: '600' }}>{t('user:department')}</div>
                     <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{selectedComplaint.department}</div>
                   </div>
                   <div style={{ padding: '10px', backgroundColor: 'var(--card-bg)', borderRadius: '6px' }}>
-                    <div style={{ fontSize: '11px', color: 'var(--muted)', marginBottom: '3px', textTransform: 'uppercase', fontWeight: '600' }}>Priority</div>
+                    <div style={{ fontSize: '11px', color: 'var(--muted)', marginBottom: '3px', textTransform: 'uppercase', fontWeight: '600' }}>{t('user:priority')}</div>
                     <span
                       style={{
                         padding: '3px 6px',
@@ -607,29 +609,29 @@ function DashboardHome() {
 
                 {/* Description */}
                 <div style={{ padding: '12px', backgroundColor: 'var(--card-bg)', borderRadius: '6px' }}>
-                  <div style={{ fontSize: '11px', color: 'var(--muted)', marginBottom: '5px', textTransform: 'uppercase', fontWeight: '600' }}>Description</div>
+                  <div style={{ fontSize: '11px', color: 'var(--muted)', marginBottom: '5px', textTransform: 'uppercase', fontWeight: '600' }}>{t('user:description')}</div>
                   <div style={{ fontSize: '14px', lineHeight: '1.4' }}>{selectedComplaint.description || selectedComplaint.title}</div>
                 </div>
 
                 {/* Bottom Info Row */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '10px' }}>
                   <div style={{ padding: '10px', backgroundColor: 'var(--card-bg)', borderRadius: '6px' }}>
-                    <div style={{ fontSize: '11px', color: 'var(--muted)', marginBottom: '3px', textTransform: 'uppercase', fontWeight: '600' }}>Submitted</div>
+                    <div style={{ fontSize: '11px', color: 'var(--muted)', marginBottom: '3px', textTransform: 'uppercase', fontWeight: '600' }}>{t('user:submitted')}</div>
                     <div style={{ fontWeight: 'bold', fontSize: '13px' }}>{new Date(selectedComplaint.dateSubmitted).toLocaleDateString()}</div>
                   </div>
                   <div style={{ padding: '10px', backgroundColor: 'var(--card-bg)', borderRadius: '6px' }}>
-                    <div style={{ fontSize: '11px', color: 'var(--muted)', marginBottom: '3px', textTransform: 'uppercase', fontWeight: '600' }}>Last Updated</div>
+                    <div style={{ fontSize: '11px', color: 'var(--muted)', marginBottom: '3px', textTransform: 'uppercase', fontWeight: '600' }}>{t('user:lastUpdated')}</div>
                     <div style={{ fontWeight: 'bold', fontSize: '13px' }}>{new Date(selectedComplaint.lastUpdated || selectedComplaint.dateSubmitted).toLocaleDateString()}</div>
                   </div>
                   <div style={{ padding: '10px', backgroundColor: 'var(--card-bg)', borderRadius: '6px' }}>
-                    <div style={{ fontSize: '11px', color: 'var(--muted)', marginBottom: '3px', textTransform: 'uppercase', fontWeight: '600' }}>Assigned To</div>
-                    <div style={{ fontWeight: 'bold', fontSize: '13px' }}>{selectedComplaint.assignedTo || 'Unassigned'}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--muted)', marginBottom: '3px', textTransform: 'uppercase', fontWeight: '600' }}>{t('user:assignedTo')}</div>
+                    <div style={{ fontWeight: 'bold', fontSize: '13px' }}>{selectedComplaint.assignedTo || t('user:unassigned')}</div>
                   </div>
                 </div>
 
                 {/* Status Timeline - Compact */}
                 <div style={{ padding: '12px', backgroundColor: 'var(--card-bg)', borderRadius: '6px' }}>
-                  <div style={{ fontSize: '12px', color: 'var(--primary)', marginBottom: '10px', fontWeight: '600' }}>Status Timeline</div>
+                  <div style={{ fontSize: '12px', color: 'var(--primary)', marginBottom: '10px', fontWeight: '600' }}>{t('user:statusTimeline')}</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                       <div style={{
@@ -638,7 +640,7 @@ function DashboardHome() {
                         borderRadius: '50%',
                         backgroundColor: '#10b981'
                       }}></div>
-                      <span style={{ fontSize: '12px' }}>Submitted</span>
+                      <span style={{ fontSize: '12px' }}>{t('user:submitted')}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                       <div style={{
@@ -647,7 +649,7 @@ function DashboardHome() {
                         borderRadius: '50%',
                         backgroundColor: selectedComplaint.status === 'In Progress' || selectedComplaint.status === 'Resolved' ? '#f59e0b' : '#e5e7eb'
                       }}></div>
-                      <span style={{ fontSize: '12px' }}>In Progress</span>
+                      <span style={{ fontSize: '12px' }}>{t('user:inProgress')}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                       <div style={{
@@ -656,7 +658,7 @@ function DashboardHome() {
                         borderRadius: '50%',
                         backgroundColor: selectedComplaint.status === 'Resolved' ? '#10b981' : '#e5e7eb'
                       }}></div>
-                      <span style={{ fontSize: '12px' }}>Resolved</span>
+                      <span style={{ fontSize: '12px' }}>{t('user:resolved')}</span>
                     </div>
                   </div>
                 </div>

@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth, useDatabase } from '../../contexts';
 
 function AdminSettings() {
+  const { t } = useTranslation('admin');
   const { user } = useAuth();
   const { getAdmin, getAdminById, getAllUsers, getAllComplaints } = useDatabase();
   const [activeTab, setActiveTab] = useState('profile');
@@ -71,18 +73,18 @@ function AdminSettings() {
   return (
     <div>
       <div className="card" style={{ padding: '20px', marginBottom: '20px' }}>
-        <h2>Admin Settings & System Information</h2>
-        <p>Manage your profile, view system statistics, and configure preferences.</p>
+        <h2>{t('adminSettingsTitle')}</h2>
+        <p>{t('adminSettingsDescription')}</p>
       </div>
 
       {/* Tab Navigation */}
       <div className="card" style={{ padding: '0', marginBottom: '20px' }}>
         <div style={{ display: 'flex', borderBottom: '1px solid var(--border)' }}>
           {[
-            { id: 'profile', label: 'Profile', icon: '👤' },
-            { id: 'system', label: 'System Stats', icon: '📊' },
-            { id: 'permissions', label: 'Permissions', icon: '🔐' },
-            { id: 'settings', label: 'Settings', icon: '⚙️' }
+            { id: 'profile', label: t('profile'), icon: '👤' },
+            { id: 'system', label: t('systemStats'), icon: '📊' },
+            { id: 'permissions', label: t('permissions'), icon: '🔐' },
+            { id: 'settings', label: t('settings'), icon: '⚙️' }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -113,7 +115,7 @@ function AdminSettings() {
       <div className="card" style={{ padding: '20px' }}>
         {activeTab === 'profile' && (
           <div>
-            <h3 style={{ marginBottom: '20px' }}>Admin Profile</h3>
+            <h3 style={{ marginBottom: '20px' }}>{t('adminProfile')}</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
@@ -139,30 +141,30 @@ function AdminSettings() {
 
                 <div style={{ display: 'grid', gap: '15px' }}>
                   <div style={{ padding: '15px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
-                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>USERNAME</div>
+                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('username')}</div>
                     <div style={{ fontWeight: 'bold' }}>{adminData?.username}</div>
                   </div>
                   <div style={{ padding: '15px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
-                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>EMAIL</div>
+                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('email')}</div>
                     <div>{adminData?.email}</div>
                   </div>
                   <div style={{ padding: '15px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
-                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>DEPARTMENT</div>
+                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('department')}</div>
                     <div>{adminData?.department}</div>
                   </div>
                   <div style={{ padding: '15px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
-                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>LOCATION</div>
+                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('location')}</div>
                     <div>{adminData?.location}</div>
                   </div>
                   <div style={{ padding: '15px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
-                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>MEMBER SINCE</div>
+                    <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('memberSince')}</div>
                     <div>{new Date(adminData?.createdAt).toLocaleDateString()}</div>
                   </div>
                 </div>
               </div>
 
               <div>
-                <h4 style={{ marginBottom: '15px' }}>Access Level</h4>
+                <h4 style={{ marginBottom: '15px' }}>{t('accessLevel')}</h4>
                 <div style={{
                   padding: '20px',
                   backgroundColor: 'var(--bg)',
@@ -192,40 +194,40 @@ function AdminSettings() {
 
         {activeTab === 'system' && (
           <div>
-            <h3 style={{ marginBottom: '20px' }}>System Statistics</h3>
+            <h3 style={{ marginBottom: '20px' }}>{t('systemStatistics')}</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginBottom: '20px' }}>
               <div style={{ padding: '20px', backgroundColor: 'var(--bg)', borderRadius: '8px', textAlign: 'center' }}>
                 <div style={{ fontSize: '24px', marginBottom: '5px' }}>👥</div>
-                <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>TOTAL USERS</div>
+                <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('totalUsers')}</div>
                 <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{systemStats.totalUsers}</div>
               </div>
               <div style={{ padding: '20px', backgroundColor: 'var(--bg)', borderRadius: '8px', textAlign: 'center' }}>
                 <div style={{ fontSize: '24px', marginBottom: '5px' }}>📋</div>
-                <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>TOTAL COMPLAINTS</div>
+                <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('totalComplaints')}</div>
                 <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{systemStats.totalComplaints}</div>
               </div>
               <div style={{ padding: '20px', backgroundColor: 'var(--bg)', borderRadius: '8px', textAlign: 'center' }}>
                 <div style={{ fontSize: '24px', marginBottom: '5px', color: '#10b981' }}>✅</div>
-                <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>RESOLVED</div>
+                <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('resolved')}</div>
                 <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#10b981' }}>{systemStats.resolvedComplaints}</div>
               </div>
               <div style={{ padding: '20px', backgroundColor: 'var(--bg)', borderRadius: '8px', textAlign: 'center' }}>
                 <div style={{ fontSize: '24px', marginBottom: '5px', color: '#f59e0b' }}>⏳</div>
-                <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>IN PROGRESS</div>
+                <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('inProgress')}</div>
                 <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#f59e0b' }}>{systemStats.inProgressComplaints}</div>
               </div>
               <div style={{ padding: '20px', backgroundColor: 'var(--bg)', borderRadius: '8px', textAlign: 'center' }}>
                 <div style={{ fontSize: '24px', marginBottom: '5px', color: '#ef4444' }}>⏸️</div>
-                <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>PENDING</div>
+                <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('pending')}</div>
                 <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ef4444' }}>{systemStats.pendingComplaints}</div>
               </div>
             </div>
 
             <div style={{ padding: '20px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
-              <h4 style={{ margin: '0 0 15px 0' }}>System Health</h4>
+              <h4 style={{ margin: '0 0 15px 0' }}>{t('systemHealth')}</h4>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
                 <div>
-                  <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>RESOLUTION RATE</div>
+                  <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('resolutionRate')}</div>
                   <div style={{ fontSize: '18px', fontWeight: 'bold' }}>
                     {systemStats.totalComplaints > 0
                       ? ((systemStats.resolvedComplaints / systemStats.totalComplaints) * 100).toFixed(1)
@@ -233,7 +235,7 @@ function AdminSettings() {
                   </div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>AVG COMPLAINTS/USER</div>
+                  <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('avgComplaintsUser')}</div>
                   <div style={{ fontSize: '18px', fontWeight: 'bold' }}>
                     {systemStats.totalUsers > 0
                       ? (systemStats.totalComplaints / systemStats.totalUsers).toFixed(1)
@@ -241,8 +243,8 @@ function AdminSettings() {
                   </div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>SYSTEM STATUS</div>
-                  <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#10b981' }}>🟢 Online</div>
+                  <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '5px' }}>{t('systemStatus')}</div>
+                  <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#10b981' }}>{t('online')}</div>
                 </div>
               </div>
             </div>
@@ -251,15 +253,15 @@ function AdminSettings() {
 
         {activeTab === 'permissions' && (
           <div>
-            <h3 style={{ marginBottom: '20px' }}>Access Permissions</h3>
+            <h3 style={{ marginBottom: '20px' }}>{t('accessPermissions')}</h3>
             <div style={{ display: 'grid', gap: '15px' }}>
               <div style={{ padding: '20px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
-                <h4 style={{ margin: '0 0 15px 0' }}>Permission Levels</h4>
+                <h4 style={{ margin: '0 0 15px 0' }}>{t('permissionLevels')}</h4>
                 <div style={{ display: 'grid', gap: '10px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', backgroundColor: 'var(--card-bg)', borderRadius: '4px' }}>
                     <div>
-                      <div style={{ fontWeight: 'bold' }}>Level 3 - State Admin</div>
-                      <div style={{ fontSize: '12px', color: 'var(--muted)' }}>Full system access and control</div>
+                      <div style={{ fontWeight: 'bold' }}>{t('level3StateAdmin')}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--muted)' }}>{t('fullSystemAccess')}</div>
                     </div>
                     <div style={{
                       padding: '4px 8px',
@@ -269,13 +271,13 @@ function AdminSettings() {
                       fontSize: '12px',
                       fontWeight: 'bold'
                     }}>
-                      {adminData?.permissionLevel === 'admin_level_3' ? 'Current' : 'Level 3'}
+                      {adminData?.permissionLevel === 'admin_level_3' ? t('current') : 'Level 3'}
                     </div>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', backgroundColor: 'var(--card-bg)', borderRadius: '4px' }}>
                     <div>
-                      <div style={{ fontWeight: 'bold' }}>Level 2 - City Admin</div>
-                      <div style={{ fontSize: '12px', color: 'var(--muted)' }}>City-wide access and management</div>
+                      <div style={{ fontWeight: 'bold' }}>{t('level2CityAdmin')}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--muted)' }}>{t('cityWideAccess')}</div>
                     </div>
                     <div style={{
                       padding: '4px 8px',
@@ -285,13 +287,13 @@ function AdminSettings() {
                       fontSize: '12px',
                       fontWeight: 'bold'
                     }}>
-                      {adminData?.permissionLevel === 'admin_level_2' ? 'Current' : 'Level 2'}
+                      {adminData?.permissionLevel === 'admin_level_2' ? t('current') : 'Level 2'}
                     </div>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', backgroundColor: 'var(--card-bg)', borderRadius: '4px' }}>
                     <div>
-                      <div style={{ fontWeight: 'bold' }}>Level 1 - Sector Admin</div>
-                      <div style={{ fontSize: '12px', color: 'var(--muted)' }}>Sector-specific access only</div>
+                      <div style={{ fontWeight: 'bold' }}>{t('level1SectorAdmin')}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--muted)' }}>{t('sectorSpecificAccess')}</div>
                     </div>
                     <div style={{
                       padding: '4px 8px',
@@ -301,7 +303,7 @@ function AdminSettings() {
                       fontSize: '12px',
                       fontWeight: 'bold'
                     }}>
-                      {adminData?.permissionLevel === 'admin_level_1' ? 'Current' : 'Level 1'}
+                      {adminData?.permissionLevel === 'admin_level_1' ? t('current') : 'Level 1'}
                     </div>
                   </div>
                 </div>
@@ -312,31 +314,31 @@ function AdminSettings() {
 
         {activeTab === 'settings' && (
           <div>
-            <h3 style={{ marginBottom: '20px' }}>System Settings</h3>
+            <h3 style={{ marginBottom: '20px' }}>{t('systemSettings')}</h3>
             <div style={{ display: 'grid', gap: '15px' }}>
               <div style={{ padding: '20px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
-                <h4 style={{ margin: '0 0 15px 0' }}>Notification Settings</h4>
+                <h4 style={{ margin: '0 0 15px 0' }}>{t('notificationSettings')}</h4>
                 <div style={{ display: 'grid', gap: '10px' }}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <input type="checkbox" defaultChecked />
-                    <span>Email notifications for new complaints</span>
+                    <span>{t('emailNotifications')}</span>
                   </label>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <input type="checkbox" defaultChecked />
-                    <span>Status update notifications</span>
+                    <span>{t('statusUpdateNotifications')}</span>
                   </label>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <input type="checkbox" />
-                    <span>Weekly summary reports</span>
+                    <span>{t('weeklySummaryReports')}</span>
                   </label>
                 </div>
               </div>
 
               <div style={{ padding: '20px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
-                <h4 style={{ margin: '0 0 15px 0' }}>System Preferences</h4>
+                <h4 style={{ margin: '0 0 15px 0' }}>{t('systemPreferences')}</h4>
                 <div style={{ display: 'grid', gap: '10px' }}>
                   <div>
-                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px' }}>Default View</label>
+                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px' }}>{t('defaultView')}</label>
                     <select style={{
                       width: '100%',
                       padding: '8px',
@@ -345,13 +347,13 @@ function AdminSettings() {
                       backgroundColor: 'var(--card-bg)',
                       color: 'var(--fg)'
                     }}>
-                      <option>Dashboard</option>
-                      <option>Manage Reports</option>
-                      <option>User Management</option>
+                      <option>{t('dashboard')}</option>
+                      <option>{t('manageReports')}</option>
+                      <option>{t('userManagement')}</option>
                     </select>
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px' }}>Items Per Page</label>
+                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '5px' }}>{t('itemsPerPage')}</label>
                     <select style={{
                       width: '100%',
                       padding: '8px',
@@ -370,7 +372,7 @@ function AdminSettings() {
               </div>
 
               <div style={{ padding: '20px', backgroundColor: 'var(--bg)', borderRadius: '8px' }}>
-                <h4 style={{ margin: '0 0 15px 0' }}>Account Settings</h4>
+                <h4 style={{ margin: '0 0 15px 0' }}>{t('accountSettings')}</h4>
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                   <button style={{
                     padding: '10px 20px',
@@ -380,7 +382,7 @@ function AdminSettings() {
                     borderRadius: '4px',
                     cursor: 'pointer'
                   }}>
-                    Change Password
+                    {t('changePassword')}
                   </button>
                   <button style={{
                     padding: '10px 20px',
@@ -390,7 +392,7 @@ function AdminSettings() {
                     borderRadius: '4px',
                     cursor: 'pointer'
                   }}>
-                    Export Data
+                    {t('exportData')}
                   </button>
                 </div>
               </div>

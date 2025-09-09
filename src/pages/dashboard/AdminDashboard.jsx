@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts';
 import AdminDashboardHome from './AdminDashboardHome';
 import ManageReports from '../../features/complaints/components/ManageReports';
@@ -7,6 +8,7 @@ import UserManagement from '../../pages/admin/UserManagement';
 import AdminSettings from '../../pages/admin/AdminSettings';
 
 function AdminDashboard() {
+  const { t } = useTranslation('admin');
   const navigate = useNavigate();
   const { logout } = useAuth();
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -36,11 +38,11 @@ function AdminDashboard() {
   };
 
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: 'fas fa-tachometer-alt' },
-    { id: 'manage-reports', label: 'Manage Reports', icon: 'fas fa-clipboard-list' },
-    { id: 'user-management', label: 'User Management', icon: 'fas fa-users' },
-    { id: 'settings', label: 'Settings', icon: 'fas fa-cog' },
-    { id: 'signout', label: 'Sign Out', icon: 'fas fa-sign-out-alt' }
+    { id: 'dashboard', label: t('dashboard'), icon: 'fas fa-tachometer-alt' },
+    { id: 'manage-reports', label: t('manageReports'), icon: 'fas fa-clipboard-list' },
+    { id: 'user-management', label: t('userManagement'), icon: 'fas fa-users' },
+    { id: 'settings', label: t('settings'), icon: 'fas fa-cog' },
+    { id: 'signout', label: t('signOut'), icon: 'fas fa-sign-out-alt' }
   ];
 
   const handleMenuClick = (sectionId) => {
@@ -90,7 +92,7 @@ function AdminDashboard() {
       {isMobile && !sidebarOpen && (
         <button
           onClick={toggleSidebar}
-          aria-label="Open navigation"
+          aria-label={t('openNavigation')}
           style={{
             position: 'fixed', top: 70, left: 0, zIndex: 1100,
             background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: '0 6px 6px 0',
@@ -116,7 +118,7 @@ function AdminDashboard() {
         }}
       >
         <div style={{ padding: '0 20px 24px', borderBottom: '1px solid var(--border)' }}>
-          <h2 style={{ margin: 0, fontSize: 20, color: 'var(--primary)' }}>Admin Panel</h2>
+          <h2 style={{ margin: 0, fontSize: 20, color: 'var(--primary)' }}>{t('adminPanel')}</h2>
         </div>
         <nav style={{ marginTop: 8 }}>
           {menuItems.map(item => (
@@ -175,11 +177,11 @@ function AdminDashboard() {
       {showSignoutConfirm && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1200 }}>
           <div className="card" style={{ padding: 32, maxWidth: 420, width: '92%' }}>
-            <h3 style={{ margin: '0 0 12px', color: 'var(--primary)' }}>Confirm Sign Out</h3>
-            <p style={{ margin: '0 0 24px', color: 'var(--muted)', fontSize: 14 }}>Are you sure you want to sign out? You'll need to sign in again to access admin tools.</p>
+            <h3 style={{ margin: '0 0 12px', color: 'var(--primary)' }}>{t('confirmSignOut')}</h3>
+            <p style={{ margin: '0 0 24px', color: 'var(--muted)', fontSize: 14 }}>{t('signOutMessage')}</p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-              <button onClick={handleSignoutConfirm} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Sign Out</button>
-              <button onClick={() => setShowSignoutConfirm(false)} style={{ background: 'var(--muted)', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
+              <button onClick={handleSignoutConfirm} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>{t('signOut')}</button>
+              <button onClick={() => setShowSignoutConfirm(false)} style={{ background: 'var(--muted)', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: 6, cursor: 'pointer' }}>{t('cancel')}</button>
             </div>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts';
 import DashboardHome from './DashboardHome';
 // Updated paths after modularization into features directory
@@ -11,6 +12,7 @@ import DeleteAccount from '../../features/users/components/DeleteAccount';
 function UserDashboard() {
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const { t } = useTranslation();
   const [activeSection, setActiveSection] = useState('dashboard');
   const [showSignoutConfirm, setShowSignoutConfirm] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -38,12 +40,12 @@ function UserDashboard() {
   };
 
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: 'fas fa-home' },
-    { id: 'view-status', label: 'View Status', icon: 'fas fa-chart-bar' },
-    { id: 'lodge-complain', label: 'Lodge Complain', icon: 'fas fa-file-alt' },
-    { id: 'edit-profile', label: 'Edit Profile', icon: 'fas fa-cog' },
-    { id: 'delete-account', label: 'Delete Account', icon: 'fas fa-trash' },
-    { id: 'signout', label: 'Sign Out', icon: 'fas fa-sign-out-alt' }
+    { id: 'dashboard', label: t('dashboard'), icon: 'fas fa-home' },
+    { id: 'view-status', label: t('user:viewStatus'), icon: 'fas fa-chart-bar' },
+    { id: 'lodge-complain', label: t('user:lodgeComplain'), icon: 'fas fa-file-alt' },
+    { id: 'edit-profile', label: t('user:editProfile'), icon: 'fas fa-cog' },
+    { id: 'delete-account', label: t('user:deleteAccount'), icon: 'fas fa-trash' },
+    { id: 'signout', label: t('signOut'), icon: 'fas fa-sign-out-alt' }
   ];
 
   const handleMenuClick = (sectionId) => {
@@ -127,7 +129,7 @@ function UserDashboard() {
         overflowY: 'auto'
       }}>
         <div style={{ padding: '0 20px', marginBottom: '30px' }}>
-          <h2 style={{ margin: '0', color: 'var(--primary)' }}>User Panel</h2>
+          <h2 style={{ margin: '0', color: 'var(--primary)' }}>{t('user:userPanel')}</h2>
         </div>
 
         <nav>
@@ -207,9 +209,9 @@ function UserDashboard() {
             width: '90%',
             textAlign: 'center'
           }}>
-            <h3 style={{ margin: '0 0 20px 0', color: 'var(--primary)' }}>Confirm Sign Out</h3>
+            <h3 style={{ margin: '0 0 20px 0', color: 'var(--primary)' }}>{t('confirmSignOut')}</h3>
             <p style={{ margin: '0 0 30px 0', color: 'var(--muted)' }}>
-              Are you sure you want to sign out? You will need to log in again to access your dashboard.
+              {t('signOutMessage')}
             </p>
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
               <button
@@ -223,7 +225,7 @@ function UserDashboard() {
                   cursor: 'pointer'
                 }}
               >
-                Sign Out
+                {t('signOut')}
               </button>
               <button
                 onClick={() => setShowSignoutConfirm(false)}
@@ -236,7 +238,7 @@ function UserDashboard() {
                   cursor: 'pointer'
                 }}
               >
-                Cancel
+                {t('cancel')}
               </button>
             </div>
           </div>

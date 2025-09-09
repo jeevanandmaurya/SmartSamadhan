@@ -1,9 +1,11 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth, useDatabase } from '../../../contexts';
 import L from 'leaflet';
 import supabase from '../../../supabaseClient';
 
 function LodgeComplain() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { addComplaint } = useDatabase();
   const mapRef = useRef(null);
@@ -535,18 +537,18 @@ function LodgeComplain() {
       <div className={embedded ? '' : 'section section--narrow'} id="lodge-complain-root-container">
         <div className="card" style={{ padding: '16px', textAlign: 'center' }}>
           <i style={{ fontSize: '30px', color: '#10b981', marginBottom: '8px' }} className="fas fa-check-circle"></i>
-          <h2 style={{ color: 'var(--primary)', marginBottom: '4px', fontSize: '16px' }}>Reported!</h2>
+          <h2 style={{ color: 'var(--primary)', marginBottom: '4px', fontSize: '16px' }}>{t('user:reported')}</h2>
           {submittedRef && (
             <p style={{ color: 'var(--muted)', marginBottom: '8px', fontSize: '12px' }}>
-              Ref: <strong>{submittedRef}</strong>
+              {t('user:reference')}: <strong>{submittedRef}</strong>
             </p>
           )}
           <p style={{ color: 'var(--muted)', marginBottom: '12px', fontSize: '12px' }}>
-            We will review and update the status soon.
+            {t('user:reviewMessage')}
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
-            <button onClick={() => window.location.reload()} className="btn btn--primary" style={{ fontSize: 12, padding: '6px 12px' }}>Report Another</button>
-            <button onClick={() => window.location.href = '/user-dashboard'} className="btn btn--outline" style={{ fontSize: 12, padding: '6px 12px' }}>Dashboard</button>
+            <button onClick={() => window.location.reload()} className="btn btn--primary" style={{ fontSize: 12, padding: '6px 12px' }}>{t('user:reportAnother')}</button>
+            <button onClick={() => window.location.href = '/user-dashboard'} className="btn btn--outline" style={{ fontSize: 12, padding: '6px 12px' }}>{t('user:dashboard')}</button>
           </div>
         </div>
       </div>
@@ -556,9 +558,9 @@ function LodgeComplain() {
   return (
     <div className={embedded ? '' : 'section section--narrow'} id="lodge-complain-root-container" style={{ overflowX: 'hidden' }}>
       <div className="card" style={{ padding: '14px', overflow: 'hidden' }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '4px', fontSize: '18px' }}>Report Civic Issues</h2>
+        <h2 style={{ textAlign: 'center', marginBottom: '4px', fontSize: '18px' }}>{t('user:reportCivicIssues')}</h2>
         <p style={{ textAlign: 'center', color: 'var(--muted)', marginBottom: '10px', fontSize: '12px', lineHeight: 1.4 }}>
-          Report everyday problems (potholes, streetlights, garbage etc.) to improve your community.
+          {t('user:reportDescription')}
         </p>
 
         <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '12px' }}>
@@ -570,16 +572,16 @@ function LodgeComplain() {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--warning-text, #856404)', marginBottom: '8px' }}>
               <i className="fas fa-exclamation-triangle" style={{ color: '#f59e0b', fontSize: '16px' }}></i>
-              <h4 style={{ margin: 0, color: 'var(--warning-text, #856404)', fontSize: '14px' }}>Notice</h4>
+              <h4 style={{ margin: 0, color: 'var(--warning-text, #856404)', fontSize: '14px' }}>{t('user:notice')}</h4>
             </div>
             <p style={{ color: 'var(--warning-text, #856404)', marginBottom: '8px', fontWeight: 'bold', fontSize: '12px', lineHeight: 1.4 }}>
-              Don't use for: RTI, court/subjudice, religious matters, internal govt service issues (unless channels exhausted), pension issues.
+              {t('user:noticeText')}
             </p>
             <div style={{ marginTop: '6px' }}>
               <label style={{ display: 'flex', alignItems: 'flex-start', cursor: 'pointer' }}>
                 <input type="checkbox" name="agreementAccepted" checked={formData.agreementAccepted} onChange={handleInputChange} style={{ marginRight: '6px', marginTop: 2 }} required />
                 <span style={{ fontSize: '12px', lineHeight: '1.4' }}>
-                  I confirm my issue is eligible.
+                  {t('user:confirmEligibility')}
                 </span>
               </label>
             </div>
@@ -589,19 +591,19 @@ function LodgeComplain() {
           <div>
       <h3 style={{ color: 'var(--primary)', marginBottom: '6px', fontSize: '14px' }}>
               <i className="fas fa-user" style={{ color: 'var(--primary)', marginRight: '8px' }}></i>
-              Your Details
+              {t('user:yourDetails')}
             </h3>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '8px' }}>
               <div>
         <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
-                  Full Name *
+                  {t('user:fullName')} *
                 </label>
                 <input
                   type="text"
                   name="fullName"
                   value={formData.fullName}
                   onChange={handleInputChange}
-                  placeholder="Your full name"
+                  placeholder={t('user:yourFullName')}
                   required
                   style={{
                     width: '100%',
@@ -617,14 +619,14 @@ function LodgeComplain() {
 
               <div>
                 <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
-                  Email *
+                  {t('user:email')} *
                 </label>
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  placeholder="Your email address"
+                  placeholder={t('user:yourEmail')}
                   required
                   style={{
                     width: '100%',
@@ -640,14 +642,14 @@ function LodgeComplain() {
 
               <div>
                 <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
-                  Phone Number *
+                  {t('user:phoneNumber')} *
                 </label>
                 <input
                   type="tel"
                   name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  placeholder="Your phone number"
+                  placeholder={t('user:yourPhone')}
                   required
                   style={{
                     width: '100%',
@@ -663,14 +665,14 @@ function LodgeComplain() {
 
               <div>
                 <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
-                  Address
+                  {t('user:address')}
                 </label>
                 <input
                   type="text"
                   name="address"
                   value={formData.address}
                   onChange={handleInputChange}
-                  placeholder="Your address"
+                  placeholder={t('user:yourAddress')}
                   style={{
                     width: '100%',
                     padding: '6px 8px',
@@ -689,19 +691,19 @@ function LodgeComplain() {
           <div>
       <h3 style={{ color: 'var(--primary)', marginBottom: '6px', fontSize: '14px' }}>
               <i className="fas fa-map-marker-alt" style={{ color: 'var(--primary)', marginRight: '8px' }}></i>
-              Location & Department
+              {t('user:locationDepartment')}
             </h3>
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit,minmax(150px,1fr))', gap: '10px' }}>
               <div>
         <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
-                  City/Municipality *
+                  {t('user:cityMunicipality')} *
                 </label>
                 <input
                   type="text"
                   name="city"
                   value={formData.city}
                   onChange={handleInputChange}
-                  placeholder="Enter your city or municipality"
+                  placeholder={t('user:enterCityMunicipality')}
                   required
                   style={{
                     width: '100%',
@@ -717,7 +719,7 @@ function LodgeComplain() {
 
               <div>
                 <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
-                  Concerned Department *
+                  {t('user:concernedDepartment')} *
                 </label>
                 <select
                   name="department"
@@ -743,14 +745,14 @@ function LodgeComplain() {
                     fontSize: '13px'
                   }}
                 >
-                  <option value="">Select Department</option>
-                  <option value="Public Works">Public Works Department</option>
-                  <option value="Municipal Corporation">Municipal Corporation</option>
-                  <option value="Electricity Board">Electricity Board</option>
-                  <option value="Water Supply">Water Supply Department</option>
-                  <option value="Sanitation">Sanitation Department</option>
-                  <option value="Traffic Police">Traffic Police</option>
-                  <option value="Other">Other</option>
+                  <option value="">{t('user:selectDepartment')}</option>
+                  <option value="Public Works">{t('user:publicWorksDepartment')}</option>
+                  <option value="Municipal Corporation">{t('user:municipalCorporation')}</option>
+                  <option value="Electricity Board">{t('user:electricityBoard')}</option>
+                  <option value="Water Supply">{t('user:waterSupplyDepartment')}</option>
+                  <option value="Sanitation">{t('user:sanitationDepartment')}</option>
+                  <option value="Traffic Police">{t('user:trafficPolice')}</option>
+                  <option value="Other">{t('user:other')}</option>
                 </select>
               </div>
             </div>
@@ -760,13 +762,13 @@ function LodgeComplain() {
           <div>
             <h3 style={{ color: 'var(--primary)', marginBottom: '6px', fontSize: '14px' }}>
               <i className="fas fa-folder" style={{ color: 'var(--primary)', marginRight: '8px' }}></i>
-              Issue Category
+              {t('user:issueCategory')}
             </h3>
             <div style={{ display: 'grid', gap: '8px' }}>
               {/* Main Category Selection */}
               <div>
                 <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
-                  Main Category *
+                  {t('user:mainCategory')} *
                 </label>
                 <select
                   name="mainCategory"
@@ -791,7 +793,7 @@ function LodgeComplain() {
                     fontSize: '13px'
                   }}
                 >
-                  <option value="">Select Main Category</option>
+                  <option value="">{t('user:selectMainCategory')}</option>
                   {Object.keys(civicCategories).map(category => (
                     <option key={category} value={category}>{category}</option>
                   ))}
@@ -803,7 +805,7 @@ function LodgeComplain() {
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : (formData.subCategory1 ? '1fr 1fr' : '1fr'), gap: '10px' }}>
                   <div>
           <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
-                      Sub Category *
+                      {t('user:subCategory')} *
                     </label>
                     <select
                       name="subCategory1"
@@ -827,7 +829,7 @@ function LodgeComplain() {
                         fontSize: '13px'
                       }}
                     >
-                      <option value="">Select Sub Category</option>
+                      <option value="">{t('user:selectSubCategory')}</option>
                       {civicCategories[formData.mainCategory] &&
                         Object.keys(civicCategories[formData.mainCategory]).map(subCat => (
                           <option key={subCat} value={subCat}>{subCat}</option>
@@ -840,7 +842,7 @@ function LodgeComplain() {
                   {formData.subCategory1 && (
                     <div>
                       <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
-                        Specific Issue *
+                        {t('user:specificIssue')} *
                       </label>
                       <select
                         name="specificIssue"
@@ -857,7 +859,7 @@ function LodgeComplain() {
                           fontSize: '13px'
                         }}
                       >
-                        <option value="">Select Specific Issue</option>
+                        <option value="">{t('user:selectSpecificIssue')}</option>
                         {civicCategories[formData.mainCategory] &&
                           civicCategories[formData.mainCategory][formData.subCategory1] &&
                           civicCategories[formData.mainCategory][formData.subCategory1].map(issue => (
@@ -876,19 +878,19 @@ function LodgeComplain() {
           <div>
       <h3 style={{ color: 'var(--primary)', marginBottom: '6px', fontSize: '14px' }}>
               <i className="fas fa-file-alt" style={{ color: 'var(--primary)', marginRight: '8px' }}></i>
-              Complaint Details
+              {t('user:complaintDetails')}
             </h3>
       <div style={{ display: 'grid', gap: '10px' }}>
               <div>
         <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
-                  Complaint Title *
+                  {t('user:complaintTitle')} *
                 </label>
                 <input
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleInputChange}
-                  placeholder="Brief title for your complaint"
+                  placeholder={t('user:briefTitle')}
                   required
                   style={{
                     width: '100%',
@@ -904,13 +906,13 @@ function LodgeComplain() {
 
               <div>
                 <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
-                  Detailed Description *
+                  {t('user:detailedDescription')} *
                 </label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  placeholder="Please provide detailed information about the issue..."
+                  placeholder={t('user:provideDetails')}
                   required
                   rows={4}
                   style={{
@@ -929,7 +931,7 @@ function LodgeComplain() {
 
               <div>
                 <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
-                  Priority / Location & Map
+                  {t('user:priorityLocationMap')}
                 </label>
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'auto 1fr auto', gap: '6px', alignItems: isMobile ? 'stretch' : 'end' }}>
                   <select
@@ -946,10 +948,10 @@ function LodgeComplain() {
                       fontSize: '13px'
                     }}
                   >
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="High">High</option>
-                    <option value="Urgent">Urgent</option>
+                    <option value="Low">{t('user:low')}</option>
+                    <option value="Medium">{t('user:medium')}</option>
+                    <option value="High">{t('user:high')}</option>
+                    <option value="Urgent">{t('user:urgent')}</option>
                   </select>
 
                   <input
@@ -957,7 +959,7 @@ function LodgeComplain() {
                     name="location"
                     value={formData.location}
                     onChange={handleInputChange}
-                    placeholder="Enter location or use GPS"
+                    placeholder={t('user:enterLocationOrGPS')}
                     required
                     style={{
           padding: '6px 8px',
@@ -971,16 +973,16 @@ function LodgeComplain() {
 
         <button type="button" onClick={getCurrentLocation} disabled={locationLoading} className="btn btn--primary" style={{ fontSize: 12, padding: '6px 10px', whiteSpace: 'nowrap' }}>
                 <i className="fas fa-crosshairs" style={{ marginRight: locationLoading ? '4px' : '0' }}></i>
-                {locationLoading ? 'Getting...' : 'GPS'}
+                {locationLoading ? t('user:gettingLocation') : t('user:gps')}
               </button>
                 </div>
 
                 {/* Map picker - Bhuvan/OSM via Leaflet */}
                 <div style={{ marginTop: '10px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <span style={{ color: 'var(--muted)', fontSize: '11px' }}>Pick location:</span>
+                    <span style={{ color: 'var(--muted)', fontSize: '11px' }}>{t('user:pickLocation')}:</span>
                     <button type="button" onClick={() => { const overlay = document.getElementById('map-overlay'); if (overlay) { overlay.style.display = overlay.style.display === 'flex' ? 'none' : 'flex'; } }} className="btn btn--outline" style={{ padding: '4px 8px', fontSize: 11 }}>
-                      <i className="fas fa-expand" style={{ marginRight: '4px' }}></i>Expand
+                      <i className="fas fa-expand" style={{ marginRight: '4px' }}></i>{t('user:expand')}
                     </button>
                   </div>
                   <div id="complaint-map" style={{ height: isMobile ? 160 : 180, width: '100%', border: '1px solid var(--border)', borderRadius: 6, overflow: 'hidden' }} />
@@ -1013,7 +1015,7 @@ function LodgeComplain() {
                         alignItems: 'center',
                         marginBottom: '10px'
                       }}>
-                        <h4 style={{ margin: 0, color: 'var(--primary)', fontSize: '14px' }}>Select Location</h4>
+                        <h4 style={{ margin: 0, color: 'var(--primary)', fontSize: '14px' }}>{t('user:selectLocation')}</h4>
                         <button onClick={() => { const overlay = document.getElementById('map-overlay'); if (overlay) overlay.style.display = 'none'; }} className="btn btn--ghost" style={{ fontSize: 16, padding: '4px 8px', lineHeight: 1 }}>
                           <i className="fas fa-times"></i>
                         </button>
@@ -1032,7 +1034,7 @@ function LodgeComplain() {
 
               <div>
                 <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', fontSize: '12px' }}>
-                  Attachments (Images/PDFs)
+                  {t('user:attachments')}
                 </label>
                 <input
                   type="file"
@@ -1051,7 +1053,7 @@ function LodgeComplain() {
                 />
                 {formData.attachments.length > 0 && (
                   <div style={{ marginTop: '10px' }}>
-                    <h5>Attached Files:</h5>
+                    <h5>{t('user:attachedFiles')}:</h5>
                     {formData.attachments.map((file, index) => {
                       const prog = uploadProgress[index]?.percent ?? 0;
                       const isImage = file.type.startsWith('image/');
@@ -1123,7 +1125,7 @@ function LodgeComplain() {
           {/* Submit Button */}
           <div style={{ marginTop: '12px' }}>
             <button type="submit" disabled={isLoading || !formData.agreementAccepted || uploading} className="btn btn--primary" style={{ width: '100%', padding: '10px', fontSize: 15, fontWeight: 600, opacity: (isLoading || !formData.agreementAccepted || uploading) ? 0.7 : 1, cursor: (isLoading || !formData.agreementAccepted || uploading) ? 'not-allowed' : 'pointer' }}>
-              {uploading ? 'Uploading...' : (isLoading ? 'Submitting...' : 'Submit Report')}
+              {uploading ? t('user:uploading') : (isLoading ? t('user:submitting') : t('user:submitReport'))}
             </button>
           </div>
         </form>

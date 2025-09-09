@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts';
 
 function Signup() {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -110,9 +112,9 @@ function Signup() {
       <div className="section" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh' }}>
         <div className="card" style={{ maxWidth: 420, width: '100%', margin: '0 16px', textAlign: 'center', padding: 40 }}>
           <div style={{ fontSize: '48px', marginBottom: '20px' }}>✅</div>
-          <h2 style={{ color: 'var(--primary)', marginBottom: '10px' }}>Account Created Successfully!</h2>
+          <h2 style={{ color: 'var(--primary)', marginBottom: '10px' }}>{t('signupSuccess')}</h2>
           <p style={{ color: 'var(--muted)', marginBottom: '20px' }}>
-            Your account has been created. You will be redirected to the login page.
+            {t('signupSuccess')}
           </p>
           <div style={{ color: 'var(--muted)', fontSize: '14px' }}>
             Redirecting in a few seconds...
@@ -128,8 +130,8 @@ function Signup() {
         {/* Left: Form */}
         <div style={{ padding: 32 }}>
           <div style={{ marginBottom: 8 }}>
-            <h2 style={{ margin: 0 }}>Create Account</h2>
-            <div style={{ color: 'var(--muted)', fontSize: 14 }}>Join SmartSamadhan today</div>
+            <h2 style={{ margin: 0 }}>{t('signup')}</h2>
+            <div style={{ color: 'var(--muted)', fontSize: 14 }}>{t('welcomeMessage')}</div>
           </div>
 
           {error && (
@@ -142,12 +144,12 @@ function Signup() {
 
             {/* Full Name */}
             <div className="field">
-              <label htmlFor="fullName">Full Name *</label>
+              <label htmlFor="fullName">{t('fullName')} *</label>
               <input
                 id="fullName"
                 className="input"
                 type="text"
-                placeholder="Enter your full name"
+                placeholder={t('fullName')}
                 name="fullName"
                 value={formData.fullName}
                 onChange={handleInputChange}
@@ -158,12 +160,12 @@ function Signup() {
 
             {/* Username */}
             <div className="field">
-              <label htmlFor="username">Username *</label>
+              <label htmlFor="username">{t('username')} *</label>
               <input
                 id="username"
                 className="input"
                 type="text"
-                placeholder="Choose a username"
+                placeholder={t('username')}
                 name="username"
                 value={formData.username}
                 onChange={handleInputChange}
@@ -174,12 +176,12 @@ function Signup() {
 
             {/* Email */}
             <div className="field">
-              <label htmlFor="email">Email Address *</label>
+              <label htmlFor="email">{t('email')} *</label>
               <input
                 id="email"
                 className="input"
                 type="email"
-                placeholder="Enter your email"
+                placeholder={t('email')}
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
@@ -190,12 +192,12 @@ function Signup() {
 
             {/* Phone */}
             <div className="field">
-              <label htmlFor="phone">Phone Number *</label>
+              <label htmlFor="phone">{t('phone')} *</label>
               <input
                 id="phone"
                 className="input"
                 type="tel"
-                placeholder="Enter your phone number"
+                placeholder={t('phone')}
                 name="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
@@ -206,11 +208,11 @@ function Signup() {
 
             {/* Address */}
             <div className="field">
-              <label htmlFor="address">Address</label>
+              <label htmlFor="address">{t('address')}</label>
               <textarea
                 id="address"
                 className="input"
-                placeholder="Enter your address"
+                placeholder={t('address')}
                 name="address"
                 value={formData.address}
                 onChange={handleInputChange}
@@ -221,13 +223,13 @@ function Signup() {
 
             {/* Password */}
             <div className="field">
-              <label htmlFor="password">Password *</label>
+              <label htmlFor="password">{t('password')} *</label>
               <div style={{ position: 'relative' }}>
                 <input
                   id="password"
                   className="input"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Create a password"
+                  placeholder={t('password')}
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
@@ -268,13 +270,13 @@ function Signup() {
 
             {/* Confirm Password */}
             <div className="field">
-              <label htmlFor="confirmPassword">Confirm Password *</label>
+              <label htmlFor="confirmPassword">{t('confirmPassword')} *</label>
               <div style={{ position: 'relative' }}>
                 <input
                   id="confirmPassword"
                   className="input"
                   type={showConfirmPassword ? 'text' : 'password'}
-                  placeholder="Confirm your password"
+                  placeholder={t('confirmPassword')}
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
@@ -321,15 +323,15 @@ function Signup() {
                 className="btn btn--primary"
                 style={{ flex: '1 1 0', opacity: isLoading ? 0.8 : 1, cursor: isLoading ? 'not-allowed' : 'pointer' }}
               >
-                {isLoading ? 'Creating...' : 'Create Account'}
+                {isLoading ? t('loading') : t('signup')}
               </button>
-              <button type="button" onClick={handleReset} className="btn" style={{ flex: '1 1 0' }}>Reset</button>
+              <button type="button" onClick={handleReset} className="btn" style={{ flex: '1 1 0' }}>{t('cancel')}</button>
             </div>
           </form>
 
           {/* Links */}
           <div style={{ marginTop: 16, textAlign: 'center' }}>
-            <a href="/login" style={{ color: 'var(--primary)', textDecoration: 'none' }}>Already have an account? Sign in</a>
+            <a href="/login" style={{ color: 'var(--primary)', textDecoration: 'none' }}>{t('login')}</a>
           </div>
 
           {/* Password Requirements */}

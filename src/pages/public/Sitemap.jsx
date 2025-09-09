@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 function Sitemap() {
+  const { t } = useTranslation();
   const [theme, setTheme] = useState(() => {
     // Load theme from localStorage or default to light
     const savedTheme = localStorage.getItem('theme');
@@ -29,164 +31,164 @@ function Sitemap() {
       <div className="card" style={{ padding: '20px', backgroundColor: 'var(--card)', color: 'var(--fg)', border: '1px solid var(--border)', width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
           <div style={{ textAlign: 'center' }}>
-            <h1 style={{ fontSize: 24, margin: '0 0 8px 0', color: 'var(--primary)' }}>SmartSamadhan - Simple Flow</h1>
+            <h1 style={{ fontSize: 24, margin: '0 0 8px 0', color: 'var(--primary)' }}>{t('sitemapTitle')}</h1>
             <p style={{ fontSize: 12, margin: 0, color: 'var(--muted)', maxWidth: 'none' }}>
-              Minimal view of how a complaint moves through the system. Left to right: user submits, data stored, admin updates, user sees status.
+              {t('sitemapSubtitle')}
             </p>
           </div>
         </div>
 
-        <div style={{ textAlign: 'left', width: '100%', margin: '0 auto', fontSize: '14px', lineHeight: '1.5', color: 'var(--fg)' }}>
-          <h2 style={{ color: 'var(--primary)', marginBottom: '20px', textAlign: 'center', fontSize: '20px' }}>System Flow Architecture</h2>
+        <div style={{ textAlign: 'left', width: '100%', margin: '0 auto', fontSize: '13px', lineHeight: '1.4', color: 'var(--fg)' }}>
+          <h2 style={{ color: 'var(--primary)', marginBottom: '16px', textAlign: 'center', fontSize: '18px' }}>{t('systemFlowArchitecture')}</h2>
 
           {/* User Journey Section */}
-          <section style={{ marginBottom: '24px' }}>
-            <h3 style={{ color: 'var(--primary)', marginBottom: '12px', borderBottom: '2px solid var(--primary)', paddingBottom: '6px', fontSize: '18px' }}>👤 User Journey</h3>
-            <ol style={{ paddingLeft: '20px' }}>
-              <li style={{ marginBottom: '12px', fontSize: '14px' }}>
-                <strong>Access App</strong>
-                <ul style={{ marginTop: '6px', paddingLeft: '20px' }}>
-                  <li style={{ marginBottom: '4px' }}>Open Website/Mobile App</li>
-                  <li>Check Login Status</li>
+          <section style={{ marginBottom: '20px' }}>
+            <h3 style={{ color: 'var(--primary)', marginBottom: '10px', borderBottom: '2px solid var(--primary)', paddingBottom: '4px', fontSize: '16px' }}>👤 {t('userJourney')}</h3>
+            <ol style={{ paddingLeft: '18px' }}>
+              <li style={{ marginBottom: '10px', fontSize: '13px' }}>
+                <strong>{t('accessApp')}</strong>
+                <ul style={{ marginTop: '4px', paddingLeft: '18px' }}>
+                  <li style={{ marginBottom: '2px' }}>{t('openWebsite')}</li>
+                  <li>{t('checkLoginStatus')}</li>
                 </ul>
               </li>
-              <li style={{ marginBottom: '12px', fontSize: '14px' }}>
-                <strong>Authentication</strong>
-                <ul style={{ marginTop: '6px', paddingLeft: '20px' }}>
-                  <li style={{ marginBottom: '4px' }}>If not logged in → Login/Signup</li>
-                  <li>If logged in → Go to Dashboard</li>
+              <li style={{ marginBottom: '10px', fontSize: '13px' }}>
+                <strong>{t('authentication')}</strong>
+                <ul style={{ marginTop: '4px', paddingLeft: '18px' }}>
+                  <li style={{ marginBottom: '2px' }}>{t('ifNotLoggedIn')}</li>
+                  <li>{t('ifLoggedIn')}</li>
                 </ul>
               </li>
-              <li style={{ marginBottom: '12px', fontSize: '14px' }}>
-                <strong>Lodge Complaint</strong>
-                <ul style={{ marginTop: '6px', paddingLeft: '20px' }}>
-                  <li style={{ marginBottom: '4px' }}>Fill Form (Title, Description, Category)</li>
-                  <li style={{ marginBottom: '4px' }}>Select Location on Interactive Map</li>
-                  <li>Optional: Upload Photos/Documents</li>
+              <li style={{ marginBottom: '10px', fontSize: '13px' }}>
+                <strong>{t('lodgeComplaint')}</strong>
+                <ul style={{ marginTop: '4px', paddingLeft: '18px' }}>
+                  <li style={{ marginBottom: '2px' }}>{t('fillForm')}</li>
+                  <li style={{ marginBottom: '2px' }}>{t('selectLocation')}</li>
+                  <li>{t('uploadPhotos')}</li>
                 </ul>
               </li>
-              <li style={{ marginBottom: '12px', fontSize: '14px' }}>
-                <strong>Submit & Process</strong>
-                <ul style={{ marginTop: '6px', paddingLeft: '20px' }}>
-                  <li style={{ marginBottom: '4px' }}>Save to Supabase Database</li>
-                  <li style={{ marginBottom: '4px' }}>Generate Registration Number</li>
-                  <li>Send Realtime Notification</li>
+              <li style={{ marginBottom: '10px', fontSize: '13px' }}>
+                <strong>{t('submitProcess')}</strong>
+                <ul style={{ marginTop: '4px', paddingLeft: '18px' }}>
+                  <li style={{ marginBottom: '2px' }}>{t('saveToDatabase')}</li>
+                  <li style={{ marginBottom: '2px' }}>{t('generateRegistration')}</li>
+                  <li>{t('sendNotification')}</li>
                 </ul>
               </li>
-              <li style={{ fontSize: '14px' }}>
-                <strong>Track Status</strong>
-                <ul style={{ marginTop: '6px', paddingLeft: '20px' }}>
-                  <li style={{ marginBottom: '4px' }}>View Complaint History</li>
-                  <li style={{ marginBottom: '4px' }}>See Real-time Updates</li>
-                  <li>Add More Details if Needed</li>
+              <li style={{ fontSize: '13px' }}>
+                <strong>{t('trackStatus')}</strong>
+                <ul style={{ marginTop: '4px', paddingLeft: '18px' }}>
+                  <li style={{ marginBottom: '2px' }}>{t('viewHistory')}</li>
+                  <li style={{ marginBottom: '2px' }}>{t('seeUpdates')}</li>
+                  <li>{t('addMoreDetails')}</li>
                 </ul>
               </li>
             </ol>
           </section>
 
           {/* Admin Workflow Section */}
-          <section style={{ marginBottom: '24px' }}>
-            <h3 style={{ color: 'var(--primary)', marginBottom: '12px', borderBottom: '2px solid var(--primary)', paddingBottom: '6px', fontSize: '18px' }}>⚙️ Admin Workflow</h3>
-            <ol style={{ paddingLeft: '20px' }}>
-              <li style={{ marginBottom: '12px', fontSize: '14px' }}>
-                <strong>Login to Admin Panel</strong>
+          <section style={{ marginBottom: '20px' }}>
+            <h3 style={{ color: 'var(--primary)', marginBottom: '10px', borderBottom: '2px solid var(--primary)', paddingBottom: '4px', fontSize: '16px' }}>⚙️ {t('adminWorkflow')}</h3>
+            <ol style={{ paddingLeft: '18px' }}>
+              <li style={{ marginBottom: '10px', fontSize: '13px' }}>
+                <strong>{t('loginToAdmin')}</strong>
               </li>
-              <li style={{ marginBottom: '12px', fontSize: '14px' }}>
-                <strong>View Dashboard</strong>
-                <ul style={{ marginTop: '6px', paddingLeft: '20px' }}>
-                  <li style={{ marginBottom: '4px' }}>See All Complaints</li>
-                  <li style={{ marginBottom: '4px' }}>Filter by Status/Category</li>
-                  <li>Sort by Priority/Date</li>
+              <li style={{ marginBottom: '10px', fontSize: '13px' }}>
+                <strong>{t('viewDashboard')}</strong>
+                <ul style={{ marginTop: '4px', paddingLeft: '18px' }}>
+                  <li style={{ marginBottom: '2px' }}>{t('seeAllComplaints')}</li>
+                  <li style={{ marginBottom: '2px' }}>{t('filterByStatus')}</li>
+                  <li>{t('sortByPriority')}</li>
                 </ul>
               </li>
-              <li style={{ marginBottom: '12px', fontSize: '14px' }}>
-                <strong>Review Complaints</strong>
-                <ul style={{ marginTop: '6px', paddingLeft: '20px' }}>
-                  <li style={{ marginBottom: '4px' }}>Open Complaint Details</li>
-                  <li style={{ marginBottom: '4px' }}>View Attachments & Location</li>
-                  <li>Check User Information</li>
+              <li style={{ marginBottom: '10px', fontSize: '13px' }}>
+                <strong>{t('reviewComplaints')}</strong>
+                <ul style={{ marginTop: '4px', paddingLeft: '18px' }}>
+                  <li style={{ marginBottom: '2px' }}>{t('openDetails')}</li>
+                  <li style={{ marginBottom: '2px' }}>{t('viewAttachments')}</li>
+                  <li>{t('checkUserInfo')}</li>
                 </ul>
               </li>
-              <li style={{ marginBottom: '12px', fontSize: '14px' }}>
-                <strong>Take Action</strong>
-                <ul style={{ marginTop: '6px', paddingLeft: '20px' }}>
-                  <li style={{ marginBottom: '4px' }}>Update Status (Pending → In Progress → Resolved)</li>
-                  <li style={{ marginBottom: '4px' }}>Add Notes/Comments</li>
-                  <li>Assign to Department (if needed)</li>
+              <li style={{ marginBottom: '10px', fontSize: '13px' }}>
+                <strong>{t('takeAction')}</strong>
+                <ul style={{ marginTop: '4px', paddingLeft: '18px' }}>
+                  <li style={{ marginBottom: '2px' }}>{t('updateStatus')}</li>
+                  <li style={{ marginBottom: '2px' }}>{t('addNotes')}</li>
+                  <li>{t('assignDepartment')}</li>
                 </ul>
               </li>
-              <li style={{ fontSize: '14px' }}>
-                <strong>Real-time Updates</strong>
-                <ul style={{ marginTop: '6px', paddingLeft: '20px' }}>
-                  <li>Changes Push Instantly to User</li>
+              <li style={{ fontSize: '13px' }}>
+                <strong>{t('realtimeUpdates')}</strong>
+                <ul style={{ marginTop: '4px', paddingLeft: '18px' }}>
+                  <li>{t('changesPush')}</li>
                 </ul>
               </li>
             </ol>
           </section>
 
           {/* Technical Architecture Section */}
-          <section style={{ marginBottom: '24px' }}>
-            <h3 style={{ color: 'var(--primary)', marginBottom: '12px', borderBottom: '2px solid var(--primary)', paddingBottom: '6px', fontSize: '18px' }}>🔧 Technical Architecture</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          <section style={{ marginBottom: '20px' }}>
+            <h3 style={{ color: 'var(--primary)', marginBottom: '10px', borderBottom: '2px solid var(--primary)', paddingBottom: '4px', fontSize: '16px' }}>🔧 {t('technicalArchitecture')}</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
               <div>
-                <h4 style={{ color: 'var(--fg)', marginBottom: '10px', fontSize: '16px' }}>Frontend (React)</h4>
-                <ul style={{ paddingLeft: '16px' }}>
-                  <li style={{ marginBottom: '4px', fontSize: '12px' }}>Components: Forms, Maps, Tables</li>
-                  <li style={{ marginBottom: '4px', fontSize: '12px' }}>State Management: Context API</li>
-                  <li style={{ fontSize: '12px' }}>Routing: React Router</li>
+                <h4 style={{ color: 'var(--fg)', marginBottom: '8px', fontSize: '14px' }}>{t('frontendReact')}</h4>
+                <ul style={{ paddingLeft: '14px' }}>
+                  <li style={{ marginBottom: '2px', fontSize: '12px' }}>{t('components')}</li>
+                  <li style={{ marginBottom: '2px', fontSize: '12px' }}>{t('stateManagement')}</li>
+                  <li style={{ fontSize: '12px' }}>{t('routing')}</li>
                 </ul>
               </div>
               <div>
-                <h4 style={{ color: 'var(--fg)', marginBottom: '10px', fontSize: '16px' }}>Backend (Supabase)</h4>
-                <ul style={{ paddingLeft: '16px' }}>
-                  <li style={{ marginBottom: '4px', fontSize: '12px' }}>Authentication: User/Admin Login</li>
-                  <li style={{ marginBottom: '4px', fontSize: '12px' }}>Database: PostgreSQL Tables</li>
-                  <li style={{ marginBottom: '4px', fontSize: '12px' }}>Storage: File Uploads</li>
-                  <li style={{ fontSize: '12px' }}>Realtime: Live Updates</li>
+                <h4 style={{ color: 'var(--fg)', marginBottom: '8px', fontSize: '14px' }}>{t('backendSupabase')}</h4>
+                <ul style={{ paddingLeft: '14px' }}>
+                  <li style={{ marginBottom: '2px', fontSize: '12px' }}>{t('authSystem')}</li>
+                  <li style={{ marginBottom: '2px', fontSize: '12px' }}>{t('database')}</li>
+                  <li style={{ marginBottom: '2px', fontSize: '12px' }}>{t('storage')}</li>
+                  <li style={{ fontSize: '12px' }}>{t('realtime')}</li>
                 </ul>
               </div>
             </div>
-            <div style={{ marginTop: '12px' }}>
-              <h4 style={{ color: 'var(--fg)', marginBottom: '10px', fontSize: '16px' }}>Additional Technologies</h4>
-              <ul style={{ paddingLeft: '16px', display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
-                <li style={{ fontSize: '12px' }}>Maps: Leaflet + OpenStreetMap</li>
-                <li style={{ fontSize: '12px' }}>Hosting: Vercel/Netlify</li>
+            <div style={{ marginTop: '10px' }}>
+              <h4 style={{ color: 'var(--fg)', marginBottom: '8px', fontSize: '14px' }}>{t('additionalTech')}</h4>
+              <ul style={{ paddingLeft: '14px', display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                <li style={{ fontSize: '12px' }}>{t('maps')}</li>
+                <li style={{ fontSize: '12px' }}>{t('hosting')}</li>
               </ul>
             </div>
           </section>
 
           {/* Data Flow Section */}
           <section>
-            <h3 style={{ color: 'var(--primary)', marginBottom: '12px', borderBottom: '2px solid var(--primary)', paddingBottom: '6px', fontSize: '18px' }}>📊 Data Flow</h3>
-            <div style={{ backgroundColor: 'var(--card)', padding: '12px', borderRadius: '6px', border: '1px solid var(--border)', overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+            <h3 style={{ color: 'var(--primary)', marginBottom: '10px', borderBottom: '2px solid var(--primary)', paddingBottom: '4px', fontSize: '16px' }}>📊 {t('dataFlow')}</h3>
+            <div style={{ backgroundColor: 'var(--card)', padding: '10px', borderRadius: '6px', border: '1px solid var(--border)', overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px' }}>
                 <thead>
                   <tr style={{ backgroundColor: 'var(--bg)' }}>
-                    <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid var(--border)', color: 'var(--fg)', fontSize: '14px', fontWeight: 'bold' }}>Input/Action</th>
-                    <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid var(--border)', color: 'var(--fg)', fontSize: '14px', fontWeight: 'bold' }}>Process</th>
-                    <th style={{ padding: '10px', textAlign: 'left', borderBottom: '2px solid var(--border)', color: 'var(--fg)', fontSize: '14px', fontWeight: 'bold' }}>Output/Storage</th>
+                    <th style={{ padding: '8px', textAlign: 'left', borderBottom: '2px solid var(--border)', color: 'var(--fg)', fontSize: '12px', fontWeight: 'bold' }}>{t('inputAction')}</th>
+                    <th style={{ padding: '8px', textAlign: 'left', borderBottom: '2px solid var(--border)', color: 'var(--fg)', fontSize: '12px', fontWeight: 'bold' }}>{t('process')}</th>
+                    <th style={{ padding: '8px', textAlign: 'left', borderBottom: '2px solid var(--border)', color: 'var(--fg)', fontSize: '12px', fontWeight: 'bold' }}>{t('outputStorage')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>User Input</td>
-                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>Form Validation</td>
-                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>Database</td>
+                    <td style={{ padding: '8px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '11px' }}>{t('userInput')}</td>
+                    <td style={{ padding: '8px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '11px' }}>{t('formValidation')}</td>
+                    <td style={{ padding: '8px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '11px' }}>{t('databaseStorage')}</td>
                   </tr>
                   <tr>
-                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>File Upload</td>
-                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>Storage Processing</td>
-                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>Metadata in DB</td>
+                    <td style={{ padding: '8px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '11px' }}>{t('fileUpload')}</td>
+                    <td style={{ padding: '8px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '11px' }}>{t('storageProcessing')}</td>
+                    <td style={{ padding: '8px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '11px' }}>{t('metadata')}</td>
                   </tr>
                   <tr>
-                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>Status Change</td>
-                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>Realtime Channel</td>
-                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>UI Update</td>
+                    <td style={{ padding: '8px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '11px' }}>{t('statusChange')}</td>
+                    <td style={{ padding: '8px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '11px' }}>{t('realtimeChannel')}</td>
+                    <td style={{ padding: '8px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '11px' }}>{t('uiUpdate')}</td>
                   </tr>
                   <tr>
-                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>Location</td>
-                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>Geocoding</td>
-                    <td style={{ padding: '10px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '12px' }}>Map Display</td>
+                    <td style={{ padding: '8px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '11px' }}>{t('location')}</td>
+                    <td style={{ padding: '8px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '11px' }}>{t('geocoding')}</td>
+                    <td style={{ padding: '8px', borderBottom: '1px solid var(--border)', color: 'var(--fg)', fontSize: '11px' }}>{t('mapDisplay')}</td>
                   </tr>
                 </tbody>
               </table>
@@ -195,7 +197,7 @@ function Sitemap() {
         </div>
 
         <div style={{ marginTop: 16, fontSize: 10, color: 'var(--muted)', borderTop: '1px solid var(--border)', paddingTop: 8 }}>
-          This is a simplified overview. For full details, check the code or docs.
+          {t('simplifiedOverview')}
         </div>
       </div>
     </div>

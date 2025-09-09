@@ -8,13 +8,40 @@
   --card: #f9fafb; /* gray-50 */
   --card-bg: #f9fafb; /* gray-50 - same as --card for consistency */
   --icon: #6b7280; /* gray-500 for icons */
-  /* Updated font stack to prioritize Apple system font and common UI fonts */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-  line-height: 1.5;
+  /* Enhanced font stack for better Hindi/Devanagari readability */
+  font-family:
+    /* Hindi/Devanagari optimized fonts */
+    "Noto Sans Devanagari",
+    "Mukati Narrow",
+    "Lohit Devanagari",
+    "Chandas",
+    "Samyak Devanagari",
+    "Gargi",
+    /* System fonts with good Devanagari support */
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Noto Sans",
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Fira Sans",
+    "Droid Sans",
+    Helvetica,
+    Arial,
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji";
+  line-height: 1.5; /* Slightly increased for better Hindi readability */
   font-weight: 400;
+  font-size: 14px; /* Reduced base font size */
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Additional properties for better Devanagari rendering */
+  font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
+  -webkit-font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
 }
 
 /* -------------------------------------------------- */
@@ -527,4 +554,51 @@ button:focus { outline: 3px solid rgba(37,99,235,0.35); outline-offset: 2px; }
     align-items: center;
     text-align: center;
   }
+}
+
+/* Enhanced Hindi/Devanagari Text Rendering */
+.hindi-text,
+:lang(hi) {
+  font-family:
+    "Noto Sans Devanagari",
+    "Mukati Narrow",
+    "Lohit Devanagari",
+    "Chandas",
+    "Samyak Devanagari",
+    "Gargi",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Noto Sans",
+    sans-serif;
+  font-feature-settings: "liga" 1, "calt" 1, "kern" 1, "dev2" 1;
+  -webkit-font-feature-settings: "liga" 1, "calt" 1, "kern" 1, "dev2" 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Specific improvements for Hindi text in different contexts */
+.card:lang(hi),
+.section:lang(hi) {
+  line-height: 1.6; /* Better line spacing for Devanagari */
+}
+
+button:lang(hi),
+.btn:lang(hi) {
+  letter-spacing: 0.01em; /* Slight letter spacing for better readability */
+}
+
+/* Ensure proper text rendering for mixed content */
+.mixed-content {
+  font-variant-ligatures: common-ligatures;
+  -webkit-font-variant-ligatures: common-ligatures;
+}
+
+/* Better spacing for Hindi numerals and punctuation */
+:lang(hi) .number,
+:lang(hi) .digit {
+  font-variant-numeric: tabular-nums;
+  -webkit-font-variant-numeric: tabular-nums;
 }

@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useAuth, useDatabase } from '../../../contexts';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 function DeleteAccount() {
+  const { t } = useTranslation('user');
   const { user, logout } = useAuth();
   const { deleteUser, deleteAdmin } = useDatabase();
   const navigate = useNavigate();
@@ -17,14 +19,14 @@ function DeleteAccount() {
       const ok = isAdmin ? await deleteAdmin(user.id) : await deleteUser(user.id);
       if (!ok) {
         // Basic inline failure notice
-        alert('Failed to delete account record.');
+        alert(t('deleteFailed'));
         return;
       }
       await logout();
       navigate('/');
     } catch (e) {
       console.error('Delete account failed', e);
-      alert('Unexpected error deleting account.');
+      alert(t('deleteError'));
     } finally {
       setIsDeleting(false);
     }
@@ -33,8 +35,8 @@ function DeleteAccount() {
   return (
     <div>
       <div className="card" style={{ padding: '16px' }}>
-        <h2 style={{ fontSize: '18px', margin: '0 0 4px 0' }}>Delete Account</h2>
-        <p style={{ fontSize: '12px', margin: 0 }}>Permanently delete your profile and complaints.</p>
+        <h2 style={{ fontSize: '18px', margin: '0 0 4px 0' }}>{t('deleteAccount')}</h2>
+        <p style={{ fontSize: '12px', margin: 0 }}>{t('deleteAccountDescription')}</p>
         <div style={{
           marginTop: '8px',
           padding: '10px',
@@ -44,16 +46,16 @@ function DeleteAccount() {
           fontSize: 12,
           lineHeight: 1.4
         }}>
-          <strong>Note:</strong> Your authentication identity (email credential) in Supabase Auth is <em>not</em> removed here because a service role key / server function is required. To fully erase auth credentials, contact support or implement a secured edge function.
+          <strong>{t('deleteNote')}</strong> {t('deleteWarning')}
         </div>
 
         <div style={{ marginTop: '14px', display: 'grid', gap: '8px', maxWidth: '420px' }}>
-          <label style={{ fontWeight: 'bold', fontSize: '12px' }}>Type DELETE to confirm</label>
+          <label style={{ fontWeight: 'bold', fontSize: '12px' }}>{t('typeDeleteToConfirm')}</label>
           <input
             type="text"
             value={confirmText}
             onChange={(e) => setConfirmText(e.target.value.toUpperCase())}
-            placeholder="DELETE"
+            placeholder={t('deletePlaceholder')}
             style={{
               padding: '8px 10px',
               border: '1px solid var(--border)',
@@ -77,11 +79,11 @@ function DeleteAccount() {
               fontSize: '14px'
             }}
           >
-            {isDeleting ? 'Deleting...' : 'Delete My Account'}
+            {isDeleting ? t('deleting') : t('deleteMyAccount')}
           </button>
 
           <div style={{ fontSize: '11px', color: 'var(--muted)' }}>
-            Type DELETE (uppercase). This cannot be undone.
+            {t('deleteWarningText')}
           </div>
         </div>
       </div>

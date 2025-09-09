@@ -6,6 +6,7 @@ import { Login, Signup, AdminLogin } from './pages/auth';
 import { UserDashboard, AdminDashboard } from './pages/dashboard';
 import { Homepage, About, ContactUs, Sitemap } from './pages/public';
 import { ViewStatus } from './features/complaints/components';
+import './i18n';
 import './styles/App.css';
 
 function App() {

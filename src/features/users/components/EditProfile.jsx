@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useAuth, useDatabase } from '../../../contexts';
+import { useTranslation } from 'react-i18next';
 
 function EditProfile() {
+  const { t } = useTranslation('user');
   const { user, refreshProfile } = useAuth();
   const { getUserById, updateUser, getAdminById, updateAdmin, getUserComplaints } = useDatabase();
   const [isLoading, setIsLoading] = useState(false);
@@ -111,7 +113,7 @@ function EditProfile() {
     return (
       <div>
         <div className="card" style={{ padding: '20px', textAlign: 'center' }}>
-          <p>Please log in to edit your profile.</p>
+          <p>{t('loginToEditProfile')}</p>
         </div>
       </div>
     );
@@ -120,8 +122,8 @@ function EditProfile() {
   return (
     <div>
       <div className="card" style={{ padding: '14px', marginBottom: '14px' }}>
-        <h2 style={{ fontSize: '18px', margin: '0 0 4px 0' }}>Edit Profile</h2>
-        <p style={{ fontSize: '12px', margin: 0 }}>Update your personal information.</p>
+        <h2 style={{ fontSize: '18px', margin: '0 0 4px 0' }}>{t('editProfile')}</h2>
+        <p style={{ fontSize: '12px', margin: 0 }}>{t('editProfileDescription')}</p>
       </div>
 
       {isSaved && (
@@ -133,7 +135,7 @@ function EditProfile() {
           color: '#065f46',
           fontSize: '12px'
         }}>
-          ✅ Profile updated!
+          {t('profileUpdated')}
         </div>
       )}
 
@@ -161,20 +163,20 @@ function EditProfile() {
         <h3 style={{ margin: '0 0 2px 0', fontSize: '16px' }}>{user.fullName}</h3>
         <p style={{ margin: '0', color: 'var(--muted)', fontSize: '12px' }}>@{user.username}</p>
         <p style={{ margin: '3px 0 0 0', fontSize: '11px', color: 'var(--muted)' }}>
-                  Member since: {new Date(user.createdAt || '2025-01-01').toLocaleDateString()}
+                  {t('memberSince')} {new Date(user.createdAt || '2025-01-01').toLocaleDateString()}
                 </p>
               </div>
             </div>
 
             {/* Full Name */}
             <div>
-              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', color: 'var(--fg)', fontSize: '12px' }}>Full Name *</label>
+              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', color: 'var(--fg)', fontSize: '12px' }}>{t('fullNameLabel')}</label>
               <input
                 type="text"
                 name="fullName"
                 value={formData.fullName}
                 onChange={handleInputChange}
-                placeholder="Enter your full name"
+                placeholder={t('fullNamePlaceholder')}
                 required
                 style={{
                   width: '100%',
@@ -190,13 +192,13 @@ function EditProfile() {
 
             {/* Email */}
             <div>
-              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', color: 'var(--fg)', fontSize: '12px' }}>Email *</label>
+              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', color: 'var(--fg)', fontSize: '12px' }}>{t('emailLabel')}</label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                placeholder="Enter your email address"
+                placeholder={t('emailPlaceholder')}
                 required
                 style={{
                   width: '100%',
@@ -212,13 +214,13 @@ function EditProfile() {
 
             {/* Phone */}
             <div>
-              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', color: 'var(--fg)', fontSize: '12px' }}>Phone *</label>
+              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', color: 'var(--fg)', fontSize: '12px' }}>{t('phoneLabel')}</label>
               <input
                 type="tel"
                 name="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
-                placeholder="Enter your phone number"
+                placeholder={t('phonePlaceholder')}
                 required
                 style={{
                   width: '100%',
@@ -234,12 +236,12 @@ function EditProfile() {
 
             {/* Address */}
             <div>
-              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', color: 'var(--fg)', fontSize: '12px' }}>Address *</label>
+              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '4px', color: 'var(--fg)', fontSize: '12px' }}>{t('addressLabel')}</label>
               <textarea
                 name="address"
                 value={formData.address}
                 onChange={handleInputChange}
-                placeholder="Enter your complete address"
+                placeholder={t('addressPlaceholder')}
                 required
                 rows={4}
                 style={{
@@ -258,22 +260,22 @@ function EditProfile() {
 
             {/* Account Information (Read-only) */}
             <div style={{ padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
-              <h4 style={{ margin: '0 0 10px 0', color: 'var(--primary)', fontSize: '13px' }}>Account Info</h4>
+              <h4 style={{ margin: '0 0 10px 0', color: 'var(--primary)', fontSize: '13px' }}>{t('accountInfo')}</h4>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
                 <div>
-                  <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '3px' }}>USERNAME</div>
+                  <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '3px' }}>{t('usernameLabel')}</div>
                   <div style={{ fontWeight: 'bold', fontSize: '12px' }}>{user.username}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '3px' }}>USER ID</div>
+                  <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '3px' }}>{t('userIdLabel')}</div>
                   <div style={{ fontWeight: 'bold', fontSize: '12px' }}>{user.id}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '3px' }}>ACCOUNT TYPE</div>
-                  <div style={{ fontWeight: 'bold', fontSize: '12px' }}>{user.permissionLevel?.startsWith('admin') ? 'Administrator' : 'Citizen'}</div>
+                  <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '3px' }}>{t('accountTypeLabel')}</div>
+                  <div style={{ fontWeight: 'bold', fontSize: '12px' }}>{user.permissionLevel?.startsWith('admin') ? t('administrator') : t('citizen')}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '3px' }}>MEMBER SINCE</div>
+                  <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '3px' }}>{t('memberSinceLabel')}</div>
                   <div style={{ fontWeight: 'bold', fontSize: '12px' }}>{new Date(user.createdAt || '2025-01-01').toLocaleDateString()}</div>
                 </div>
               </div>
@@ -295,7 +297,7 @@ function EditProfile() {
                   fontWeight: 'bold'
                 }}
               >
-                {isLoading ? 'Saving...' : 'Save Changes'}
+                {isLoading ? t('saving') : t('saveChanges')}
               </button>
               <button
                 type="button"
@@ -310,7 +312,7 @@ function EditProfile() {
                   fontSize: '14px'
                 }}
               >
-                Reset Changes
+                {t('resetChanges')}
               </button>
             </div>
           </div>
@@ -319,32 +321,32 @@ function EditProfile() {
 
       {/* Profile Statistics */}
       <div className="card" style={{ padding: '14px', marginTop: '14px' }}>
-        <h3 style={{ marginBottom: '10px', fontSize: '16px' }}>Activity Summary</h3>
+        <h3 style={{ marginBottom: '10px', fontSize: '16px' }}>{t('activitySummary')}</h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px' }}>
           <div style={{ textAlign: 'center', padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
             <div style={{ fontSize: '20px', marginBottom: '4px' }}>📋</div>
-            <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '4px' }}>TOTAL</div>
+            <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '4px' }}>{t('total')}</div>
             <div style={{ fontSize: '16px', fontWeight: 'bold' }}>
               {userDataComplaintsLength}
             </div>
           </div>
           <div style={{ textAlign: 'center', padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
             <div style={{ fontSize: '20px', marginBottom: '4px', color: '#10b981' }}>✅</div>
-            <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '4px' }}>RESOLVED</div>
+            <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '4px' }}>{t('resolved')}</div>
             <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#10b981' }}>
               {userDataStatusCount('Resolved')}
             </div>
           </div>
           <div style={{ textAlign: 'center', padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
             <div style={{ fontSize: '20px', marginBottom: '4px', color: '#f59e0b' }}>⏳</div>
-            <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '4px' }}>PROGRESS</div>
+            <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '4px' }}>{t('progress')}</div>
             <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#f59e0b' }}>
               {userDataStatusCount('In Progress')}
             </div>
           </div>
           <div style={{ textAlign: 'center', padding: '10px', backgroundColor: 'var(--bg)', borderRadius: '6px' }}>
             <div style={{ fontSize: '20px', marginBottom: '4px', color: '#ef4444' }}>⏸️</div>
-            <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '4px' }}>PENDING</div>
+            <div style={{ fontSize: '10px', color: 'var(--muted)', marginBottom: '4px' }}>{t('pending')}</div>
             <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#ef4444' }}>
               {userDataStatusCount('Pending')}
             </div>

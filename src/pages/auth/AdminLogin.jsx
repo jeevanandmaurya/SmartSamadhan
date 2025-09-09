@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts';
 
 function AdminLogin() {
+  const { t } = useTranslation('admin');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -45,7 +47,7 @@ function AdminLogin() {
     console.log('🔍 AdminLogin: Starting admin login process for:', username);
 
     if (!username || !password) {
-      setError(`Please enter your ${usingSupabase ? 'admin email' : 'username/email'} and password.`);
+      setError(t('enterCredentials', { credential: usingSupabase ? t('adminEmail') : t('usernameOrEmail') }));
       setLoginStep('idle');
       return;
     }
@@ -54,7 +56,7 @@ function AdminLogin() {
       const { data, error } = await loginAdmin(username, password);
 
       if (error) {
-        setError(error.message || 'Invalid credentials');
+        setError(error.message || t('invalidCredentials'));
         setLoginStep('idle');
       } else if (data) {
         setLoginStep('complete');
@@ -63,7 +65,7 @@ function AdminLogin() {
       }
     } catch (error) {
       console.error('🔍 AdminLogin: Login error:', error);
-      setError('Login failed: ' + error.message);
+      setError(t('loginFailed') + error.message);
       setLoginStep('idle');
     }
   };
@@ -81,8 +83,8 @@ function AdminLogin() {
         {/* Left: Form */}
         <div style={{ padding: 32 }}>
           <div style={{ marginBottom: 8 }}>
-            <h2 style={{ margin: 0 }}>Admin/Officer Login</h2>
-            <div style={{ color: 'var(--muted)', fontSize: 14 }}>Sign in to SmartSamadhan</div>
+            <h2 style={{ margin: 0 }}>{t('adminLogin')}</h2>
+            <div style={{ color: 'var(--muted)', fontSize: 14 }}>{t('welcomeBack')}</div>
           </div>
 
           {error && (
@@ -93,58 +95,58 @@ function AdminLogin() {
 
           {loginStep === 'authenticating' && (
             <div className="card" style={{ borderColor: '#3b82f6', background: '#eff6ff', color: '#1d4ed8', marginBottom: 12 }}>
-              🔐 Authenticating your credentials...
+              🔐 {t('authenticating')}
             </div>
           )}
 
           {loginStep === 'verifying' && (
             <div className="card" style={{ borderColor: '#f59e0b', background: '#fffbeb', color: '#92400e', marginBottom: 12 }}>
-              🛡️ Verifying admin privileges...
+              🛡️ {t('verifyingAdmin')}
               <br/>
-              <small>Checking your admin status in the system...</small>
+              <small>{t('verifyingAdmin')}</small>
             </div>
           )}
 
           {loginStep === 'complete' && user?.permissionLevel?.startsWith('admin') && (
             <div className="card" style={{ borderColor: '#10b981', background: '#ecfdf5', color: '#064e3b', marginBottom: 12 }}>
-              ✅ Admin access verified! Redirecting to dashboard...
+              ✅ {t('adminVerified')}
             </div>
           )}
 
           {loginStep === 'complete' && !user?.permissionLevel?.startsWith('admin') && (
             <div className="card" style={{ borderColor: '#ef4444', background: '#fef2f2', color: '#991b1b', marginBottom: 12 }}>
-              ❌ Admin access denied. This account doesn't have admin privileges.
+              ❌ {t('adminDenied')}
               <br/>
-              <small>Please use the regular user login or contact administrator.</small>
+              <small>{t('adminDeniedNote')}</small>
             </div>
           )}
 
       <form onSubmit={handleLogin} noValidate>
             {/* Username */}
             <div className="field">
-              <label htmlFor="username">{usingSupabase ? 'Admin Email' : 'Username or Email'}</label>
+              <label htmlFor="username">{usingSupabase ? t('adminEmail') : t('usernameOrEmail')}</label>
               <input
                 id="username"
                 className="input"
                 type="text"
-                placeholder={usingSupabase ? 'admin@example.com' : 'Username | Email | Mobile No'}
+                placeholder={usingSupabase ? t('adminEmail') : t('usernameOrEmail')}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 autoComplete="username"
-        aria-required="true"
+                aria-required="true"
               />
             </div>
 
             {/* Password */}
             <div className="field">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">{t('password')}</label>
               <div style={{ position: 'relative' }}>
                 <input
                   id="password"
                   className="input"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Your password"
+                  placeholder={t('password')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -165,8 +167,8 @@ function AdminLogin() {
                     padding: '4px',
                     color: 'var(--muted)'
                   }}
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  title={showPassword ? 'Hide password' : 'Show password'}
+                  aria-label={showPassword ? t('hidePassword') : t('showPassword')}
+                  title={showPassword ? t('hidePassword') : t('showPassword')}
                 >
                   {showPassword ? (
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -187,34 +189,34 @@ function AdminLogin() {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
-                Remember me
+                {t('rememberMe')}
               </label>
-              <a href="#" onClick={(e)=>e.preventDefault()}>Forgot password?</a>
+              <a href="#" onClick={(e)=>e.preventDefault()}>{t('forgotPassword')}</a>
             </div>
 
             {/* Actions */}
             <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
-              <button type="submit" className="btn btn--primary" style={{ flex: '1 1 0' }} disabled={loginStep !== 'idle'}>Sign in</button>
-              <button type="button" onClick={handleReset} className="btn" style={{ flex: '1 1 0' }}>Reset</button>
+              <button type="submit" className="btn btn--primary" style={{ flex: '1 1 0' }} disabled={loginStep !== 'idle'}>{t('signIn')}</button>
+              <button type="button" onClick={handleReset} className="btn" style={{ flex: '1 1 0' }}>{t('cancel')}</button>
             </div>
           </form>
 
           {/* Links */}
           <div style={{ marginTop: 16, textAlign: 'center' }}>
-            <a href="/login" style={{ color: 'var(--primary)', textDecoration: 'none' }}>User Login</a>
+            <a href="/" style={{ color: 'var(--primary)', textDecoration: 'none' }}>{t('backToHome')}</a>
           </div>
 
           {/* Tip */}
           {usingSupabase && (
             <div style={{ color: 'var(--muted)', fontSize: 12, marginTop: 12 }}>
-              Use your registered admin email & password. Admin status is determined by your permission level.
+              {t('adminTip')}
             </div>
           )}
         </div>
 
         {/* Right: Banner */}
         <div className="auth-banner" aria-hidden style={{ background: 'linear-gradient(135deg,var(--primary),var(--primary-hover))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, fontSize: 18 }}>
-          Admin Portal
+          {t('adminPortal')}
         </div>
       </div>
     </div>

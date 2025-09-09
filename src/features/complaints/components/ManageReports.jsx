@@ -1,7 +1,9 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth, useDatabase } from '../../../contexts';
 
 function ManageReports() {
+  const { t } = useTranslation('admin');
   const { user } = useAuth();
   const { getAllComplaints, updateComplaintStatus } = useDatabase();
   const [filterStatus, setFilterStatus] = useState('all');
@@ -149,7 +151,90 @@ function ManageReports() {
   const paginatedComplaints = filteredComplaints.slice(startIndex, startIndex + entriesPerPage);
 
   const departments = [...new Set(allComplaints.map(c => c.department))];
-  const priorities = ['High', 'Medium', 'Low', 'Urgent'];
+
+  // Function to translate department names
+  const translateDepartment = (dept) => {
+    if (!dept) return dept;
+
+    const deptTranslations = {
+      // Exact matches
+      'Police': t('police'),
+      'Fire': t('fire'),
+      'Health': t('health'),
+      'Municipal': t('municipal'),
+      'Water': t('water'),
+      'Electricity': t('electricity'),
+      'Roads': t('roads'),
+      'Sanitation': t('sanitation'),
+      'Education': t('education'),
+      'Revenue': t('revenue'),
+      'Public Works': t('public works'),
+      'Transport': t('transport'),
+      'Environment': t('environment'),
+      'Housing': t('housing'),
+      'Urban Development': t('urban development'),
+      'Rural Development': t('rural development'),
+      'Social Welfare': t('social welfare'),
+      'Labor': t('labor'),
+      'Finance': t('finance'),
+      'Administration': t('administration'),
+
+      // Common variations
+      'Police Department': t('police'),
+      'Fire Department': t('fire'),
+      'Health Department': t('health'),
+      'Municipal Corporation': t('municipal'),
+      'Water Supply': t('water'),
+      'Electricity Board': t('electricity'),
+      'Roads & Transport': t('roads'),
+      'Roads and Transport': t('roads'),
+      'Education Department': t('education'),
+      'Revenue Department': t('revenue'),
+      'Public Works Department': t('public works'),
+      'Transport Department': t('transport'),
+      'Environment Department': t('environment'),
+      'Housing Department': t('housing'),
+      'Urban Development Department': t('urban development'),
+      'Rural Development Department': t('rural development'),
+      'Social Welfare Department': t('social welfare'),
+      'Labor Department': t('labor'),
+      'Finance Department': t('finance'),
+      'Administration Department': t('administration'),
+
+      // Lowercase variations
+      'police': t('police'),
+      'fire': t('fire'),
+      'health': t('health'),
+      'municipal': t('municipal'),
+      'water': t('water'),
+      'electricity': t('electricity'),
+      'roads': t('roads'),
+      'sanitation': t('sanitation'),
+      'education': t('education'),
+      'revenue': t('revenue'),
+      'public works': t('public works'),
+      'transport': t('transport'),
+      'environment': t('environment'),
+      'housing': t('housing'),
+      'urban development': t('urban development'),
+      'rural development': t('rural development'),
+      'social welfare': t('social welfare'),
+      'labor': t('labor'),
+      'finance': t('finance'),
+      'administration': t('administration')
+    };
+
+    const translated = deptTranslations[dept] || dept;
+    console.log('Department translation:', dept, '->', translated); // Debug log
+    return translated;
+  };
+
+  const priorities = [
+    { value: 'High', label: t('high') },
+    { value: 'Medium', label: t('medium') },
+    { value: 'Low', label: t('low') },
+    { value: 'Urgent', label: t('urgent') }
+  ];
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -184,33 +269,33 @@ function ManageReports() {
   return (
     <div className="manage-reports">
       <div className="reports-header" style={{ marginBottom: '8px' }}>
-        <h2 style={{ fontSize: '18px', margin: '0 0 4px 0' }}>Manage Reports</h2>
+        <h2 style={{ fontSize: '18px', margin: '0 0 4px 0' }}>{t('manageReports')}</h2>
         <div className="filters-section">
           <div className="search-bar">
             <input
               type="text"
-              placeholder="Search..."
+              placeholder={t('searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="filters">
             <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
-              <option value="all">Status *</option>
-              <option value="Pending">Pending</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Resolved">Resolved</option>
+              <option value="all">{t('statusAll')}</option>
+              <option value="Pending">{t('pending')}</option>
+              <option value="In Progress">{t('inProgress')}</option>
+              <option value="Resolved">{t('resolved')}</option>
             </select>
             <select value={filterDepartment} onChange={(e) => setFilterDepartment(e.target.value)}>
-              <option value="all">Dept *</option>
+              <option value="all">{t('deptAll')}</option>
               {departments.map(dept => (
-                <option key={dept} value={dept}>{dept}</option>
+                <option key={dept} value={dept}>{translateDepartment(dept)}</option>
               ))}
             </select>
             <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)}>
-              <option value="all">Priority *</option>
+              <option value="all">{t('priorityAll')}</option>
               {priorities.map(priority => (
-                <option key={priority} value={priority}>{priority}</option>
+                <option key={priority.value} value={priority.value}>{priority.label}</option>
               ))}
             </select>
           </div>
@@ -220,7 +305,7 @@ function ManageReports() {
       <div className="table-container">
         <div className="table-controls" style={{ gap: '8px' }}>
           <div className="entries-control">
-            <label style={{ fontSize: '12px' }}>Show:</label>
+            <label style={{ fontSize: '12px' }}>{t('showLabel')}</label>
             <select value={entriesPerPage} onChange={(e) => setEntriesPerPage(Number(e.target.value))}>
               <option value={5}>5</option>
               <option value={10}>10</option>
@@ -229,15 +314,15 @@ function ManageReports() {
             </select>
           </div>
           <div className="sort-control">
-            <label style={{ fontSize: '12px' }}>Sort:</label>
+            <label style={{ fontSize: '12px' }}>{t('sortLabel')}</label>
             <select value={selectedSortOption} onChange={handleSortChange}>
-              <option value="date-newest">Date (Newest First)</option>
-              <option value="date-oldest">Date (Oldest First)</option>
-              <option value="issue-asc">Issue (A-Z)</option>
-              <option value="issue-desc">Issue (Z-A)</option>
-              <option value="status-pending">Status (Pending First)</option>
-              <option value="status-progress">Status (In Progress First)</option>
-              <option value="status-resolved">Status (Resolved First)</option>
+              <option value="date-newest">{t('dateNewestFirst')}</option>
+              <option value="date-oldest">{t('dateOldestFirst')}</option>
+              <option value="issue-asc">{t('issueAZ')}</option>
+              <option value="issue-desc">{t('issueZA')}</option>
+              <option value="status-pending">{t('statusPendingFirst')}</option>
+              <option value="status-progress">{t('statusProgressFirst')}</option>
+              <option value="status-resolved">{t('statusResolvedFirst')}</option>
             </select>
           </div>
         </div>
@@ -246,27 +331,27 @@ function ManageReports() {
           <thead>
             <tr>
               <th onClick={() => handleSort('regNumber')} className="sortable">
-                Reg # {getSortIcon('regNumber')}
+                {t('regNumber')} {getSortIcon('regNumber')}
               </th>
               <th onClick={() => handleSort('userName')} className="sortable">
-                User {getSortIcon('userName')}
+                {t('user')} {getSortIcon('userName')}
               </th>
               <th onClick={() => handleSort('description')} className="sortable">
-                Issue {getSortIcon('description')}
+                {t('issue')} {getSortIcon('description')}
               </th>
               <th onClick={() => handleSort('department')} className="sortable">
-                Dept {getSortIcon('department')}
+                {t('dept')} {getSortIcon('department')}
               </th>
               <th onClick={() => handleSort('priority')} className="sortable">
-                Prio {getSortIcon('priority')}
+                {t('prio')} {getSortIcon('priority')}
               </th>
               <th onClick={() => handleSort('status')} className="sortable">
-                Status {getSortIcon('status')}
+                {t('status')} {getSortIcon('status')}
               </th>
               <th onClick={() => handleSort('dateSubmitted')} className="sortable">
-                Date {getSortIcon('dateSubmitted')}
+                {t('date')} {getSortIcon('dateSubmitted')}
               </th>
-              <th>Act</th>
+              <th>{t('act')}</th>
             </tr>
           </thead>
           <tbody>
@@ -350,7 +435,7 @@ function ManageReports() {
                     )}
                   </div>
                 </td>
-                <td>{complaint.department}</td>
+                <td>{translateDepartment(complaint.department)}</td>
                 <td>
                   <span
                     className="priority-badge"
@@ -371,7 +456,7 @@ function ManageReports() {
                 <td>
                   <div className="action-buttons">
                     {updatingId === complaint.id ? (
-                      <span>Updating...</span>
+                      <span>{t('updating')}</span>
                     ) : (
                       <>
                         {complaint.status !== 'Resolved' && (
@@ -380,7 +465,7 @@ function ManageReports() {
                             className="resolve-btn"
                             style={{ fontSize: '11px', padding: '4px 6px' }}
                           >
-                            Resolve
+                            {t('resolve')}
                           </button>
                         )}
                         {complaint.status !== 'In Progress' && (
@@ -389,7 +474,7 @@ function ManageReports() {
                             className="progress-btn"
                             style={{ fontSize: '11px', padding: '4px 6px' }}
                           >
-                            In Progress
+                            {t('inProgress')}
                           </button>
                         )}
                         {complaint.status !== 'Pending' && (
@@ -398,7 +483,7 @@ function ManageReports() {
                             className="pending-btn"
                             style={{ fontSize: '11px', padding: '4px 6px' }}
                           >
-                            Pending
+                            {t('pending')}
                           </button>
                         )}
                       </>
@@ -411,7 +496,7 @@ function ManageReports() {
         </table>
 
         {filteredComplaints.length === 0 && (
-          <div className="no-results">No reports found matching your criteria.</div>
+          <div className="no-results">{t('noReportsFound')}</div>
         )}
 
         <div className="pagination" style={{ fontSize: '12px' }}>
@@ -423,7 +508,7 @@ function ManageReports() {
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
             >
-              Previous
+              {t('previous')}
             </button>
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
               <button
@@ -438,7 +523,7 @@ function ManageReports() {
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
             >
-              Next
+              {t('next')}
             </button>
           </div>
         </div>
