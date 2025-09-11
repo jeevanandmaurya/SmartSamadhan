@@ -173,6 +173,89 @@ function Homepage() {
         </Link>
       </div>
 
+      {/* Android App Download Section */}
+      <div className="card glass-card neon-edge lift" style={{ marginTop: 24, marginBottom: 20, padding: '14px' }}>
+        <h3 className="gradient-text" style={{ margin: '0 0 16px 0', fontSize: 18, textAlign: 'center' }}>Download Our Android App</h3>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
+          {/* Left Side: SVG and Info */}
+          <div style={{ flex: '1', minWidth: '200px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+            {/* Mobile Phone SVG */}
+            <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ opacity: 0.8 }}>
+              {/* Phone body */}
+              <rect x="25" y="15" width="70" height="90" rx="8" ry="8" fill="url(#phoneGradient)" stroke="#e5e7eb" strokeWidth="2"/>
+              {/* Screen */}
+              <rect x="30" y="25" width="60" height="70" rx="4" ry="4" fill="#1f2937"/>
+              {/* Home indicator */}
+              <rect x="50" y="85" width="20" height="3" rx="1.5" ry="1.5" fill="#6b7280"/>
+              {/* App icon */}
+              <circle cx="60" cy="45" r="12" fill="#3b82f6"/>
+              <rect x="54" y="39" width="12" height="12" rx="2" ry="2" fill="#3b82f6"/>
+              {/* Stats elements */}
+              <circle cx="45" cy="65" r="3" fill="#10b981"/>
+              <circle cx="60" cy="65" r="3" fill="#f59e0b"/>
+              <circle cx="75" cy="65" r="3" fill="#ef4444"/>
+              {/* Download arrow */}
+              <path d="M60 75 L55 80 L65 80 Z" fill="#ffffff"/>
+              <line x1="60" y1="55" x2="60" y2="75" stroke="#ffffff" strokeWidth="2"/>
+              {/* Gradient definition */}
+              <defs>
+                <linearGradient id="phoneGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style={{stopColor:'#f3f4f6', stopOpacity:1}} />
+                  <stop offset="100%" style={{stopColor:'#d1d5db', stopOpacity:1}} />
+                </linearGradient>
+              </defs>
+            </svg>
+
+            {/* Stats */}
+            <div style={{ display: 'flex', gap: '16px', fontSize: '12px', color: 'var(--muted)' }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--primary)' }}>10K+</div>
+                <div>Downloads</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--primary)' }}>4.8★</div>
+                <div>Rating</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--primary)' }}>Free</div>
+                <div>Download</div>
+              </div>
+            </div>
+
+            <p style={{ fontSize: 13, lineHeight: 1.45, margin: '10px', textAlign: 'center' }}>
+              SmartSamadhan is a mobile-first app designed exclusively for citizens.<br/>
+              Get the Android app on your device for a seamless experience in reporting issues and tracking progress.
+            </p>
+          </div>
+
+          {/* Right Side: Download Option */}
+          <div style={{ flex: '1', minWidth: '200px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+            <div style={{ textAlign: 'center' }}>
+              <h4 style={{ margin: '0 0 8px 0', fontSize: '16px', color: 'var(--primary)' }}>Ready to Download?</h4>
+              <p style={{ fontSize: '12px', color: 'var(--muted)', margin: '0 0 16px 0' }}>
+                Download the APK file directly from our secure Google Drive link.
+              </p>
+            </div>
+
+            <a
+              href="https://drive.google.com/file/d/1A8eHqingjGHsCTQUG6ZZyUUtQq2gMf6Q/view?usp=drive_link"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn--primary lift"
+              style={{ padding: '14px 28px', fontSize: 14, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+            >
+              <i className="fab fa-android" style={{ fontSize: 18 }}></i>
+              Download APK Now
+            </a>
+
+            <div style={{ fontSize: '11px', color: 'var(--muted)', textAlign: 'center' }}>
+              <i className="fas fa-shield-alt" style={{ marginRight: '4px' }}></i>
+              Secure & Virus-Free
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Admin Information Section */}
   <div className="card glass-card neon-edge lift" style={{ marginTop: 24, textAlign: 'left', padding: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
