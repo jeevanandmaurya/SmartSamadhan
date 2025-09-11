@@ -1,66 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, Dimensions, StatusBar } from 'react-native';
-import Svg, { Defs, LinearGradient, Stop, RadialGradient, Pattern, Circle, Rect, Text as SvgText, G } from 'react-native-svg';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('screen');
-
-// Simplified SVG Background Component
-const LoginBackgroundSvg = ({ width, height }) => (
-  <Svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
-    <Defs>
-      <LinearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <Stop offset="0" stopColor="#4f46e5" stopOpacity="1"/>
-        <Stop offset="0.3" stopColor="#6366f1" stopOpacity="1"/>
-        <Stop offset="0.7" stopColor="#8b5cf6" stopOpacity="1"/>
-        <Stop offset="1" stopColor="#a855f7" stopOpacity="1"/>
-      </LinearGradient>
-      <RadialGradient id="glow" cx="50%" cy="30%" r="60%">
-        <Stop offset="0" stopColor="#ffffff" stopOpacity="0.15"/>
-        <Stop offset="1" stopColor="#ffffff" stopOpacity="0"/>
-      </RadialGradient>
-    </Defs>
-
-    {/* Background Gradient - Full Screen */}
-    <Rect width={width} height={height} fill="url(#bgGradient)"/>
-    <Rect width={width} height={height} fill="url(#glow)"/>
-
-    {/* SmartSamadhan Text - Centered */}
-    <SvgText
-      x={width / 2}
-      y={height * 0.2}
-      textAnchor="middle"
-      fontFamily="Arial, sans-serif"
-      fontSize={Math.min(width * 0.08, 32)}
-      fill="white"
-      fontWeight="700"
-    >
-      Smart Samadhan
-    </SvgText>
-
-    <SvgText
-      x={width / 2}
-      y={height * 0.25}
-      textAnchor="middle"
-      fontFamily="Arial, sans-serif"
-      fontSize={Math.min(width * 0.04, 16)}
-      fill="white"
-      opacity="0.9"
-    >
-      Empowering Citizens, Enabling Change
-    </SvgText>
-
-    {/* Decorative Elements - Positioned Relatively */}
-    <Circle cx={width * 0.13} cy={height * 0.12} r={width * 0.05} fill="white" opacity="0.1"/>
-    <Circle cx={width * 0.87} cy={height * 0.18} r={width * 0.04} fill="white" opacity="0.08"/>
-    <Circle cx={width * 0.27} cy={height * 0.87} r={width * 0.07} fill="white" opacity="0.06"/>
-    <Circle cx={width * 0.73} cy={height * 0.80} r={width * 0.05} fill="white" opacity="0.07"/>
-    <Circle cx={width * 0.5} cy={height * 0.6} r={width * 0.03} fill="white" opacity="0.05"/>
-    <Circle cx={width * 0.2} cy={height * 0.4} r={width * 0.02} fill="white" opacity="0.08"/>
-    <Circle cx={width * 0.8} cy={height * 0.5} r={width * 0.025} fill="white" opacity="0.06"/>
-  </Svg>
-);
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -87,17 +30,6 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <View style={styles.mainContainer}>
-      {/* SVG Background - Full Screen */}
-      <View style={styles.svgContainer}>
-        <LoginBackgroundSvg
-          width={screenWidth}
-          height={screenHeight}
-        />
-      </View>
-
-      {/* Semi-transparent overlay for better text readability */}
-      <View style={styles.overlay} />
-
       {/* Content Container */}
       <View style={styles.contentContainer}>
         <View style={[styles.card, { backgroundColor: theme.colors.card, shadowColor: theme.colors.shadow }]}>
@@ -154,30 +86,16 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    position: 'relative',
-  },
-  svgContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: screenWidth,
-    height: screenHeight,
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5', // A light grey background
   },
   contentContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    width: '100%',
   },
   card: {
     width: '100%',

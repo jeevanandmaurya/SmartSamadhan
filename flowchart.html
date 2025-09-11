@@ -3,45 +3,481 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Civic Issue Reporting System Flowchart</title>
-    <script type="module">
-        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-        mermaid.initialize({ startOnLoad: true });
-    </script>
+    <title>Technical Approach</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .slide {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto 1fr auto;
+            gap: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+        
+        .header {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .tech-stack {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .tech-stack h2 {
+            color: #2d3748;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .tech-stack h2::before {
+            content: '⚙️';
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .tech-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .tech-item {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.85rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .tech-label {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 4px;
+        }
+        
+        .tech-value {
+            color: #667eea;
+            font-weight: 500;
+        }
+        
+        .architecture {
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 5px solid #e53e3e;
+            position: relative;
+        }
+        
+        .architecture h2 {
+            color: #2d3748;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .architecture h2::before {
+            content: '🏗️';
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .arch-diagram {
+            position: relative;
+            height: 320px;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid #fed7d7;
+        }
+        
+        .arch-block {
+            position: absolute;
+            padding: 6px 8px;
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .user-layer {
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+            height: 35px;
+        }
+        
+        .frontend-layer {
+            background: linear-gradient(90deg, #48bb78, #38a169);
+            color: white;
+            border-color: #48bb78;
+        }
+        
+        .frontend-layer:nth-child(3) {
+            top: 70px;
+            left: 15px;
+            width: 65px;
+        }
+        
+        .frontend-layer:nth-child(4) {
+            top: 70px;
+            left: 90px;
+            width: 65px;
+        }
+        
+        .frontend-layer:nth-child(5) {
+            top: 70px;
+            left: 165px;
+            width: 80px;
+        }
+        
+        .frontend-layer:nth-child(6) {
+            top: 70px;
+            right: 15px;
+            width: 80px;
+        }
+        
+        .backend-layer {
+            background: linear-gradient(90deg, #ed8936, #dd6b20);
+            color: white;
+            border-color: #ed8936;
+        }
+        
+        .backend-layer:nth-child(7) {
+            top: 140px;
+            left: 25px;
+            width: 75px;
+        }
+        
+        .backend-layer:nth-child(8) {
+            top: 140px;
+            left: 110px;
+            width: 75px;
+        }
+        
+        .backend-layer:nth-child(9) {
+            top: 140px;
+            right: 25px;
+            width: 90px;
+        }
+        
+        .database-layer {
+            background: linear-gradient(90deg, #9f7aea, #805ad5);
+            color: white;
+            border-color: #9f7aea;
+        }
+        
+        .database-layer:nth-child(10) {
+            bottom: 40px;
+            left: 25px;
+            width: 85px;
+        }
+        
+        .database-layer:nth-child(11) {
+            bottom: 40px;
+            right: 15px;
+            width: 110px;
+        }
+        
+        .connection-line {
+            position: absolute;
+            background: #a0aec0;
+            z-index: 1;
+        }
+        
+        .h-line {
+            height: 2px;
+        }
+        
+        .v-line {
+            width: 2px;
+        }
+        
+        .line-1 {
+            top: 55px;
+            left: 15px;
+            right: 15px;
+        }
+        
+        .line-3 {
+            top: 125px;
+            left: 15px;
+            right: 15px;
+        }
+        
+        .line-5 {
+            bottom: 85px;
+            left: 15px;
+            right: 15px;
+        }
+        
+        .v-line-1 {
+            left: 50%;
+            top: 55px;
+            height: 70px;
+        }
+        
+        .v-line-2 {
+            left: 50%;
+            top: 170px;
+            height: 45px;
+        }
+        
+        .main-content {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            height: 100%;
+        }
+        
+        .flow-section {
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+            border-radius: 15px;
+            padding: 18px;
+            border-left: 5px solid #48bb78;
+        }
+        
+        .flow-section h3 {
+            color: #2d3748;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .citizen h3::before { content: '👤 '; }
+        .admin h3::before { content: '🛡️ '; }
+        .data h3::before { content: '💾 '; }
+        
+        .flow-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .step {
+            background: white;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            text-align: center;
+            border: 1px solid #c6f6d5;
+            position: relative;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .step:not(:last-child)::after {
+            content: '↓';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #48bb78;
+            font-weight: bold;
+        }
+        
+        .footer {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .footer-item {
+            background: linear-gradient(135deg, #faf5ff 0%, #e9d8fd 100%);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #805ad5;
+            font-size: 0.8rem;
+        }
+        
+        .footer-item h4 {
+            color: #553c9a;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .footer-item p {
+            color: #6b46c1;
+            font-weight: 500;
+        }
+        
+        .highlight {
+            background: linear-gradient(90deg, #ffd89b 0%, #19547b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+    </style>
 </head>
 <body>
-    <h1 style="font-family: system-ui; font-size: 20px; margin:8px 0;">SmartSamadhan - Simple Flow</h1>
-    <p style="font:12px system-ui; margin:4px 0 14px; color:#555;max-width:760px;">Minimal view of how a complaint moves through the system. Left to right: user submits, data stored, admin updates, user sees status.</p>
-    <div class="mermaid">
-        flowchart LR
-            U[User] --> A[Login / Signup]
-            A --> B[Auth]
-            B --> C[User Dashboard]
-            C --> D[Lodge Complaint]
-            D --> E{Add Attachments?}
-            E -->|Yes| F[Upload Files]
-            E -->|No| G[Skip]
-            F --> H[Save Complaint]
-            G --> H[Save Complaint]
-            H --> I[(Supabase DB)]
-            I --> J[[Realtime Notify]]
-            J --> K[Admin Dashboard]
-            K --> L{Action}
-            L -->|Update Status| M[Set Pending/In Progress/Resolved]
-            L -->|Add Notes| N[Store Notes]
-            M --> O[(DB Update)]
-            N --> O
-            O --> P[[Realtime Push]]
-            P --> Q[User Views Status]
-            Q --> C
-
-        %% Legend
-        classDef db fill:#f1f5f9,stroke:#94a3b8,color:#111,font-size:11px;
-        classDef action fill:#eef2ff,stroke:#6366f1,color:#111,font-size:11px;
-        classDef rt fill:#ecfdf5,stroke:#10b981,color:#064e3b,font-size:11px;
-        class I,O db;
-        class D,M,N,E,L action;
-        class J,P rt;
+    <div class="slide">
+        <div class="header">
+            <h1>Technical Approach & System Architecture</h1>
+        </div>
+        
+        <div class="tech-stack">
+            <h2>Technology Stack</h2>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <div class="tech-label">Frontend</div>
+                    <div class="tech-value">React.js + Vite</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-label">Backend</div>
+                    <div class="tech-value">Supabase Cloud</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-label">Maps</div>
+                    <div class="tech-value">Leaflet.js</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-label">Database</div>
+                    <div class="tech-value">PostgreSQL</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-label">Auth</div>
+                    <div class="tech-value">JWT + RLS</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-label">i18n</div>
+                    <div class="tech-value">Multi-language</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="architecture">
+            <h2>System Architecture</h2>
+            <div class="arch-diagram">
+                <div class="connection-line h-line line-1"></div>
+                <div class="connection-line h-line line-3"></div>
+                <div class="connection-line h-line line-5"></div>
+                <div class="connection-line v-line v-line-1"></div>
+                <div class="connection-line v-line v-line-2"></div>
+                
+                <div class="arch-block user-layer">Citizens/Admins (Mobile/Desktop)</div>
+                <div class="arch-block frontend-layer">React.js UI + Vite</div>
+                <div class="arch-block frontend-layer">React Router</div>
+                <div class="arch-block frontend-layer">Leaflet Maps + Heat/Clustering</div>
+                <div class="arch-block frontend-layer">i18next + FontAwesome</div>
+                
+                <div class="arch-block backend-layer">Supabase API</div>
+                <div class="arch-block backend-layer">Auth + RLS</div>
+                <div class="arch-block backend-layer">Real-time Updates</div>
+                
+                <div class="arch-block database-layer">PostgreSQL DB</div>
+                <div class="arch-block database-layer">File Storage (Images)</div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="flow-section citizen">
+                <h3>Citizen Flow</h3>
+                <div class="flow-steps">
+                    <div class="step">Access App via Browser</div>
+                    <div class="step">Login/Register</div>
+                    <div class="step">Report Issue</div>
+                    <div class="step">Track Status</div>
+                </div>
+            </div>
+            
+            <div class="flow-section admin">
+                <h3>Admin Flow</h3>
+                <div class="flow-steps">
+                    <div class="step">Admin Login</div>
+                    <div class="step">View Dashboard</div>
+                    <div class="step">Assign Department</div>
+                    <div class="step">Update Status</div>
+                </div>
+            </div>
+            
+            <div class="flow-section data">
+                <h3>Data Flow</h3>
+                <div class="flow-steps">
+                    <div class="step">User Input</div>
+                    <div class="step">Frontend Validation</div>
+                    <div class="step">Supabase API</div>
+                    <div class="step">Database Storage</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-item">
+                <h4>Security</h4>
+                <p>RLS + JWT + HTTPS</p>
+            </div>
+            <div class="footer-item">
+                <h4>Scalability</h4>
+                <p>Auto-scaling + CDN</p>
+            </div>
+            <div class="footer-item">
+                <h4>Monitoring</h4>
+                <p>Real-time Dashboard</p>
+            </div>
+        </div>
     </div>
 </body>
 </html>

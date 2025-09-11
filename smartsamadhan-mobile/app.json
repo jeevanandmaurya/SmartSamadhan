@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "SmartSamadhan",
+    "slug": "smartsamadhan-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "deploymentTarget": "15.1",
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "compileSdkVersion": 34,
+      "targetSdkVersion": 34,
+      "buildToolsVersion": "34.0.0",
+      "package": "com.jeevanandmaurya.smartsamadhanmobile",
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "bfacd7a5-8e4d-46de-8467-3a21c890b2b2"
+      }
+    },
+    "plugins": [
+      "expo-build-properties"
+    ]
+  }
+}
